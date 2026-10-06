@@ -1,6 +1,13 @@
-/* Hand-written extras: glossary, quiz feedback, mascot. Everything here is fictional/teaching content. */
+/* Hand-written extras: glossary, quiz feedback, part icons. Everything here is fictional/teaching content. */
 window.EXTRAS = {
   glossary: {
+    'positional encoding': 'A signal added to each token\u2019s numbers that says where it sits in the text, so word order isn\u2019t lost.',
+    'feed-forward layer': 'The per-token calculator inside each transformer block: widen, switch on useful signals, shrink back. Holds most of the parameters.',
+    'softmax': 'The final step that turns raw scores for every possible next token into probabilities that add up to 100%.',
+    'residual connection': 'A shortcut that adds each block\u2019s input back to its output, so information (and training signal) survives deep stacks.',
+    'layer norm': 'Rescaling the numbers to a steady range before each sub-step, so nothing explodes or fades across many layers.',
+    'causal masking': 'The rule that a token may only look at earlier tokens, never later ones. It is what makes the model a next-token predictor.',
+    'validation loss': 'Loss measured on text the model never trained on. If it rises while training loss falls, the model is memorising.',
     'token': 'A small chunk of text (a word, part of a word, or punctuation) that the model reads and writes. The model sees tokens as numbers.',
     'model': 'The trained AI system itself: a huge set of numbers that turns input text into a prediction of the next token.',
     'training': 'Tuning the model\u2019s numbers by letting it guess hidden next tokens and nudging it towards the right answer, billions of times.',
@@ -41,118 +48,127 @@ window.EXTRAS = {
     'latency': 'Waiting time: how long until an answer starts or finishes.'
   },
   quizWhy: {
-    1: 'An LLM predicts the next token, over and over. Looking things up needs an extra system bolted on (Step 5).',
+    4: "Roughly two-thirds of a typical transformer’s weights sit in the feed-forward layers. There is no fact database: knowledge is spread across those numbers.",
+    1: 'An LLM predicts the next token, over and over. Looking things up needs an extra system bolted on (Step 6).',
     2: 'It repeats it. The model mirrors its data and can\u2019t tell old from current by itself.',
     3: 'Older content gets dropped or summarised. Nothing is learned permanently inside a chat.',
-    4: 'It doesn\u2019t know them unless they\u2019re supplied (for example through RAG). They were never in its training data.',
-    5: 'Search returning the wrong or outdated content. Bad search = bad answers, however big the model.',
-    6: 'Limited permissions and human approval. A polite instruction can be overridden by injected text.',
-    7: 'Consistent style, format or narrow behaviour. Changing facts belong in RAG.',
-    8: 'Sources, users, cost of errors and success measures. The model brand can be chosen later, using evals.',
-    9: 'A saved note is pasted into its context. The model\u2019s parameters didn\u2019t change.',
-    10: 'Exact codes like \u201cHR-114\u201d. Meaning search is great at synonyms and paraphrases; hybrid search adds keywords.',
-    11: 'Usually, but it may miss it, especially in the middle. Test with facts deliberately buried.',
-    12: 'A validation rule plus human review. Check the numbers that matter.',
-    13: 'A simple lookup at high volume. Thinking adds cost and delay but no accuracy there.',
-    14: 'It standardises how AI apps connect to tools and data, like a plug shape. Safety comes from permissions.',
-    15: 'Limiting what the system is allowed to do. A hijacked AI that can\u2019t send email can\u2019t leak by email.',
-    16: 'Demos show the best case; evals reveal failure rates.',
-    17: 'Maths or code with tests, because an automatic checker can say what\u2019s objectively right.',
-    18: 'Supplement real data, with expert checks. Real examples stay the reality check.',
-    19: 'Smaller, sometimes slightly less accurate. It doesn\u2019t add knowledge.',
-    20: 'A learned sub-network chosen per word (token), not a human-like specialist.',
-    21: 'Volume \u00d7 model calls per task \u00d7 length (\u00d7 price). Agents multiply the middle bit.'
+    5: 'It doesn\u2019t know them unless they\u2019re supplied (for example through RAG). They were never in its training data.',
+    6: 'Search returning the wrong or outdated content. Bad search = bad answers, however big the model.',
+    7: 'Limited permissions and human approval. A polite instruction can be overridden by injected text.',
+    8: 'Consistent style, format or narrow behaviour. Changing facts belong in RAG.',
+    9: 'Sources, users, cost of errors and success measures. The model brand can be chosen later, using evals.',
+    10: 'A saved note is pasted into its context. The model\u2019s parameters didn\u2019t change.',
+    11: 'Exact codes like \u201cHR-114\u201d. Meaning search is great at synonyms and paraphrases; hybrid search adds keywords.',
+    12: 'Usually, but it may miss it, especially in the middle. Test with facts deliberately buried.',
+    13: 'A validation rule plus human review. Check the numbers that matter.',
+    14: 'A simple lookup at high volume. Thinking adds cost and delay but no accuracy there.',
+    15: 'It standardises how AI apps connect to tools and data, like a plug shape. Safety comes from permissions.',
+    16: 'Limiting what the system is allowed to do. A hijacked AI that can\u2019t send email can\u2019t leak by email.',
+    17: 'Demos show the best case; evals reveal failure rates.',
+    18: 'Maths or code with tests, because an automatic checker can say what\u2019s objectively right.',
+    19: 'Supplement real data, with expert checks. Real examples stay the reality check.',
+    20: 'Smaller, sometimes slightly less accurate. It doesn\u2019t add knowledge.',
+    21: 'A learned sub-network chosen per word (token), not a human-like specialist.',
+    22: 'Volume \u00d7 model calls per task \u00d7 length (\u00d7 price). Agents multiply the middle bit.'
   },
-  emoji: {1:'🍼',2:'📚',3:'👀',4:'🌱',5:'🎒',6:'💼',7:'🎩',8:'🎓',9:'📔',10:'🗺️',11:'🧳',12:'👂',13:'🤔',14:'🔑',15:'🚸',16:'📝',17:'🧭',18:'🧪',19:'👶',20:'🏢',21:'🪙'},
-  accessories: {1:['pacifier'],2:['pacifier','book'],3:['book'],4:['book'],5:['backpack'],6:['tie'],7:['bowtie'],8:['cap'],9:['cap','diary'],10:['cap','glasses'],11:['cap','backpack'],12:['cap','headphones'],13:['cap','glasses'],14:['cap','key'],15:['cap'],16:['cap','glasses'],17:['cap','bowtie'],18:['cap','book'],19:['cap'],20:['cap','glasses'],21:['cap','coin']}
+  emoji: {1:'⚡',2:'⛽',3:'🔦',4:'🧠',5:'📈',6:'📚',7:'🧰',8:'🎩',9:'🚀',10:'💾',11:'🗺️',12:'🧳',13:'👂',14:'🤔',15:'🔑',16:'🛡️',17:'📋',18:'🧭',19:'🧪',20:'📦',21:'🏢',22:'🪙'},
+  icons: {1:'spark',2:'fuel',3:'eye',4:'brain',5:'scale',6:'books',7:'tools',8:'polish',9:'rocket',10:'memory',11:'search',12:'layers',13:'senses',14:'bulb',15:'key',16:'shield',17:'bench',18:'compass',19:'flask',20:'chip',21:'router',22:'coin'}
 };
 
-/* Baby AI mascot as inline SVG. acc: array of accessory names. */
-window.babySVG = function (acc, size, mood) {
-  acc = acc || []; size = size || 96;
-  const has = (a) => acc.indexOf(a) >= 0;
-  const mouth = mood === 'oops' ? '<ellipse cx="60" cy="80" rx="7" ry="6" fill="#7a2b3a"/>' :
-    mood === 'wow' ? '<circle cx="60" cy="80" r="6" fill="#7a2b3a"/>' :
-    '<path d="M48 76 Q60 88 72 76" stroke="#3b2a52" stroke-width="4" fill="none" stroke-linecap="round"/>';
-  let s = '<svg class="baby" viewBox="0 0 120 130" width="' + size + '" height="' + Math.round(size * 1.08) + '" aria-hidden="true" focusable="false">';
-  if (has('backpack')) s += '<rect x="14" y="88" width="92" height="36" rx="12" fill="#2f9e74"/><rect x="40" y="96" width="40" height="14" rx="5" fill="#bfeedd"/>';
-  else s += '<rect x="30" y="96" width="60" height="30" rx="14" fill="#8b7be8"/>';
-  if (has('tie')) s += '<path d="M60 98 l-6 6 l6 20 l6 -20 z" fill="#e2553e"/>';
-  if (has('bowtie')) s += '<path d="M48 100 l12 6 l-12 6 z M72 100 l-12 6 l12 6 z" fill="#e2553e"/><circle cx="60" cy="106" r="3" fill="#b4361f"/>';
-  s += '<line x1="60" y1="18" x2="60" y2="6" stroke="#5a3fd1" stroke-width="4"/><circle cx="60" cy="6" r="5" fill="#ffc93c" stroke="#5a3fd1" stroke-width="2"/>';
-  s += '<rect x="16" y="18" width="88" height="82" rx="36" fill="#efeaff" stroke="#5a3fd1" stroke-width="4"/>';
-  s += '<circle cx="12" cy="60" r="7" fill="#c9bdfb" stroke="#5a3fd1" stroke-width="3"/><circle cx="108" cy="60" r="7" fill="#c9bdfb" stroke="#5a3fd1" stroke-width="3"/>';
-  s += '<circle cx="44" cy="56" r="9" fill="#1e2140"/><circle cx="76" cy="56" r="9" fill="#1e2140"/><circle cx="47" cy="53" r="3" fill="#fff"/><circle cx="79" cy="53" r="3" fill="#fff"/>';
-  s += '<circle cx="32" cy="72" r="6" fill="#ffb3c1" opacity=".8"/><circle cx="88" cy="72" r="6" fill="#ffb3c1" opacity=".8"/>';
-  if (has('glasses')) s += '<circle cx="44" cy="56" r="14" fill="none" stroke="#1e2140" stroke-width="3"/><circle cx="76" cy="56" r="14" fill="none" stroke="#1e2140" stroke-width="3"/><line x1="58" y1="56" x2="62" y2="56" stroke="#1e2140" stroke-width="3"/>';
-  if (has('pacifier')) s += '<circle cx="60" cy="82" r="9" fill="#ff8fa3" stroke="#c2185b" stroke-width="2"/><ellipse cx="60" cy="82" rx="14" ry="5" fill="#ffd1dc" stroke="#c2185b" stroke-width="2"/>';
-  else s += mouth;
-  if (has('headphones')) s += '<path d="M18 56 Q18 14 60 14 Q102 14 102 56" fill="none" stroke="#1e2140" stroke-width="5"/><rect x="6" y="48" width="14" height="22" rx="5" fill="#1e2140"/><rect x="100" y="48" width="14" height="22" rx="5" fill="#1e2140"/>';
-  if (has('cap')) s += '<polygon points="60,2 104,18 60,32 16,18" fill="#1e2140"/><rect x="44" y="20" width="32" height="12" fill="#1e2140"/><line x1="98" y1="18" x2="100" y2="40" stroke="#ffc93c" stroke-width="3"/><circle cx="100" cy="42" r="4" fill="#ffc93c"/>';
-  if (has('book')) s += '<rect x="78" y="94" width="30" height="24" rx="3" fill="#ffc93c" stroke="#a87700" stroke-width="2"/><line x1="93" y1="94" x2="93" y2="118" stroke="#a87700" stroke-width="2"/>';
-  if (has('diary')) s += '<rect x="80" y="92" width="26" height="30" rx="3" fill="#e2553e"/><rect x="84" y="98" width="18" height="4" fill="#fff"/>';
-  if (has('key')) s += '<circle cx="96" cy="104" r="8" fill="none" stroke="#a87700" stroke-width="4"/><path d="M90 110 l-14 14 m4 -4 l4 4" stroke="#a87700" stroke-width="4"/>';
-  if (has('coin')) s += '<circle cx="96" cy="108" r="12" fill="#ffc93c" stroke="#a87700" stroke-width="3"/><text x="96" y="113" font-size="13" text-anchor="middle" fill="#7a5600" font-weight="700">¢</text>';
-  return s + '</svg>';
+/* Workshop "part" icons: a gradient tile with a simple line icon, one per step. Inline SVG, no assets. */
+window.PART_ICONS = {
+  spark: '<path d="M32 10v10M32 44v10M10 32h10M44 32h10M17 17l7 7M40 40l7 7M47 17l-7 7M24 40l-7 7"/><circle cx="32" cy="32" r="6"/>',
+  fuel: '<path d="M18 16h20v34H18zM18 26h20M38 22l8 6v16a3 3 0 0 0 6 0V30l-6-8"/>',
+  eye: '<path d="M8 32s9-14 24-14 24 14 24 14-9 14-24 14S8 32 8 32z"/><circle cx="32" cy="32" r="6"/>',
+  brain: '<rect x="16" y="16" width="32" height="32" rx="5"/><path d="M24 8v8M32 8v8M40 8v8M24 48v8M32 48v8M40 48v8M8 24h8M8 32h8M8 40h8M48 24h8M48 32h8M48 40h8"/><rect x="25" y="25" width="14" height="14" rx="2"/>',
+  scale: '<path d="M12 52L52 12M36 12h16v16M12 36v16h16"/>',
+  books: '<path d="M12 50V14h8v36M24 50V18h8v32M36 50l6-34 8 2-6 34z"/><path d="M8 52h48"/>',
+  tools: '<path d="M14 50l18-18M38 14a10 10 0 0 0-8 14l-16 16 6 6 16-16a10 10 0 0 0 14-8l-6 2-4-4z"/>',
+  polish: '<path d="M14 50l22-22M36 28l6-14 8 8-14 6zM44 40l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',
+  rocket: '<path d="M32 8c10 8 14 20 10 34H22C18 28 22 16 32 8z"/><circle cx="32" cy="26" r="4"/><path d="M22 42l-6 8h10M42 42l6 8H38M28 50l4 6 4-6"/>',
+  memory: '<rect x="12" y="20" width="40" height="24" rx="3"/><path d="M20 20v-6M28 20v-6M36 20v-6M44 20v-6M20 44v6M28 44v6M36 44v6M44 44v6M20 30h24"/>',
+  search: '<circle cx="28" cy="28" r="14"/><path d="M38 38l14 14"/>',
+  layers: '<path d="M32 10l22 11-22 11-22-11zM10 32l22 11 22-11M10 43l22 11 22-11"/>',
+  senses: '<path d="M6 26s6-9 16-9 16 9 16 9-6 9-16 9S6 26 6 26z"/><circle cx="22" cy="26" r="4"/><path d="M44 30a8 8 0 1 1 12 7c-3 2-3 5-3 8a5 5 0 0 1-9 2"/>',
+  bulb: '<path d="M24 44h16M26 52h12M32 8a14 14 0 0 0-8 26c2 2 2 4 2 10h12c0-6 0-8 2-10a14 14 0 0 0-8-26z"/>',
+  key: '<circle cx="22" cy="32" r="10"/><path d="M32 32h22M46 32v8M54 32v6"/>',
+  shield: '<path d="M32 8l20 8v14c0 13-9 22-20 26-11-4-20-13-20-26V16z"/><path d="M24 32l6 6 12-12"/>',
+  bench: '<rect x="14" y="10" width="36" height="46" rx="4"/><path d="M24 10V6h16v4M22 26l4 4 8-8M22 42l4 4 8-8M38 28h6M38 44h6"/>',
+  compass: '<path d="M32 8v48M14 20h36M14 20l-8 16h16zM50 20l-8 16h16zM24 56h16"/>',
+  flask: '<path d="M26 8h12M28 8v16L14 50a4 4 0 0 0 4 6h28a4 4 0 0 0 4-6L36 24V8M20 40h24"/>',
+  chip: '<rect x="20" y="20" width="24" height="24" rx="3"/><path d="M26 14v6M32 14v6M38 14v6M26 44v6M32 44v6M38 44v6M14 26h6M14 32h6M14 38h6M44 26h6M44 32h6M44 38h6"/>',
+  router: '<circle cx="14" cy="32" r="5"/><circle cx="50" cy="14" r="5"/><circle cx="50" cy="32" r="5"/><circle cx="50" cy="50" r="5"/><path d="M19 32h26M19 30l26-14M19 34l26 14"/>',
+  coin: '<ellipse cx="32" cy="20" rx="18" ry="7"/><path d="M14 20v12c0 4 8 7 18 7s18-3 18-7V20M14 32v12c0 4 8 7 18 7s18-3 18-7V32"/>',
+  lock: '<rect x="16" y="28" width="32" height="24" rx="4"/><path d="M22 28v-6a10 10 0 0 1 20 0v6M32 38v6"/>',
+  flag: '<path d="M16 56V10M16 12h30l-6 9 6 9H16"/>',
+  map: '<path d="M8 16l14-6 20 6 14-6v38l-14 6-20-6-14 6zM22 10v38M42 16v38"/>',
+  pause: '<path d="M14 18h36v24H14zM24 50h16M32 42v8"/><path d="M22 30h4M30 30h12"/>'
+};
+window.partSVG = function (icon, size, cls) {
+  const d = window.PART_ICONS[icon] || window.PART_ICONS.spark; size = size || 64;
+  const id = 'pg' + Math.random().toString(36).slice(2, 8);
+  return '<svg class="part-ico ' + (cls || '') + '" viewBox="0 0 64 64" width="' + size + '" height="' + size + '" aria-hidden="true" focusable="false"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--ico-a,#6d4aff)"/><stop offset="1" stop-color="var(--ico-b,#14b8a6)"/></linearGradient></defs><rect x="1" y="1" width="62" height="62" rx="16" fill="url(#' + id + ')"/><g transform="translate(9.6 9.6) scale(.7)" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round">' + d + '</g></svg>';
 };
 
 /* ---------- Humour layer (office-safe, inclusive). Punchlines sit NEXT TO the real explanation. ----------
    Running jokes:
-   1) The "Confidence: 100%" sticker: the baby is always 100% confident, whether right or wrong.
-   2) "Kind regards, regards, regards": the baby learned office email from a few hundred emails and cannot stop signing off.
-   3) The baby keeps trying to approve Acme invoice INV-2291. Nobody lets it. */
+   1) The "Model confidence: 100%" sticker: the model always sounds 100% sure, whether right or wrong.
+   2) "Kind regards, regards, regards": the engine learned office email from a few hundred emails and cannot stop signing off.
+   3) The agent keeps trying to approve Acme invoice INV-2291. Nobody lets it. */
 window.FUN = {
   hookQuip: {
-    1: 'Current vocabulary: zero words. Current confidence: 100%.',
-    2: 'First full sentence: \u201cKind regards.\u201d Second full sentence: \u201cregards regards regards.\u201d We\u2019re very proud.',
-    3: 'Goldfish have a three-second memory. Our baby has a two-hundred-token one. Similar vibe.',
-    4: 'It has read more books than every library you\u2019ve visited. It has read zero of your team\u2019s spreadsheets.',
-    5: 'The library card is laminated. The baby is thrilled. Please don\u2019t tell it about the 2019 shelf yet.',
-    6: 'First task on day one: \u201cCan I approve invoice INV-2291?\u201d No. No, you can\u2019t.',
-    7: '\u201cAhoy, valued customer! Yer refund be sailin\u2019 to ye.\u201d Yeah, we need to talk.',
-    8: 'Caps on. Gowns on. Fantasy requirements: off.',
-    9: 'Dear Diary: Today I learned nothing. But I wrote it down, so tomorrow I\u2019ll seem very wise.',
-    10: 'Fiction is next to \u201cstories\u201d. Expense claims are next to \u201cregret\u201d.',
-    11: 'Packed: 40 contracts, a chat history, and somewhere at the bottom, one sock of crucial information.',
-    12: 'New skill: reading receipts. New hobby: reading a coffee stain as \u201c\u20b98\u201d.',
-    13: 'Old baby: blurts. New baby: thinks for 25 seconds, then blurts something better.',
-    14: 'It asked for the master key \u201cjust to be safe\u201d. That is exactly how it wouldn\u2019t be safe.',
-    15: 'Rule one: don\u2019t take sweets from strangers. Rule two: don\u2019t take instructions from supplier emails.',
-    16: 'Every parent says \u201cmy baby is a genius\u201d. Evals ask \u201cdo you have that in writing?\u201d',
-    17: 'Raise a child on compliments and you get a child who only gives compliments. Ask any rater.',
-    18: 'Homework written by the big kids: tidy, plentiful, and occasionally confidently wrong.',
-    19: 'The professor costs a fortune and takes a week. The intern sorted the post before lunch.',
-    20: 'Huge office, many teams, and for each word only two of them have to leave their desks.',
-    21: 'The pilot cost a coffee. The rollout costs a coffee machine. Per hour.'
+    1: 'Parts assembled: zero. Confidence: 100%.',
+    2: 'First full sentence after training: \u201cKind regards.\u201d Second: \u201cregards regards regards.\u201d The engine runs. Mostly on regards.',
+    3: 'Goldfish: a three-second memory. Our GPT: a 200-token one. Similar vibe, better at spreadsheets.',
+    4: 'Spoiler: there\u2019s no tiny librarian in there. Just a lot of very organised maths.',
+    5: 'It has read more books than every library you\u2019ve visited. It has read zero of your team\u2019s spreadsheets.',
+    6: 'The library is installed. Please don\u2019t tell it about the 2019 shelf yet.',
+    7: 'First task on day one: \u201cCan I approve invoice INV-2291?\u201d No. No, you can\u2019t.',
+    8: '\u201cAhoy, valued customer! Yer refund be sailin\u2019 to ye.\u201d Yeah, we need to talk.',
+    9: 'Hard hats off. Fantasy requirements: also off.',
+    10: 'Memory module installed. It remembers everything you told it, as long as \u201ceverything\u201d fits on a sticky note.',
+    11: 'On the meaning map, \u201cexpense claims\u201d sit right next to \u201cregret\u201d.',
+    12: 'Packed: 40 contracts, a chat history and, somewhere at the bottom, one sock of crucial information.',
+    13: 'New skill: reading receipts. New hobby: reading a coffee stain as \u201c\u20b98\u201d.',
+    14: 'Fast mode: blurts. Thinking mode: thinks for 25 seconds, then blurts something better.',
+    15: 'It asked for the master key \u201cjust to be safe\u201d. That is exactly how it wouldn\u2019t be safe.',
+    16: 'Rule one: don\u2019t click links from strangers. Rule two: don\u2019t take orders from supplier emails.',
+    17: 'Every team says \u201cour prototype is a genius\u201d. Evals ask \u201cdo you have that in writing?\u201d',
+    18: 'Train a model on compliments and you get a model that only gives compliments. Ask any rater.',
+    19: 'Practice tickets written by a bigger model: tidy, plentiful and occasionally confidently wrong.',
+    20: 'The professor costs a fortune and takes a week. The intern sorted the post before lunch.',
+    21: 'Huge office, many teams, and for each word only two of them have to leave their desks.',
+    22: 'The pilot cost a coffee. The rollout costs a coffee machine. Per hour.'
   },
   mythPunch: {
-    1: 'Looking things up is a different job. The baby is in autocomplete, not research.',
+    1: 'Looking things up is a different job. This engine does autocomplete, not research.',
     2: 'You are what you eat. So is your model, and it ate the comments section.',
-    3: 'It\u2019s not ignoring you. You just fell out of the toy box.',
-    4: 'Its knowledge has a best-before date, and it doesn\u2019t check the label.',
-    5: 'Connecting a library isn\u2019t the same as reading it. Ask anyone with a gym membership.',
-    6: 'A digital employee with no judgement and every password is called an incident.',
-    7: 'Fine-tuning teaches it to say the price nicely. It doesn\u2019t teach it the price.',
-    8: 'The vendor can build anything. They just need you to say what \u201cright\u201d looks like.',
-    9: 'It doesn\u2019t remember you. It remembers a sticky note about you. Choose your sticky notes wisely.',
-    10: 'Close in meaning, miles apart in usefulness: like \u201cannual leave policy 2019\u201d and \u201c2026\u201d.',
-    11: 'A bigger suitcase doesn\u2019t help you find your passport.',
-    12: 'It saw the receipt. It just saw it like you see a menu without your glasses.',
-    13: 'Thinking harder about your Q3 revenue does not create your Q3 revenue.',
-    14: 'A standard plug is great. You still don\u2019t plug the toaster into the bathtub.',
-    15: 'A note saying \u201cplease don\u2019t be tricked\u201d is not a lock. Locks are locks.',
-    16: 'The demo is the wedding photo. The eval is the marriage.',
-    17: 'It learns what you reward. Reward flattery and it will call your plan \u201cvisionary\u201d. Every plan.',
-    18: 'Practice papers are great. Just don\u2019t let the practice paper mark itself.',
-    19: 'Hire for the job, not the CV. The intern doesn\u2019t need a corner office.',
-    20: 'There is no \u201clegal expert\u201d in there. There\u2019s a lot of maths with good manners.',
-    21: 'Small number \u00d7 big number \u00d7 another big number = a meeting with Finance.'
+    3: 'It\u2019s not ignoring you. You just scrolled out of its context window.',
+    4: 'No filing cabinet inside. Just billions of very opinionated numbers.',
+    5: 'Its knowledge has a best-before date, and it doesn\u2019t check the label.',
+    6: 'Connecting a library isn\u2019t the same as reading it. Ask anyone with a gym membership.',
+    7: 'A digital employee with no judgement and every password is called an incident.',
+    8: 'Fine-tuning teaches it to say the price nicely. It doesn\u2019t teach it the price.',
+    9: 'The vendor can build anything. They just need you to say what \u201cright\u201d looks like.',
+    10: 'It doesn\u2019t remember you. It remembers a sticky note about you. Choose your sticky notes wisely.',
+    11: 'Close in meaning, miles apart in usefulness: like \u201cannual leave policy 2019\u201d and \u201c2026\u201d.',
+    12: 'A bigger suitcase doesn\u2019t help you find your passport.',
+    13: 'It saw the receipt. It just saw it the way you see a menu without your glasses.',
+    14: 'Thinking harder about your Q3 revenue does not create your Q3 revenue.',
+    15: 'A standard plug is great. You still don\u2019t plug the toaster into the bathtub.',
+    16: 'A note saying \u201cplease don\u2019t be tricked\u201d is not a lock. Locks are locks.',
+    17: 'The demo is the wedding photo. The eval is the marriage.',
+    18: 'It learns what you reward. Reward flattery and it will call your plan \u201cvisionary\u201d. Every plan.',
+    19: 'Practice papers are great. Just don\u2019t let the practice paper mark itself.',
+    20: 'Hire for the job, not the CV. The intern doesn\u2019t need a corner office.',
+    21: 'There is no \u201clegal expert\u201d in there. There\u2019s a lot of maths with good manners.',
+    22: 'Small number \u00d7 big number \u00d7 another big number = a meeting with Finance.'
   },
-  right: ['Nailed it.', 'Correct! The baby is taking notes.', 'Yes! Gold star (we don\u2019t do badges, so imagine it).', 'Spot on. Someone\u2019s been paying attention.', 'Correct. Your requirement just got sharper.'],
-  wrong: ['Not quite, but the baby makes that mistake too, with 100% confidence.', 'Close! Have another look. No one is scoring this.', 'Plausible, fluent... and not right. You\u2019re thinking like an LLM!', 'Nope, but that\u2019s exactly the myth this step busts.'],
-  loading: ['Consulting its 40-word vocabulary\u2026', 'Predicting the next token, very seriously\u2026', 'Asking the library (politely)\u2026', 'Warming up the parameters\u2026', 'Pretending to think\u2026 no wait, actually thinking\u2026', 'Counting on its fingers\u2026', 'Adding one more \u201cregards\u201d\u2026'],
-  stopHere: ['Stop here (the baby needs a nap)', 'Stop here, I need a coffee', 'Pause the parenting'],
-  keepGoing: ['Keep going \u2192', 'More tricks, please \u2192', 'One more step \u2192'],
-  confidence: 'Confidence: 100%',
-  confidenceTip: 'Running joke, real point: the baby sounds 100% sure whether it\u2019s right or wrong. Fluency is not accuracy.'
+  right: ['Nailed it.', 'Correct! Your GPT is taking notes.', 'Yes! Gold star (we don\u2019t do badges, so imagine it).', 'Spot on. Someone\u2019s been paying attention.', 'Correct. Your requirement just got sharper.'],
+  wrong: ['Not quite, but the model makes that mistake too, with 100% confidence.', 'Close! Have another look. No one is scoring this.', 'Plausible, fluent... and not right. You\u2019re thinking like an LLM!', 'Nope, but that\u2019s exactly the myth this step busts.'],
+  loading: ['Tightening the bolts\u2026', 'Reading the manual (a first for everyone)\u2026', 'Predicting the next token, very seriously\u2026', 'Asking the library (politely)\u2026', 'Warming up the parameters\u2026', 'Pretending to think\u2026 no wait, actually thinking\u2026', 'Counting on its fingers\u2026', 'Adding one more \u201cregards\u201d\u2026'],
+  stopHere: ['Stop here (tools down)', 'Stop here, I need a coffee', 'Park the build for now'],
+  keepGoing: ['Keep building \u2192', 'Bolt on the next part \u2192', 'One more part \u2192'],
+  confidence: 'Model confidence: 100%',
+  confidenceTip: 'Running joke, real point: the model sounds 100% sure whether it\u2019s right or wrong. Fluency is not accuracy.'
 };

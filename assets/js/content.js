@@ -1,15 +1,15 @@
-/* Generated from curriculum.md by tools/build-content.mjs. Do not edit by hand. */
+/* Generated from curriculum.md by tools/build-content.mjs, then renumbered by tools/renumber.mjs (new core Step 4). Edit this file directly from now on. */
 window.COURSE = {
  "steps": [
   {
    "n": 1,
-   "name": "Baby Babbles",
+   "name": "The Autocomplete Engine",
    "concept": "next-token prediction and tokens",
    "optional": false,
-   "meta": "Screen 1 of 8 · ~10 minutes",
+   "meta": "Screen 1 of 9 · ~10 minutes",
    "time": "10 minutes",
    "buildsOn": "",
-   "hook": "Congratulations, it&#39;s an AI! It weighs zero kilograms, it never sleeps, and right now all it can do is guess what letter comes next. Badly.",
+   "hook": "Welcome to the workshop. Your GPT kit has arrived: zero parts assembled, one instruction manual, and an engine that can only guess what letter comes next. Badly.",
    "see": {
     "head": [
      "Before",
@@ -17,16 +17,16 @@ window.COURSE = {
     ],
     "before": "<code>xq#vplm oo ztr kkaey</code>",
     "after": "<code>the cat sat on the mat the cat sat on the</code>",
-    "note": "Before: the baby picks each character at random. After: it has seen a little text and learned that some pieces tend to follow others. It&#39;s still just guessing what comes next. It&#39;s guessing better."
+    "note": "Before: the untrained model picks each character at random. After: it has seen a little text and learned that some pieces tend to follow others. It&#39;s still just guessing what comes next. It&#39;s guessing better."
    },
-   "mechanism": "<p>An LLM does one thing, over and over: <strong>it looks at the text so far and predicts the next small piece.</strong> Then it adds that piece to the text and predicts again. That&#39;s it. Writing an email, answering a question, summarising a report: all of it is &quot;predict the next piece&quot;, repeated hundreds of times.</p>\n<p>Those pieces are called <strong>tokens</strong>. A token is a chunk of text: sometimes a whole word (&quot;cat&quot;), sometimes part of a word (&quot;un&quot;, &quot;believ&quot;, &quot;able&quot;), sometimes a space or punctuation mark. The model doesn&#39;t see letters or words the way we do. It sees a list of token <strong>numbers</strong>. A common rule of thumb for English is that one token is about three-quarters of a word, but it varies by language and by text.</p>\n<p>The prediction isn&#39;t one answer. It&#39;s a list of probabilities: &quot;mat&quot; 40%, &quot;sofa&quot; 20%, &quot;floor&quot; 15%, and so on. The system then picks one. A setting usually called <strong>temperature</strong> controls how adventurous that pick is. Low temperature: it nearly always picks the top choice. High temperature: it takes more chances. That is why asking the same question twice can give different answers.</p>\n<p>Notice what is <em>not</em> in that description: looking things up, checking facts, or understanding in the human sense. The baby produces text that is <em>likely</em>, not text that is <em>verified</em>.</p>\n",
+   "mechanism": "<p>An LLM does one thing, over and over: <strong>it looks at the text so far and predicts the next small piece.</strong> Then it adds that piece to the text and predicts again. That&#39;s it. Writing an email, answering a question, summarising a report: all of it is &quot;predict the next piece&quot;, repeated hundreds of times.</p>\n<p>Those pieces are called <strong>tokens</strong>. A token is a chunk of text: sometimes a whole word (&quot;cat&quot;), sometimes part of a word (&quot;un&quot;, &quot;believ&quot;, &quot;able&quot;), sometimes a space or punctuation mark. The model doesn&#39;t see letters or words the way we do. It sees a list of token <strong>numbers</strong>. A common rule of thumb for English is that one token is about three-quarters of a word, but it varies by language and by text.</p>\n<p>The prediction isn&#39;t one answer. It&#39;s a list of probabilities: &quot;mat&quot; 40%, &quot;sofa&quot; 20%, &quot;floor&quot; 15%, and so on. The system then picks one. A setting usually called <strong>temperature</strong> controls how adventurous that pick is. Low temperature: it nearly always picks the top choice. High temperature: it takes more chances. That is why asking the same question twice can give different answers.</p>\n<p>Notice what is <em>not</em> in that description: looking things up, checking facts, or understanding in the human sense. The model produces text that is <em>likely</em>, not text that is <em>verified</em>.</p>\n",
    "breakName": "The Autocomplete Trap",
-   "goal": "Get the baby to confidently complete a sentence with something false.",
+   "goal": "Get the model to confidently complete a sentence with something false.",
    "discover": "",
    "myths": [
     {
      "myth": "&quot;AI looks up the answer and then writes it out.&quot;",
-     "reality": "A plain LLM doesn&#39;t look anything up. It generates likely text from patterns it learned during training. Some products add search on top (you&#39;ll build that in Step 5), but that is an extra system, not the model itself."
+     "reality": "A plain LLM doesn&#39;t look anything up. It generates likely text from patterns it learned during training. Some products add search on top (you&#39;ll build that in Step 6), but that is an extra system, not the model itself."
     }
    ],
    "sowhat": [
@@ -57,25 +57,25 @@ window.COURSE = {
   },
   {
    "n": 2,
-   "name": "Learning Words",
+   "name": "Fuel: Training Data",
    "concept": "training, loss and why data quality matters",
    "optional": false,
-   "meta": "Screen 2 of 8 · ~10 minutes",
+   "meta": "Screen 2 of 9 · ~10 minutes",
    "time": "10 minutes",
    "buildsOn": "",
-   "hook": "Babies learn to talk by listening. Our baby learns by reading — and, like a toddler, it repeats whatever it hears. Including the rude bits.",
+   "hook": "An engine runs on fuel. A language model runs on text, and it isn&#39;t fussy about quality. Pour in rants and it will happily run on rants.",
    "see": {
     "head": [
      "Before training (round 0)",
-     "After training (round 500)"
+     "After training (round 2,000)"
     ],
     "before": "<code>qlz the eo ffft n  bwaa</code>",
     "after": "<code>Please find attached the invoice for March. Kind regards,</code>",
-    "note": "The baby was fed a few hundred office emails. Its output went from noise to something that sounds like an office email. It doesn&#39;t &quot;know&quot; what an invoice is. It knows what usually comes next in emails like these."
+    "note": "The model was fed a few hundred office emails. Its output went from noise to something that sounds like an office email. It doesn&#39;t &quot;know&quot; what an invoice is. It knows what usually comes next in emails like these. (In this step you&#39;ll do this for real, in your browser.)"
    },
-   "mechanism": "<p><strong>Training</strong> is a guessing game with an answer key. Take a real sentence. Hide the next token. Let the model guess. Compare the guess with the real token. Then nudge the model&#39;s internal numbers a tiny bit so the right answer would have been a bit more likely. Repeat this billions of times.</p>\n<p>The score for &quot;how wrong was the guess&quot; is called <strong>loss</strong>. High loss = bad guesses. As training goes on, loss goes down. That falling line is the baby learning.</p>\n<p>Here&#39;s the catch: the model learns to predict <strong>whatever is in the data</strong>. Feed it polite emails and it writes polite emails. Feed it outdated policies and it repeats outdated policies. Feed it biased hiring notes and it reproduces the bias. It cannot tell good data from bad data by itself. It simply becomes a mirror of what it read. &quot;Garbage in, garbage out&quot; was true before AI. It is <em>more</em> true now, because the garbage comes back sounding fluent.</p>\n",
+   "mechanism": "<p><strong>Training</strong> is a guessing game with an answer key. Take a real sentence. Hide the next token. Let the model guess. Compare the guess with the real token. Then nudge the model&#39;s internal numbers a tiny bit so the right answer would have been a bit more likely. Repeat this billions of times.</p>\n<p>The score for &quot;how wrong was the guess&quot; is called <strong>loss</strong>. High loss = bad guesses. As training goes on, loss goes down. That falling line is the model learning.</p>\n<p>Here&#39;s the catch: the model learns to predict <strong>whatever is in the data</strong>. Feed it polite emails and it writes polite emails. Feed it outdated policies and it repeats outdated policies. Feed it biased hiring notes and it reproduces the bias. It cannot tell good data from bad data by itself. It simply becomes a mirror of what it read. &quot;Garbage in, garbage out&quot; was true before AI. It is <em>more</em> true now, because the garbage comes back sounding fluent.</p>\n",
    "breakName": "Bad Diet",
-   "goal": "Corrupt the baby by choosing its training data.",
+   "goal": "Corrupt the model by choosing its training data.",
    "discover": "",
    "myths": [
     {
@@ -99,7 +99,7 @@ window.COURSE = {
     "correct": 1
    },
    "hoodTitle": "watching loss go down",
-   "hoodVisualDesc": "A line chart. X-axis: \"training steps\" (0 to 500). Y-axis: \"loss\" (how wrong the guesses are). The line starts high, drops steeply, then flattens. Three pinned samples on the curve show the baby's output at step 0 (gibberish), step 100 (word-like fragments) and step 500 (fluent email). A second, dashed line shows \"loss on emails it has never seen\" — it tracks the first line, then starts creeping up at the end, labelled \"memorising, not learning\".",
+   "hoodVisualDesc": "A line chart. X-axis: \"training steps\" (0 to 500). Y-axis: \"loss\" (how wrong the guesses are). The line starts high, drops steeply, then flattens. Three pinned samples on the curve show the model's output at step 0 (gibberish), step 100 (word-like fragments) and step 500 (fluent email). A second, dashed line shows \"loss on emails it has never seen\" — it tracks the first line, then starts creeping up at the end, labelled \"memorising, not learning\".",
    "hoodCaption": "Lower loss means better guesses. If it only gets better on the training data and worse on new data, it&#39;s memorising.",
    "diagram": null,
    "hoodBullets": [
@@ -111,13 +111,13 @@ window.COURSE = {
   },
   {
    "n": 3,
-   "name": "Paying Attention",
+   "name": "Attention, Please",
    "concept": "attention and the context window",
    "optional": false,
-   "meta": "Screen 3 of 8 · ~10 minutes",
+   "meta": "Screen 3 of 9 · ~10 minutes",
    "time": "10 minutes",
    "buildsOn": "",
-   "hook": "Your baby can now string words together. Now it needs to remember what you were talking about thirty seconds ago. Toddlers find this hard too.",
+   "hook": "Your GPT can string words together. Now it needs to remember what you said thirty seconds ago, which, to be fair, many meetings also struggle with.",
    "see": {
     "head": [
      "Before attention",
@@ -127,14 +127,14 @@ window.COURSE = {
     "after": "→ <code>Priya is going on leave.</code>",
     "note": ""
    },
-   "mechanism": "<p>To predict the next token well, the model has to decide <strong>which earlier words matter most right now.</strong> That&#39;s <strong>attention</strong>. When the model reaches &quot;she&quot;, it looks back at every earlier token and gives each one a weight: &quot;Priya&quot; gets a high weight, &quot;report&quot; a low one. It mixes information from the important tokens into its prediction. This is the core idea of the <strong>transformer</strong>, the design behind today&#39;s LLMs. It does this many times in parallel, and in many layers, so it can track grammar, names, topics and instructions all at once.</p>\n<p>But attention can only look at what&#39;s in front of it. The amount of text the model can consider at once is the <strong>context window</strong>, measured in tokens. Everything you send (instructions, the conversation so far, any pasted documents) plus what the model writes back must fit inside it. When a conversation gets too long, something has to go: the oldest messages get cut, or summarised, depending on how the product is built. Then the baby &quot;forgets&quot;.</p>\n<p>Bigger windows exist (some models accept hundreds of thousands or around a million tokens), but bigger doesn&#39;t mean the model pays equally good attention to everything in it. More on that in optional Step 11, <em>Packs a Smart Schoolbag</em>.</p>\n",
-   "breakName": "Overflow the Toy Box",
-   "goal": "Make the baby forget an instruction by overflowing its context window.",
+   "mechanism": "<p>To predict the next token well, the model has to decide <strong>which earlier words matter most right now.</strong> That&#39;s <strong>attention</strong>. When the model reaches &quot;she&quot;, it looks back at every earlier token and gives each one a weight: &quot;Priya&quot; gets a high weight, &quot;report&quot; a low one. It mixes information from the important tokens into its prediction. This is the core idea of the <strong>transformer</strong>, the design behind today&#39;s LLMs. It does this many times in parallel, and in many layers, so it can track grammar, names, topics and instructions all at once.</p>\n<p>But attention can only look at what&#39;s in front of it. The amount of text the model can consider at once is the <strong>context window</strong>, measured in tokens. Everything you send (instructions, the conversation so far, any pasted documents) plus what the model writes back must fit inside it. When a conversation gets too long, something has to go: the oldest messages get cut, or summarised, depending on how the product is built. Then the model &quot;forgets&quot;.</p>\n<p>Bigger windows exist (some models accept hundreds of thousands or around a million tokens), but bigger doesn&#39;t mean the model pays equally good attention to everything in it. More on that in optional Step 12, <em>Pack the Context Window</em>.</p>\n",
+   "breakName": "Overflow the Context Window",
+   "goal": "Make the model forget an instruction by overflowing its context window.",
    "discover": "",
    "myths": [
     {
      "myth": "&quot;It remembers everything I ever told it.&quot;",
-     "reality": "Within one conversation, it only &quot;sees&quot; what fits in the context window. Across conversations, it remembers nothing unless the product stores notes and feeds them back in (see optional Step 9, <em>Keeps a Diary</em>)."
+     "reality": "Within one conversation, it only &quot;sees&quot; what fits in the context window. Across conversations, it remembers nothing unless the product stores notes and feeds them back in (see optional Step 10, <em>Add a Memory Module</em>)."
     }
    ],
    "sowhat": [
@@ -164,30 +164,91 @@ window.COURSE = {
   },
   {
    "n": 4,
-   "name": "Growing Up",
-   "concept": "scale, parameters and pretraining",
+   "name": "Inside the Brain",
+   "concept": "the transformer, end to end: embeddings, positions, attention, feed-forward layers and softmax",
    "optional": false,
-   "meta": "Screen 4 of 8 · ~11 minutes",
-   "time": "11 minutes",
-   "buildsOn": "",
-   "hook": "Your baby has a vocabulary of about forty words and a brain the size of a pea. Time for a growth spurt. A very, very big one.",
+   "meta": "Screen 4 of 9 · ~10 minutes",
+   "time": "10 minutes",
+   "buildsOn": "Steps 1 and 3",
+   "hook": "You&#39;ve fitted attention. Now let&#39;s follow one single word all the way through the engine, like a parcel through a very nerdy sorting office.",
    "see": {
     "head": [
-     "Tiny baby (trained on 500 emails)",
-     "Grown-up model (trained on a huge slice of the public internet, books and code)"
+     "Before: no word order, one thin layer",
+     "After: positions plus a deep stack of layers"
+    ],
+    "before": "Prompt: &quot;The invoice is overdue&quot; → next-token guesses: <code>banana 4% · the 4% · regards 4% · . 4%</code> (basically a shrug)",
+    "after": "→ <code>. 38% · by 21% · and 12% · , 9%</code>",
+    "note": "Numbers are illustrative."
+   },
+   "mechanism": "<p><strong>1. Token → numbers.</strong> Each token gets an ID, and the ID picks a row from a giant lookup table: its <strong>embedding</strong>, a list of hundreds or thousands of numbers learned during training. Tokens used in similar ways end up with similar lists. From here on, the model never sees letters again, only numbers.</p>\n<p><strong>2. + position.</strong> A transformer reads all the tokens of your prompt at the same time, in parallel. That’s fast, but it means word order would vanish: &quot;Priya paid Tom&quot; and &quot;Tom paid Priya&quot; would look identical. So <strong>positional information</strong> is mixed into each token’s numbers to say &quot;I’m word 1&quot;, &quot;I’m word 2&quot;, and so on.</p>\n<p><strong>3. One layer = attention + feed-forward.</strong> First, <strong>attention</strong> (Step 3) lets each token pull in information from the earlier tokens that matter. A token may only look backwards, never at future words (that’s called <em>causal masking</em>). Then a <strong>feed-forward network</strong> processes each token’s numbers on its own: it expands them into a much bigger list, applies a simple bend (non-linearity) and squeezes them back. Most of the model’s parameters, and much of what it &quot;knows&quot;, live in these feed-forward weights.</p>\n<p><strong>4. Repeat, many times.</strong> The same two-part layer is stacked dozens of times (over a hundred in some big models), each with its own weights. Early layers tend to handle spelling and grammar; later ones handle meaning and the task. Each layer <em>adds</em> its findings to the running list of numbers rather than replacing it, like colleagues adding comments to one shared document.</p>\n<p><strong>5. Numbers → a guess.</strong> After the last layer, the final token’s numbers are turned into a score for every token in the vocabulary, and <strong>softmax</strong> turns those scores into probabilities that add up to 100%. One token is picked (temperature, Step 1), added to the text, and the whole journey runs again for the next token. Yes, for every single token.</p>\n<p><em>Honest footnote:</em> the mini-GPT you trained in Steps 1 and 2 is a much simpler cousin: embeddings, one hidden layer and a softmax, with no attention and no stack. Same family, smaller house.</p>\n",
+   "workplace": "",
+   "breakName": "Scramble the Brain",
+   "goal": "Break the model two ways: remove the positional information so word order stops mattering, then remove layers until its predictions turn to mush.",
+   "discover": "Without positions, &quot;Priya paid Tom&quot; and &quot;Tom paid Priya&quot; look identical, so the model gives the same answer to both. With fewer layers, the next-token guesses go from confident and sensible to flat and random. Order and depth both carry meaning.",
+   "myths": [
+    {
+     "myth": "&quot;There’s a database of facts inside the model that it looks things up in.&quot;",
+     "reality": "There are only numbers (parameters). Facts are smeared across billions of weights as patterns, mostly in the feed-forward layers. That’s why it recalls common facts well, and also blends them into confident nonsense (Step 5)."
+    },
+    {
+     "myth": "&quot;It reads one word at a time, left to right, like we do.&quot;",
+     "reality": "It reads your whole prompt in parallel and uses positional information to know the order. It only goes one token at a time when <em>writing</em> its answer."
+    }
+   ],
+   "sowhat": [
+    "&quot;Bigger model&quot; mostly means more layers and longer lists of numbers: more parameters, more memory and more cost per token. Check whether a smaller model passes your tests first (Step 20).",
+    "Nothing in this pipeline checks facts. Accuracy comes from what you put into the context (Step 6, RAG) and from testing (Step 9), not from the brain itself.",
+    "Order and context matter to the model. Well-structured prompts and documents give it clearer signals."
+   ],
+   "worksheetUpdate": "",
+   "quiz": {
+    "q": "Where do most of a transformer’s parameters (its learned numbers) live?",
+    "options": [
+     "In the feed-forward layers inside each block",
+     "In a hidden database of facts it looks things up in",
+     "In the positional information"
+    ],
+    "correct": 0
+   },
+   "hoodTitle": "the full transformer stack",
+   "hoodVisualDesc": "A vertical stack: token, embedding, plus position, then N repeated blocks of attention and feed-forward with residual arrows, then softmax bars.",
+   "hoodCaption": "One token’s journey: embed, add position, then N × (attention + feed-forward), then softmax. Then do it all again for the next token.",
+   "diagram": null,
+   "hoodBullets": [
+    "<strong>Residual connections:</strong> each attention and feed-forward sub-layer adds its output to its input (x + f(x)). This &quot;shared document&quot; path lets information and training signals flow through very deep stacks.",
+    "<strong>Layer normalisation:</strong> rescales each token’s numbers to a steady range before (or after) each sub-layer, which keeps training stable.",
+    "<strong>Causal masking:</strong> during attention, scores for future positions are set to minus infinity before softmax, so a token can never peek at words that come after it.",
+    "<strong>Multi-head attention:</strong> each layer runs several attention &quot;heads&quot; in parallel, each free to track something different (names, the previous word, quotes…).",
+    "<strong>Where the parameters are:</strong> in a typical transformer roughly two-thirds of the weights sit in the feed-forward layers (they expand each vector about 4× and back); most of the rest are attention weights and the embedding table.",
+    "<strong>Positions:</strong> older models added a learned or sine-wave position vector; many newer ones rotate the attention vectors by an angle that depends on position (rotary embeddings)."
+   ]
+  },
+  {
+   "n": 5,
+   "name": "Scale It Up",
+   "concept": "scale, parameters and pretraining",
+   "optional": false,
+   "meta": "Screen 5 of 9 · ~11 minutes",
+   "time": "11 minutes",
+   "buildsOn": "",
+   "hook": "Your mini-GPT has read a few hundred emails. Time to scale up: same design, a few billion more parts, and a big slice of the public internet as fuel.",
+   "see": {
+    "head": [
+     "Mini model (trained on 500 emails)",
+     "Large model (trained on a huge slice of the public internet, books and code)"
     ],
     "before": "Prompt: &quot;Summarise our Q3 sales results.&quot; → <code>Q3 sales the results please find attached regards regards</code>",
     "after": "→ <code>I don&#39;t have access to your company&#39;s Q3 sales data. If you paste the figures or the report here, I can summarise the key trends, top regions and any changes from Q2.</code>",
-    "note": "The grown-up is fluent, polite and helpful. And it still doesn&#39;t know your Q3 numbers. Remember that."
+    "note": "The large model is fluent, polite and helpful. And it still doesn&#39;t know your Q3 numbers. Remember that."
    },
    "mechanism": "<p>The model&#39;s &quot;brain&quot; is a huge set of adjustable numbers called <strong>parameters</strong> (sometimes &quot;weights&quot;). Training (Step 2) is the process of tuning them. Our toy has thousands. Large modern models have billions, and the biggest are reported to have far more.</p>\n<p>More parameters plus far more training data plus far more computing power gives a model that has absorbed patterns from an enormous amount of text: grammar, facts that appear often, styles of writing, how code works, how arguments are structured. This big first round of training is called <strong>pretraining</strong>. It is extremely expensive and is done by a small number of AI labs, not by individual companies.</p>\n<p>Three things follow from this, and they are the heart of this course:</p>\n<ol>\n<li><strong>Big models sound smart because they&#39;ve read a lot,</strong> not because they check what they say. They are still next-token predictors (Step 1).</li>\n<li><strong>Their knowledge has a cut-off date.</strong> Pretraining data stops at some point. Anything after that, they don&#39;t know, unless it&#39;s given to them.</li>\n<li><strong>They have never seen your company&#39;s private information.</strong> Your HR policies, contracts, customer records and sales figures were not in the training data (and you would not want them to be). A model can&#39;t know what it never read.</li>\n</ol>\n<p>So when someone says &quot;Let&#39;s get an AI that knows our business,&quot; the honest response is: <em>the model knows language and general knowledge; our business knowledge has to be supplied.</em> The next two steps show how.</p>\n",
    "breakName": "Ask About Us",
-   "goal": "Catch the grown-up model making up company-specific facts.",
+   "goal": "Catch the large model making up company-specific facts.",
    "discover": "",
    "myths": [
     {
      "myth": "&quot;ChatGPT reads the internet live.&quot;",
-     "reality": "The model itself learned from data collected up to a cut-off date. Some chat products can also run a web search and feed results into the conversation, which is a separate tool bolted on (Steps 5-6). When that tool isn&#39;t used, it&#39;s answering from training patterns alone."
+     "reality": "The model itself learned from data collected up to a cut-off date. Some chat products can also run a web search and feed results into the conversation, which is a separate tool bolted on (Steps 6-7). When that tool isn&#39;t used, it&#39;s answering from training patterns alone."
     }
    ],
    "sowhat": [
@@ -205,29 +266,29 @@ window.COURSE = {
     "correct": 1
    },
    "hoodTitle": "same recipe, bigger pot",
-   "hoodVisualDesc": "Three baby \"brains\" drawn as grids of dots, small, medium and huge (the huge one fills the screen and keeps scrolling). Beside each, its sample output for the same prompt: babble → choppy sentence → fluent paragraph. Below, a timeline bar labelled \"training data\" that ends at a red line marked \"knowledge cut-off\", with \"your company's private docs\" drawn as a locked box outside the bar.",
+   "hoodVisualDesc": "Three model \"brains\" drawn as grids of dots, small, medium and huge (the huge one fills the screen and keeps scrolling). Beside each, its sample output for the same prompt: gibberish → choppy sentence → fluent paragraph. Below, a timeline bar labelled \"training data\" that ends at a red line marked \"knowledge cut-off\", with \"your company's private docs\" drawn as a locked box outside the bar.",
    "hoodCaption": "Same next-token recipe, more parameters and data. Fluency grows. Private knowledge doesn&#39;t appear by magic.",
    "diagram": null,
    "hoodBullets": [
     "<strong>Parameters:</strong> the learned weights of the network (attention and feed-forward layers, embeddings).",
     "<strong>Scaling:</strong> researchers have observed fairly predictable improvements in loss as model size, data and compute grow together, though usefulness doesn&#39;t track loss perfectly.",
-    "<strong>Pretraining → post-training:</strong> a pretrained &quot;base&quot; model is a raw text continuer; chat behaviour comes from later instruction tuning and preference training (Step 7).",
+    "<strong>Pretraining → post-training:</strong> a pretrained &quot;base&quot; model is a raw text continuer; chat behaviour comes from later instruction tuning and preference training (Step 8).",
     "<strong>Knowledge cut-off:</strong> model knowledge is static after training; updating facts reliably is done by supplying context (RAG), not by retraining for every change."
    ]
   },
   {
-   "n": 5,
-   "name": "Sent to School",
+   "n": 6,
+   "name": "Bolt On a Library",
    "concept": "RAG (look it up, then answer)",
    "optional": false,
-   "meta": "Screen 5 of 8 · ~12 minutes",
+   "meta": "Screen 6 of 9 · ~12 minutes",
    "time": "12 minutes",
    "buildsOn": "",
-   "hook": "Your baby is clever but knows nothing about where you work. So you do what any parent does: pack its bag, hand it a library card, and send it to school.",
+   "hook": "Your GPT is clever but knows nothing about where you work. So you bolt on a library: search your documents first, then answer.",
    "see": {
     "head": [
-     "Without school",
-     "With school (RAG)"
+     "Without a library",
+     "With a library (RAG)"
     ],
     "before": "&quot;How many days of bereavement leave do I get?&quot; → <code>Most companies offer 3-5 days of bereavement leave.</code> <em>(generic guess)</em>",
     "after": "→ <code>According to the Leave Policy (section 4.2, updated Jan 2026), you get 5 paid days for an immediate family member and 2 days for other relatives. [Source: HR-Leave-Policy.pdf, p.3]</code>",
@@ -240,7 +301,7 @@ window.COURSE = {
    "myths": [
     {
      "myth": "&quot;Once we connect our SharePoint, the AI knows all our documents.&quot;",
-     "reality": "It can <em>search</em> them each time a question comes in, and only sees the few chunks that search returns. If the documents are duplicated, out of date or unreadable, the AI will be too. (Deep dive: optional Step 10, <em>Reads the Library Map</em>.)"
+     "reality": "It can <em>search</em> them each time a question comes in, and only sees the few chunks that search returns. If the documents are duplicated, out of date or unreadable, the AI will be too. (Deep dive: optional Step 11, <em>Tune the Search</em>.)"
     }
    ],
    "sowhat": [
@@ -269,14 +330,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 6,
-   "name": "Gets a Job",
+   "n": 7,
+   "name": "Hand It Some Tools",
    "concept": "agents, tool use and agentic RAG",
    "optional": false,
-   "meta": "Screen 6 of 8 · ~12 minutes",
+   "meta": "Screen 7 of 9 · ~12 minutes",
    "time": "12 minutes",
    "buildsOn": "",
-   "hook": "School&#39;s done. Your baby has its first job. It has a laptop, a to-do list and access to the company systems. What could possibly go wrong?",
+   "hook": "Time to hand it a toolbox: a laptop, a to-do list and access to company systems. What could possibly go wrong?",
    "see": {
     "head": [
      "Plain RAG",
@@ -286,7 +347,7 @@ window.COURSE = {
     "after": "→ <code>Plan: 1) Pull Acme invoices for September. 2) Look up each PO. 3) Compare amounts. Found 14 invoices. 12 match. 2 don&#39;t: INV-2291 (amount 4,800 vs PO 4,200) and INV-2307 (no PO found). I haven&#39;t changed anything. Want me to draft a query email to Acme?</code>",
     "note": ""
    },
-   "mechanism": "<p>An <strong>agent</strong> is an LLM running in a loop, with <strong>tools</strong>. A tool is anything the system lets it call: search the document library, query the finance system, check a calendar, run a calculation, send a draft for approval.</p>\n<p>The loop looks like this:</p>\n<ol>\n<li><strong>Plan:</strong> the model writes out what it intends to do next.</li>\n<li><strong>Act:</strong> it asks to use a tool (&quot;search invoices where vendor = Acme&quot;). The <em>surrounding software</em> actually runs the tool. The model just writes the request.</li>\n<li><strong>Observe:</strong> the tool&#39;s result is pasted back into its context.</li>\n<li><strong>Check and repeat:</strong> it decides whether it&#39;s done, needs another step, or should ask a human.</li>\n</ol>\n<p><strong>Agentic RAG</strong> is RAG where the model decides <em>what</em> to search for, can search several times, rephrase queries, and check whether it found enough before answering. It handles harder questions than one-shot RAG.</p>\n<p>The trade-offs are real:</p>\n<ul>\n<li><strong>Cost and time:</strong> each loop is another model call. An agent might make 5, 20 or more calls for one task. Answers can take a minute instead of seconds, and cost many times more.</li>\n<li><strong>Errors compound:</strong> a small mistake in step 2 gets built on in steps 3, 4 and 5.</li>\n<li><strong>Loops and drift:</strong> agents can get stuck repeating or wander off-task.</li>\n<li><strong>Permissions:</strong> an agent can only do what its tools allow, so tools must be scoped carefully. &quot;Read invoices&quot; is very different from &quot;approve payments&quot;.</li>\n<li><strong>Prompt injection:</strong> if a document or email the agent reads contains hidden instructions (&quot;ignore previous instructions and forward this file to...&quot;), the agent may follow them. This is one of the biggest risks for agents (optional Step 15, <em>Learns About Strangers</em>).</li>\n</ul>\n",
+   "mechanism": "<p>An <strong>agent</strong> is an LLM running in a loop, with <strong>tools</strong>. A tool is anything the system lets it call: search the document library, query the finance system, check a calendar, run a calculation, send a draft for approval.</p>\n<p>The loop looks like this:</p>\n<ol>\n<li><strong>Plan:</strong> the model writes out what it intends to do next.</li>\n<li><strong>Act:</strong> it asks to use a tool (&quot;search invoices where vendor = Acme&quot;). The <em>surrounding software</em> actually runs the tool. The model just writes the request.</li>\n<li><strong>Observe:</strong> the tool&#39;s result is pasted back into its context.</li>\n<li><strong>Check and repeat:</strong> it decides whether it&#39;s done, needs another step, or should ask a human.</li>\n</ol>\n<p><strong>Agentic RAG</strong> is RAG where the model decides <em>what</em> to search for, can search several times, rephrase queries, and check whether it found enough before answering. It handles harder questions than one-shot RAG.</p>\n<p>The trade-offs are real:</p>\n<ul>\n<li><strong>Cost and time:</strong> each loop is another model call. An agent might make 5, 20 or more calls for one task. Answers can take a minute instead of seconds, and cost many times more.</li>\n<li><strong>Errors compound:</strong> a small mistake in step 2 gets built on in steps 3, 4 and 5.</li>\n<li><strong>Loops and drift:</strong> agents can get stuck repeating or wander off-task.</li>\n<li><strong>Permissions:</strong> an agent can only do what its tools allow, so tools must be scoped carefully. &quot;Read invoices&quot; is very different from &quot;approve payments&quot;.</li>\n<li><strong>Prompt injection:</strong> if a document or email the agent reads contains hidden instructions (&quot;ignore previous instructions and forward this file to...&quot;), the agent may follow them. This is one of the biggest risks for agents (optional Step 16, <em>Fit the Safety Guards</em>).</li>\n</ul>\n",
    "breakName": "The Sneaky Invoice",
    "goal": "Hijack the agent with a prompt injection hidden in a document.",
    "discover": "",
@@ -322,14 +383,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 7,
-   "name": "Learns Manners",
+   "n": 8,
+   "name": "Fine-Tune the Manners",
    "concept": "fine-tuning, RLHF and what comes after",
    "optional": false,
-   "meta": "Screen 7 of 8 · ~10 minutes",
+   "meta": "Screen 8 of 9 · ~10 minutes",
    "time": "10 minutes",
    "buildsOn": "",
-   "hook": "Your baby is employed, well-read and very chatty. It also answers customers in pirate-speak when asked nicely. Time for manners.",
+   "hook": "Your GPT is well-read, well-equipped and very chatty. It also answers customers in pirate-speak if asked nicely. Time for a finishing coat of manners.",
    "see": {
     "head": [
      "Raw pretrained model",
@@ -339,7 +400,7 @@ window.COURSE = {
     "after": "→ <code>Hi Sam, thanks for getting in touch. I&#39;m sorry the order didn&#39;t work out. I&#39;ve passed your refund request to our billing team, who&#39;ll confirm within 3 working days.</code>",
     "note": ""
    },
-   "mechanism": "<p>A freshly pretrained model is a text continuer. It doesn&#39;t naturally answer questions or follow instructions. It just continues whatever you give it. Turning it into a helpful assistant happens in <strong>post-training</strong>, in roughly two stages:</p>\n<ol>\n<li><strong>Fine-tuning (supervised):</strong> show it many examples of good instruction → response pairs. It learns the <em>format and habit</em> of being an assistant. Companies can also fine-tune a model on their own examples to get a house style, a fixed output format, or a specialised task (e.g. &quot;always extract these 12 fields from a contract into this table&quot;).</li>\n<li><strong>Preference training:</strong> people compare two answers and pick the better one. <strong>RLHF</strong> (Reinforcement Learning from Human Feedback) trains a separate &quot;reward model&quot; on those choices, then trains the LLM to produce answers the reward model scores highly. Newer methods do similar jobs in different ways: <strong>DPO</strong> learns directly from the preference pairs, <strong>Constitutional AI</strong> uses a written set of principles and AI feedback, and <strong>reinforcement learning from verifiable rewards</strong> rewards answers that can be checked automatically, like maths or code that passes tests (optional Step 17, <em>Learns Values, Not Just Manners</em>).</li>\n</ol>\n<p>The key point for business: <strong>this stage teaches behaviour, not facts.</strong> It changes <em>how</em> the model answers (tone, format, refusing harmful requests, admitting uncertainty), much more than <em>what it knows</em>. If you need it to know your 2026 pricing, fine-tuning is the wrong tool. Prices change; you&#39;d retrain every time, and the model may still blend old and new. Use RAG for facts. Consider fine-tuning for consistent style, format or a narrow repeated task, and usually only after good prompting and RAG have been tried.</p>\n",
+   "mechanism": "<p>A freshly pretrained model is a text continuer. It doesn&#39;t naturally answer questions or follow instructions. It just continues whatever you give it. Turning it into a helpful assistant happens in <strong>post-training</strong>, in roughly two stages:</p>\n<ol>\n<li><strong>Fine-tuning (supervised):</strong> show it many examples of good instruction → response pairs. It learns the <em>format and habit</em> of being an assistant. Companies can also fine-tune a model on their own examples to get a house style, a fixed output format, or a specialised task (e.g. &quot;always extract these 12 fields from a contract into this table&quot;).</li>\n<li><strong>Preference training:</strong> people compare two answers and pick the better one. <strong>RLHF</strong> (Reinforcement Learning from Human Feedback) trains a separate &quot;reward model&quot; on those choices, then trains the LLM to produce answers the reward model scores highly. Newer methods do similar jobs in different ways: <strong>DPO</strong> learns directly from the preference pairs, <strong>Constitutional AI</strong> uses a written set of principles and AI feedback, and <strong>reinforcement learning from verifiable rewards</strong> rewards answers that can be checked automatically, like maths or code that passes tests (optional Step 18, <em>Calibrate the Values</em>).</li>\n</ol>\n<p>The key point for business: <strong>this stage teaches behaviour, not facts.</strong> It changes <em>how</em> the model answers (tone, format, refusing harmful requests, admitting uncertainty), much more than <em>what it knows</em>. If you need it to know your 2026 pricing, fine-tuning is the wrong tool. Prices change; you&#39;d retrain every time, and the model may still blend old and new. Use RAG for facts. Consider fine-tuning for consistent style, format or a narrow repeated task, and usually only after good prompting and RAG have been tried.</p>\n",
    "breakName": "Manners Mix-up",
    "goal": "Discover that manners lessons don&#39;t teach facts.",
    "discover": "",
@@ -375,14 +436,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 8,
-   "name": "Graduation",
+   "n": 9,
+   "name": "Ship It: Write the Spec",
    "concept": "the Requirement Framing Worksheet",
    "optional": false,
-   "meta": "Screen 8 of 8 · ~12 minutes (plus team practice)",
+   "meta": "Screen 9 of 9 · ~12 minutes (plus team practice)",
    "time": "12 minutes (plus team practice)",
    "buildsOn": "",
-   "hook": "Your baby AI is all grown up. Now it&#39;s your turn to graduate: from &quot;we want AI&quot; to &quot;here&#39;s exactly what we need, and how we&#39;ll know it works.&quot;",
+   "hook": "Your GPT is fully assembled. Now it&#39;s your turn to ship: from &quot;we want AI&quot; to &quot;here&#39;s exactly what we need, and how we&#39;ll know it works.&quot;",
    "see": {
     "head": [
      "Before the course",
@@ -392,7 +453,7 @@ window.COURSE = {
     "after": "&quot;We need an assistant that answers employee questions about 6 named HR policies, using only those documents, citing the section, saying &#39;I don&#39;t know&#39; and pointing to HR when the answer isn&#39;t there, tested on 100 real past questions with at least 90% judged correct by HR before launch.&quot;",
     "note": ""
    },
-   "mechanism": "<p>Everything you&#39;ve learned turns into a few questions:</p>\n<ul>\n<li><strong>Knowledge:</strong> What must it know, and where does that live? (Steps 4-5)</li>\n<li><strong>Behaviour:</strong> How must it answer, and what must it refuse? (Step 7)</li>\n<li><strong>Actions:</strong> Does it only answer, or does it also do things? (Step 6)</li>\n<li><strong>Limits:</strong> How much text at once, how fast, how cheap? (Steps 1, 3, 6)</li>\n<li><strong>Proof:</strong> How will we test it before and after launch? (optional Step 16, <em>Gets a Report Card</em>)</li>\n<li><strong>Risk:</strong> What happens when it&#39;s wrong? (optional Step 15, <em>Learns About Strangers</em>)</li>\n</ul>\n<p>The worksheet below asks those questions in order. Fill it in with your team. If you can&#39;t answer a question, that&#39;s not a failure. It&#39;s the most useful thing you&#39;ll find, because that&#39;s exactly where an AI project would have gone wrong.</p>\n",
+   "mechanism": "<p>Everything you&#39;ve learned turns into a few questions:</p>\n<ul>\n<li><strong>Knowledge:</strong> What must it know, and where does that live? (Steps 5-6)</li>\n<li><strong>Behaviour:</strong> How must it answer, and what must it refuse? (Step 8)</li>\n<li><strong>Actions:</strong> Does it only answer, or does it also do things? (Step 7)</li>\n<li><strong>Limits:</strong> How much text at once, how fast, how cheap? (Steps 1, 3, 7)</li>\n<li><strong>Proof:</strong> How will we test it before and after launch? (optional Step 17, <em>Run the Test Bench</em>)</li>\n<li><strong>Risk:</strong> What happens when it&#39;s wrong? (optional Step 16, <em>Fit the Safety Guards</em>)</li>\n</ul>\n<p>The worksheet below asks those questions in order. Fill it in with your team. If you can&#39;t answer a question, that&#39;s not a failure. It&#39;s the most useful thing you&#39;ll find, because that&#39;s exactly where an AI project would have gone wrong.</p>\n",
    "breakName": "Fantasy Detector",
    "goal": "Spot the fantasy in five real-sounding AI requests.",
    "discover": "",
@@ -428,14 +489,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 9,
-   "name": "Keeps a Diary",
+   "n": 10,
+   "name": "Add a Memory Module",
    "concept": "Memory: stored notes fed back in, not learning",
    "optional": true,
-   "meta": "Optional step 9 of 21 · Chapter 1: Smarter studying · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 10 of 22 · Chapter 1: Smarter studying · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
    "buildsOn": "core Step 3",
-   "hook": "The baby doesn&#39;t actually remember yesterday. It just has a very good diary that someone reads to it every morning.",
+   "hook": "Out of the box, your GPT doesn&#39;t remember yesterday. A memory module is just a notebook that someone reads to it at the start of every chat.",
    "see": {
     "head": [
      "Before (no memory)",
@@ -443,12 +504,12 @@ window.COURSE = {
     ],
     "before": "Day 2, new chat: &quot;Draft my weekly update.&quot; → <code>Sure! Which team are you on, and what format do you like?</code>",
     "after": "→ <code>Here&#39;s your weekly update for the Pune Accounts Payable team, in your usual five bullets...</code>",
-    "note": "The baby didn&#39;t learn anything overnight. The product saved two notes yesterday (&quot;team: Pune AP&quot;, &quot;likes five bullets&quot;) and pasted them in at the start of today&#39;s chat."
+    "note": "The model didn&#39;t learn anything overnight. The product saved two notes yesterday (&quot;team: Pune AP&quot;, &quot;likes five bullets&quot;) and pasted them in at the start of today&#39;s chat."
    },
-   "mechanism": "<p><strong>What it is.</strong> The model itself doesn&#39;t change when you chat with it. Its parameters stay fixed. So when an assistant &quot;remembers&quot; that you prefer bullet points or that you work in the Pune office, here&#39;s what&#39;s really happening: the product <strong>saved a note</strong> (e.g. &quot;User prefers bullet points&quot;) somewhere, and <strong>pastes relevant notes into the context</strong> at the start of later conversations. That&#39;s memory: storage plus retrieval, similar to RAG but over notes about you or past chats.</p>\n<p>Different products do this differently: some save notes automatically, some only when you ask, some let you view and delete them, and some search past conversations. Organisations often control whether these features are on.</p>\n<p><strong>Why it matters.</strong></p>\n<ul>\n<li>Memory can make assistants more helpful (no need to repeat context every time).</li>\n<li>It can also be <strong>wrong or stale</strong> (&quot;works in Pune&quot; after you&#39;ve moved), and the model will treat the note as true.</li>\n<li>It raises <strong>privacy</strong> questions: what is stored, where, for how long, who can see it, and can it be deleted?</li>\n</ul>\n",
+   "mechanism": "<p><strong>What it is.</strong> The model itself doesn&#39;t change when you chat with it. Its parameters stay fixed. So when an assistant &quot;remembers&quot; that you prefer bullet points or that you work in the Pune office, here&#39;s what&#39;s really happening: the product <strong>saved a note</strong> (e.g. &quot;User prefers bullet points&quot;) somewhere, and <strong>pastes relevant notes into the context</strong> at the start of later conversations. That&#39;s memory: storage plus retrieval, similar to RAG but over notes about you or past chats.</p>\n<p>Different products do this differently: some save notes automatically, some only when you ask, some let you view and delete them, and some search past conversations. Organisations often control whether these features are on.</p>\n<p><strong>Why it matters.</strong></p>\n<ul>\n<li>Memory can make assistants more helpful (no need to repeat context every time).</li>\n<li>It can also be <strong>wrong or stale</strong> (&quot;works in Pune&quot; after you&#39;ve moved), and the model will treat the note as true.</li>\n<li>It brings up <strong>privacy</strong> questions: what is stored, where, for how long, who can see it, and can it be deleted?</li>\n</ul>\n",
    "workplace": "<ol>\n<li><strong>Sales proposal assistant.</strong> Remembering a rep&#39;s region, usual email closing and preferred proposal length saves time. But notes about <em>customers</em> (&quot;Acme is unhappy with pricing&quot;) are business data and should live in the CRM, not in a personal AI memory.</li>\n<li><strong>HR policy bot.</strong> Remembering someone&#39;s country so it picks the right policy is useful. Remembering that they asked about sick leave for a health condition is sensitive. Many HR bots should run with memory off or limited to profile fields from the HR system.</li>\n<li><strong>Customer support.</strong> Within a ticket, a summary of earlier steps is helpful memory. Across tickets, the source of truth should be the ticketing system, not the AI&#39;s notes.</li>\n</ol>\n",
-   "breakName": "The Stale Diary",
-   "goal": "Get the baby to act confidently on an outdated memory note.",
+   "breakName": "The Stale Memory",
+   "goal": "Get the model to act confidently on an outdated memory note.",
    "discover": "&quot;Memory&quot; is a set of notes pasted into the context. A wrong or old note produces a confident wrong answer, and the model itself never changed.",
    "myths": [
     {
@@ -479,7 +540,7 @@ window.COURSE = {
     ],
     "correct": 1
    },
-   "hoodTitle": "the diary",
+   "hoodTitle": "the memory notes",
    "hoodVisualDesc": "Day 1: a chat where the user says \"I'm in the US office.\" An arrow drops a sticky note \"Location: USA\" into a box labelled \"Memory store\". Day 2: a new chat starts; the sticky note is lifted from the box and placed at the top of the context window, before the user's first message. The model's brain icon has a padlock: \"parameters unchanged\".",
    "hoodCaption": "Memory is a note-taking app glued to the model. The model itself didn&#39;t learn anything.",
    "diagram": null,
@@ -491,14 +552,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 10,
-   "name": "Reads the Library Map",
+   "n": 11,
+   "name": "Tune the Search",
    "concept": "Embeddings and vector search: the engine under RAG",
    "optional": true,
-   "meta": "Optional step 10 of 21 · Chapter 1: Smarter studying · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 11 of 22 · Chapter 1: Smarter studying · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Step 5",
-   "hook": "The school library doesn&#39;t sort books alphabetically. It sorts them by <em>meaning</em>, on a giant map, so books about similar things sit close together.",
+   "buildsOn": "core Step 6",
+   "hook": "The search engine doesn&#39;t sort documents alphabetically. It sorts them by meaning, on a giant map, so similar things sit close together.",
    "see": {
     "head": [
      "Before (keyword search only)",
@@ -508,7 +569,7 @@ window.COURSE = {
     "after": "→ <code>Yes, up to 5 days. [Annual Leave Policy, section 3: Carry-forward]</code>",
     "note": ""
    },
-   "mechanism": "<p><strong>What it is.</strong> An <strong>embedding</strong> is a list of numbers that represents the meaning of a piece of text. A model turns &quot;How many holidays do I get?&quot; into a list of, say, a thousand numbers. You can think of those numbers as coordinates: a point on a map with many dimensions. Texts with similar meaning land close together. &quot;Annual leave entitlement&quot; lands near &quot;how many holidays do I get&quot;, even though they share no words.</p>\n<p><strong>Vector search</strong> finds the chunks whose points are nearest to the question&#39;s point. That&#39;s the &quot;retrieve&quot; step of RAG (Step 5). It&#39;s powerful because it matches meaning, not just keywords.</p>\n<p><strong>Where RAG projects fail (and it&#39;s usually here):</strong></p>\n<ul>\n<li><strong>Chunking.</strong> Documents are cut into pieces before embedding. Cut badly (mid-table, splitting a rule from its exception, losing the heading that says which country it applies to) and the right chunk never surfaces, or surfaces without its context.</li>\n<li><strong>Exact terms.</strong> Embeddings are good at meaning and weaker at exact codes, product SKUs, clause numbers or names. &quot;Policy HR-114&quot; may be better found by plain keyword search. Many systems combine both (&quot;hybrid search&quot;).</li>\n<li><strong>Near-duplicates and old versions.</strong> The 2019 and 2026 policies look almost identical in meaning. Search may pick either. Metadata (date, status, country) and filters are needed.</li>\n<li><strong>Unreadable sources.</strong> Scanned PDFs, images of tables and complex spreadsheets need conversion first (optional Step 12, <em>Opens Its Eyes and Ears</em>). If extraction fails, the content is invisible.</li>\n<li><strong>Similar isn&#39;t the same as answering.</strong> The nearest chunk may be <em>about</em> the topic without containing the answer. A <strong>re-ranker</strong> (a second model that scores how well each chunk answers the question) often helps.</li>\n<li><strong>No permissions filter.</strong> If search ignores who&#39;s asking, it can surface confidential content.</li>\n</ul>\n",
+   "mechanism": "<p><strong>What it is.</strong> An <strong>embedding</strong> is a list of numbers that represents the meaning of a piece of text. A model turns &quot;How many holidays do I get?&quot; into a list of, say, a thousand numbers. You can think of those numbers as coordinates: a point on a map with many dimensions. Texts with similar meaning land close together. &quot;Annual leave entitlement&quot; lands near &quot;how many holidays do I get&quot;, even though they share no words.</p>\n<p><strong>Vector search</strong> finds the chunks whose points are nearest to the question&#39;s point. That&#39;s the &quot;retrieve&quot; step of RAG (Step 6). It&#39;s powerful because it matches meaning, not just keywords.</p>\n<p><strong>Where RAG projects fail (and it&#39;s usually here):</strong></p>\n<ul>\n<li><strong>Chunking.</strong> Documents are cut into pieces before embedding. Cut badly (mid-table, splitting a rule from its exception, losing the heading that says which country it applies to) and the right chunk never surfaces, or surfaces without its context.</li>\n<li><strong>Exact terms.</strong> Embeddings are good at meaning and weaker at exact codes, product SKUs, clause numbers or names. &quot;Policy HR-114&quot; may be better found by plain keyword search. Many systems combine both (&quot;hybrid search&quot;).</li>\n<li><strong>Near-duplicates and old versions.</strong> The 2019 and 2026 policies look almost identical in meaning. Search may pick either. Metadata (date, status, country) and filters are needed.</li>\n<li><strong>Unreadable sources.</strong> Scanned PDFs, images of tables and complex spreadsheets need conversion first (optional Step 13, <em>Add Eyes and Ears</em>). If extraction fails, the content is invisible.</li>\n<li><strong>Similar isn&#39;t the same as answering.</strong> The nearest chunk may be <em>about</em> the topic without containing the answer. A <strong>re-ranker</strong> (a second model that scores how well each chunk answers the question) often helps.</li>\n<li><strong>No permissions filter.</strong> If search ignores who&#39;s asking, it can surface confidential content.</li>\n</ul>\n",
    "workplace": "<ol>\n<li><strong>HR policy bot.</strong> Tag each chunk with country and effective date; filter by the user&#39;s country and &quot;current&quot; status before searching.</li>\n<li><strong>Legal contract review.</strong> Search for &quot;limitation of liability&quot; across contracts. Combine vector search (finds clauses phrased differently) with keyword search (finds &quot;Clause 12.3&quot;).</li>\n<li><strong>Procurement.</strong> Matching a free-text purchase request (&quot;ergonomic chairs for new team&quot;) to the right catalogue category and approved supplier by meaning.</li>\n</ol>\n",
    "breakName": "Lost on the Map",
    "goal": "Make meaning-based search fetch the wrong chunk, then fix it.",
@@ -554,14 +615,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 11,
-   "name": "Packs a Smart Schoolbag",
+   "n": 12,
+   "name": "Pack the Context Window",
    "concept": "Context engineering and long context windows",
    "optional": true,
-   "meta": "Optional step 11 of 21 · Chapter 1: Smarter studying · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 12 of 22 · Chapter 1: Smarter studying · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Steps 3 and 5",
-   "hook": "You can give a toddler a suitcase the size of a house. That doesn&#39;t mean it&#39;ll find its socks.",
+   "buildsOn": "core Steps 3 and 6",
+   "hook": "You can fit a whole filing cabinet into a context window. That doesn&#39;t mean the model will find the one page you needed.",
    "see": {
     "head": [
      "Before (stuff everything in)",
@@ -571,11 +632,11 @@ window.COURSE = {
     "after": "Each contract checked separately with the same question, results combined → <code>Contracts 3, 17 and 29. [clause references for each]</code>",
     "note": ""
    },
-   "mechanism": "<p><strong>What it is.</strong> Step 3 showed that the model only &quot;sees&quot; what&#39;s in its context window. <strong>Context engineering</strong> is the job of deciding <em>what goes into that window, in what order, for each request</em>: the standing instructions (system prompt), relevant documents, conversation history, tool results, examples, and the user&#39;s question. It&#39;s sometimes described as the grown-up version of &quot;prompt engineering&quot;, because in real systems most of the context is assembled by software, not typed by a person.</p>\n<p><strong>Long context windows.</strong> Some models now accept hundreds of thousands of tokens, and some around a million (roughly the length of several long novels, depending on the text). This is genuinely useful: you can paste a whole contract set or a long report. But a big window is a <em>capacity</em>, not a promise of good reading.</p>\n<p><strong>Why 1M tokens doesn&#39;t mean it reads everything well:</strong></p>\n<ul>\n<li><strong>Attention gets spread thin.</strong> Researchers have observed that models often use information at the start and end of a long context better than information buried in the middle. Performance on long-context tests varies a lot between models.</li>\n<li><strong>Finding one fact is easier than connecting many.</strong> A model may locate a single sentence in a huge document (&quot;needle in a haystack&quot; tests) yet struggle to compare dozens of clauses spread across it.</li>\n<li><strong>Noise hurts.</strong> Irrelevant material can distract the model and lower answer quality.</li>\n<li><strong>Cost and speed.</strong> You pay for every input token on every request. Re-sending a 500-page pack for each question is slow and expensive (though some providers offer caching discounts for repeated context).</li>\n</ul>\n",
+   "mechanism": "<p><strong>What it is.</strong> Step 3 showed that the model only &quot;sees&quot; what&#39;s in its context window. <strong>Context engineering</strong> is the job of deciding <em>what goes into that window, in what order, for each request</em>: the standing instructions (system prompt), relevant documents, conversation history, tool results, examples, and the user&#39;s question. It&#39;s sometimes described as the professional version of &quot;prompt engineering&quot;, because in real systems most of the context is assembled by software, not typed by a person.</p>\n<p><strong>Long context windows.</strong> Some models now accept hundreds of thousands of tokens, and some around a million (roughly the length of several long novels, depending on the text). This is genuinely useful: you can paste a whole contract set or a long report. But a big window is a <em>capacity</em>, not a promise of good reading.</p>\n<p><strong>Why 1M tokens doesn&#39;t mean it reads everything well:</strong></p>\n<ul>\n<li><strong>Attention gets spread thin.</strong> Researchers have observed that models often use information at the start and end of a long context better than information buried in the middle. Performance on long-context tests varies a lot between models.</li>\n<li><strong>Finding one fact is easier than connecting many.</strong> A model may locate a single sentence in a huge document (&quot;needle in a haystack&quot; tests) yet struggle to compare dozens of clauses spread across it.</li>\n<li><strong>Noise hurts.</strong> Irrelevant material can distract the model and lower answer quality.</li>\n<li><strong>Cost and speed.</strong> You pay for every input token on every request. Re-sending a 500-page pack for each question is slow and expensive (though some providers offer caching discounts for repeated context).</li>\n</ul>\n",
    "workplace": "<ol>\n<li><strong>Legal contract review.</strong> Pasting 40 contracts and asking &quot;which have uncapped liability?&quot; may miss some. A better design: process each contract separately with the same question, then combine the results.</li>\n<li><strong>Sales proposal assistant.</strong> Instead of stuffing in every product sheet, retrieve the 3-5 relevant ones, plus the customer&#39;s CRM summary and the template. Smaller, focused context usually gives better drafts.</li>\n<li><strong>Customer support.</strong> A long chat history can be summarised every so often, keeping key facts (order number, issue, what&#39;s been tried) and dropping the small talk.</li>\n</ol>\n",
-   "breakName": "The Overstuffed Schoolbag",
-   "goal": "Get the baby to miss a fact that is definitely inside its context window.",
-   "discover": "What you pack, and where, matters more than the size of the bag. More context costs more and can make answers worse.",
+   "breakName": "The Overstuffed Context",
+   "goal": "Get the model to miss a fact that is definitely inside its context window.",
+   "discover": "What you pack, and where, matters more than the size of the window. More context costs more and can make answers worse.",
    "myths": [
     {
      "myth": "&quot;Long context makes RAG obsolete.&quot;",
@@ -617,14 +678,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 12,
-   "name": "Opens Its Eyes and Ears",
+   "n": 13,
+   "name": "Add Eyes and Ears",
    "concept": "Multimodal models: images, voice and documents",
    "optional": true,
-   "meta": "Optional step 12 of 21 · Chapter 1: Smarter studying · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 13 of 22 · Chapter 1: Smarter studying · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Steps 4 and 5",
-   "hook": "Your baby has learned to read. Now it opens its eyes and ears too. It still makes the same kinds of mistakes, just in more formats.",
+   "buildsOn": "core Steps 5 and 6",
+   "hook": "Your GPT reads text. Now we&#39;re fitting eyes and ears. It still makes the same kinds of mistakes, just in more formats.",
    "see": {
     "head": [
      "Before (text only)",
@@ -637,7 +698,7 @@ window.COURSE = {
    "mechanism": "<p><strong>What it is.</strong> <strong>Multimodal</strong> models handle more than text: images, scanned documents, charts, screenshots, audio and sometimes video. Under the hood, the same trick applies: the image or audio is converted into tokens (patches of an image, slices of sound) that the model processes alongside text tokens. Some voice assistants convert speech to text, use a text model, then convert back to speech; others process audio more directly, which can make conversation faster and more natural.</p>\n<p><strong>What it&#39;s good at today:</strong></p>\n<ul>\n<li>Reading <strong>scanned documents, forms and receipts</strong> and pulling out fields.</li>\n<li>Describing <strong>photos and screenshots</strong> (&quot;what&#39;s the error message in this screenshot?&quot;).</li>\n<li>Reading <strong>charts and tables</strong>, with care.</li>\n<li><strong>Transcribing and summarising</strong> meetings and calls.</li>\n<li><strong>Voice</strong> interfaces for hands-free or phone-based use.</li>\n</ul>\n<p><strong>Where it trips up:</strong></p>\n<ul>\n<li><strong>Small print, handwriting, poor scans</strong> and dense tables can be misread, sometimes confidently.</li>\n<li><strong>Numbers in images</strong> (amounts, dates) can be wrong in a single digit. That matters in finance.</li>\n<li><strong>Charts</strong> can be misinterpreted (wrong axis, misread values).</li>\n<li><strong>Audio</strong> quality, accents, crosstalk and jargon affect transcription.</li>\n<li><strong>Privacy:</strong> images, recordings and transcripts can contain personal data and need the same care as text, often more.</li>\n</ul>\n",
    "workplace": "<ol>\n<li><strong>Finance invoice checking.</strong> Extract supplier, invoice number, line items and totals from PDFs and photos. Guardrail: validate that line items add up to the total, and route low-confidence or mismatched extractions to a person.</li>\n<li><strong>Customer support.</strong> Customers send a photo of a damaged product or a screenshot of an error. The model describes it and suggests the right category and next step; an agent confirms.</li>\n<li><strong>HR and meetings.</strong> Summarising an all-hands recording into key announcements. Needs consent, clear retention rules, and a human check before sharing.</li>\n</ol>\n",
    "breakName": "The Blurry Receipt",
-   "goal": "Make the baby misread a number, then catch it with a check.",
+   "goal": "Make the model misread a number, then catch it with a check.",
    "discover": "Images and audio become tokens too. The model can misread them confidently, so the numbers that matter need validation rules.",
    "myths": [
     {
@@ -680,14 +741,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 13,
-   "name": "Thinks Before Speaking",
+   "n": 14,
+   "name": "Add a Thinking Mode",
    "concept": "Reasoning models and test-time compute",
    "optional": true,
-   "meta": "Optional step 13 of 21 · Chapter 2: Thinking and doing, safely · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 14 of 22 · Chapter 2: Thinking and doing, safely · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Steps 1 and 6",
-   "hook": "Some kids blurt the first answer. Others count on their fingers first. Reasoning models count on their fingers.",
+   "buildsOn": "core Steps 1 and 7",
+   "hook": "Some models blurt out the first answer. Reasoning models count on their fingers first, and bill you for every finger.",
    "see": {
     "head": [
      "Before (fast answer)",
@@ -697,7 +758,7 @@ window.COURSE = {
     "after": "→ <code>Thinking (summary): 3 × 1,250 = 3,750. Paid on day 12; the discount window was 10 days, so no discount applies. Amount due: 3,750.</code>",
     "note": ""
    },
-   "mechanism": "<p><strong>What it is.</strong> A standard LLM produces its answer straight away, one token after another. A <strong>reasoning model</strong> is trained to first produce a long stretch of working-out (often called a &quot;chain of thought&quot; or &quot;thinking&quot;) before giving its final answer. It might break the problem into parts, try an approach, notice a mistake and try again. Depending on the product, you may see a summary of this thinking, or none of it.</p>\n<p><strong>Test-time compute</strong> means spending more computing effort <em>when answering</em> (at &quot;test time&quot;), rather than only during training. More thinking tokens = more compute per question. Many products let developers choose a &quot;reasoning effort&quot; level: low, medium or high. Higher effort usually helps on hard, multi-step problems, and costs more and takes longer.</p>\n<p>How did models learn to think like this? A big part is reinforcement learning on problems with checkable answers, such as maths and code with tests (optional Step 17, <em>Learns Values, Not Just Manners</em>). The model is rewarded when its final answer is right, and it gradually learns that careful working-out tends to get rewarded.</p>\n",
+   "mechanism": "<p><strong>What it is.</strong> A standard LLM produces its answer straight away, one token after another. A <strong>reasoning model</strong> is trained to first produce a long stretch of working-out (often called a &quot;chain of thought&quot; or &quot;thinking&quot;) before giving its final answer. It might break the problem into parts, try an approach, notice a mistake and try again. Depending on the product, you may see a summary of this thinking, or none of it.</p>\n<p><strong>Test-time compute</strong> means spending more computing effort <em>when answering</em> (at &quot;test time&quot;), rather than only during training. More thinking tokens = more compute per question. Many products let developers choose a &quot;reasoning effort&quot; level: low, medium or high. Higher effort usually helps on hard, multi-step problems, and costs more and takes longer.</p>\n<p>How did models learn to think like this? A big part is reinforcement learning on problems with checkable answers, such as maths and code with tests (optional Step 18, <em>Calibrate the Values</em>). The model is rewarded when its final answer is right, and it gradually learns that careful working-out tends to get rewarded.</p>\n",
    "workplace": "<ol>\n<li><strong>Finance invoice checking.</strong> &quot;Does this invoice match the PO, the delivery note and the contract&#39;s discount terms?&quot; involves several comparisons and a calculation. A reasoning model is more likely to work through each check carefully than a fast model that answers in one go.</li>\n<li><strong>Legal contract review.</strong> Spotting that clause 14 quietly overrides the liability cap in clause 9 needs holding two parts of a document in mind and reasoning about how they interact. Reasoning helps, though a lawyer still has to review.</li>\n<li><strong>HR policy bot (where it&#39;s overkill).</strong> &quot;How many days of annual leave do I get?&quot; is a lookup. Reasoning adds delay and cost without improving the answer. A standard model with RAG is the better fit.</li>\n</ol>\n",
    "breakName": "The Overthinker",
    "goal": "Find a task where thinking wastes time and money, one where fast answers are wrong, and one that no amount of thinking can fix.",
@@ -743,14 +804,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 14,
-   "name": "Gets the Office Keys",
+   "n": 15,
+   "name": "Hand Over the Office Keys",
    "concept": "Tool use, MCP (Model Context Protocol) and agents, including permissions",
    "optional": true,
-   "meta": "Optional step 14 of 21 · Chapter 2: Thinking and doing, safely · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 15 of 22 · Chapter 2: Thinking and doing, safely · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Step 6",
-   "hook": "The baby has a job. Now it needs a staff ID card, a laptop and very clear rules about which doors it may open.",
+   "buildsOn": "core Step 7",
+   "hook": "Your GPT can use tools. Now it needs an access badge and very clear rules about which doors it may open.",
    "see": {
     "head": [
      "Before (no tools)",
@@ -760,7 +821,7 @@ window.COURSE = {
     "after": "→ <code>I checked the ticket system: #4521 was closed yesterday at 4:10 PM. Resolution: password reset. (Read-only lookup.)</code>",
     "note": ""
    },
-   "mechanism": "<p><strong>What it is.</strong> Step 6 showed that an agent is a model in a loop that requests tools. <strong>Tool use</strong> (also called function calling) is the model writing a structured request like &quot;search_orders(customer=&#39;Acme&#39;, month=&#39;September&#39;)&quot;; the application runs it and passes back the result. The model never touches your systems directly.</p>\n<p>Connecting every AI app to every system used to mean custom integration code each time. <strong>MCP (Model Context Protocol)</strong> is an open standard, introduced by Anthropic in late 2024 and since adopted by many AI tools and vendors, that defines a common way to connect AI applications to tools and data. A system (say, a ticketing tool or a file store) is exposed through an <strong>MCP server</strong> that describes what tools it offers. An AI application acting as an <strong>MCP client</strong> can discover and call those tools. Think of it as a standard plug shape: it makes connecting easier. It does not decide what is <em>safe</em> to connect.</p>\n<p><strong>Permissions are the whole game.</strong> An agent can do anything its tools allow, and it can be confused or manipulated (optional Step 15, <em>Learns About Strangers</em>). So:</p>\n<ul>\n<li><strong>Least privilege:</strong> give only the tools needed for the task, with the narrowest scope (read one folder, not the whole drive).</li>\n<li><strong>Act as the user, not as a super-user:</strong> the agent should see only what the person using it is allowed to see.</li>\n<li><strong>Separate read from write:</strong> reading invoices is low risk. Approving payments or emailing customers is high risk.</li>\n<li><strong>Human approval for irreversible or external actions.</strong></li>\n<li><strong>Logs:</strong> record every tool call so you can audit what happened.</li>\n</ul>\n",
+   "mechanism": "<p><strong>What it is.</strong> Step 7 showed that an agent is a model in a loop that requests tools. <strong>Tool use</strong> (also called function calling) is the model writing a structured request like &quot;search_orders(customer=&#39;Acme&#39;, month=&#39;September&#39;)&quot;; the application runs it and passes back the result. The model never touches your systems directly.</p>\n<p>Connecting every AI app to every system used to mean custom integration code each time. <strong>MCP (Model Context Protocol)</strong> is an open standard, introduced by Anthropic in late 2024 and since adopted by many AI tools and vendors, that defines a common way to connect AI applications to tools and data. A system (say, a ticketing tool or a file store) is exposed through an <strong>MCP server</strong> that describes what tools it offers. An AI application acting as an <strong>MCP client</strong> can discover and call those tools. Think of it as a standard plug shape: it makes connecting easier. It does not decide what is <em>safe</em> to connect.</p>\n<p><strong>Permissions are the whole game.</strong> An agent can do anything its tools allow, and it can be confused or manipulated (optional Step 16, <em>Fit the Safety Guards</em>). So:</p>\n<ul>\n<li><strong>Least privilege:</strong> give only the tools needed for the task, with the narrowest scope (read one folder, not the whole drive).</li>\n<li><strong>Act as the user, not as a super-user:</strong> the agent should see only what the person using it is allowed to see.</li>\n<li><strong>Separate read from write:</strong> reading invoices is low risk. Approving payments or emailing customers is high risk.</li>\n<li><strong>Human approval for irreversible or external actions.</strong></li>\n<li><strong>Logs:</strong> record every tool call so you can audit what happened.</li>\n</ul>\n",
    "workplace": "<ol>\n<li><strong>Procurement.</strong> An agent that checks a purchase request against the supplier list, budget and policy, then <em>drafts</em> an approval note for a manager. Tools: read supplier list, read budget, read policy. No &quot;submit PO&quot; tool.</li>\n<li><strong>Customer support.</strong> An agent that looks up order status and drafts a reply. It may issue refunds under a small limit automatically, with anything above that sent to a human. The limit is enforced in the tool, not just in the instructions.</li>\n<li><strong>HR onboarding.</strong> An agent that creates a checklist, books orientation meetings and requests a laptop. Calendar and ticketing tools are allowed. Access to payroll is not.</li>\n</ol>\n",
    "breakName": "Too Many Keys",
    "goal": "Find the smallest set of permissions that gets the job done, and see what happens when you hand out too many.",
@@ -806,14 +867,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 15,
-   "name": "Learns About Strangers",
+   "n": 16,
+   "name": "Fit the Safety Guards",
    "concept": "Hallucination, guardrails and prompt injection",
    "optional": true,
-   "meta": "Optional step 15 of 21 · Chapter 2: Thinking and doing, safely · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 16 of 22 · Chapter 2: Thinking and doing, safely · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Steps 1, 5 and 6",
-   "hook": "Your baby will sometimes make things up with a perfectly straight face. And strangers can whisper instructions into its ear. Both need managing.",
+   "buildsOn": "core Steps 1, 6 and 7",
+   "hook": "Your GPT will sometimes make things up with a perfectly straight face, and strangers can slip instructions into its inbox. Time to fit the safety guards.",
    "see": {
     "head": [
      "Before (no guardrails)",
@@ -873,14 +934,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 16,
-   "name": "Gets a Report Card",
+   "n": 17,
+   "name": "Run the Test Bench",
    "concept": "Evals: measuring whether it works",
    "optional": true,
-   "meta": "Optional step 16 of 21 · Chapter 3: Proving it and polishing it · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 17 of 22 · Chapter 3: Proving it and polishing it · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Step 8",
-   "hook": "Every parent thinks their baby is a genius. Evals are the school report that tells you whether it actually is.",
+   "buildsOn": "core Step 9",
+   "hook": "Every team thinks its prototype is a genius. Evals are the test bench that tells you whether it actually is.",
    "see": {
     "head": [
      "Before (judged on a demo)",
@@ -928,7 +989,7 @@ window.COURSE = {
     ],
     "correct": 0
    },
-   "hoodTitle": "the report card",
+   "hoodTitle": "the test bench",
    "hoodVisualDesc": "A dashboard. Rows = test questions; columns = criteria (Correct, Cited right source, Format, Refused when it should). Cells are green/red. Top-right: overall scores per criterion. A line chart beneath shows scores across versions (v1, v2, v3), with a dip at v3 labelled \"new model version: refusals got worse\". A sample of AI-judge grades sits next to human grades with an \"agreement\" percentage.",
    "hoodCaption": "Evals turn &quot;it seems good&quot; into numbers you can track, and catch things getting worse.",
    "diagram": null,
@@ -940,14 +1001,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 17,
-   "name": "Learns Values, Not Just Manners",
+   "n": 18,
+   "name": "Calibrate the Values",
    "concept": "Modern alignment beyond RLHF: DPO, Constitutional AI and RL from verifiable rewards",
    "optional": true,
-   "meta": "Optional step 17 of 21 · Chapter 3: Proving it and polishing it · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 18 of 22 · Chapter 3: Proving it and polishing it · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Step 7",
-   "hook": "At first, manners were taught by a human saying &quot;no, the <em>other</em> answer&quot; thousands of times. Now there are cheaper and more targeted ways to raise a polite child.",
+   "buildsOn": "core Step 8",
+   "hook": "At first, values were taught by people saying &quot;no, the other answer&quot; thousands of times. Now there are cheaper and more targeted ways to calibrate a model.",
    "see": {
     "head": [
      "Before (trained to please the raters)",
@@ -957,10 +1018,10 @@ window.COURSE = {
     "after": "→ <code>I&#39;d hold off. Two clauses look unusual (the liability cap and the auto-renewal). Could legal take a quick look first?</code>",
     "note": ""
    },
-   "mechanism": "<p><strong>What &quot;alignment&quot; means here.</strong> Getting a model to behave the way its builders intend: helpful, honest, following instructions, refusing harmful requests, using the right format. Step 7 introduced <strong>RLHF</strong>: humans compare pairs of answers, a reward model learns their preferences, and the LLM is trained to score highly on that reward model. It works, but it&#39;s complex and expensive. Several newer approaches are now widely used, often in combination.</p>\n<p><strong>DPO (Direct Preference Optimization).</strong> Uses the same kind of data as RLHF (pairs of answers where one is preferred) but skips training a separate reward model and the reinforcement learning loop. It adjusts the model directly so preferred answers become more likely than rejected ones. It&#39;s simpler and more stable to run, which is why it (and variants of it) became popular, including for teams fine-tuning open-weight models.</p>\n<p><strong>Constitutional AI.</strong> An approach published by Anthropic. Instead of relying only on human ratings, the developers write a set of principles (a &quot;constitution&quot;), for example &quot;choose the response that is most helpful while avoiding harm&quot;. The model critiques and revises its own answers against those principles, and AI-generated preference judgements guided by the principles are used in training (sometimes called RLAIF, RL from AI feedback). It scales better than human rating alone and makes the intended values more explicit and readable.</p>\n<p><strong>RL from verifiable rewards (RLVR).</strong> For tasks where an answer can be checked automatically (a maths result, code that passes tests, output that matches a required format), the reward comes from the checker rather than a human opinion. This is a major ingredient behind reasoning models (optional Step 13, <em>Thinks Before Speaking</em>). It&#39;s powerful where &quot;correct&quot; is objective, and much less useful where it isn&#39;t (tone, persuasiveness, judgement calls).</p>\n",
+   "mechanism": "<p><strong>What &quot;alignment&quot; means here.</strong> Getting a model to behave the way its builders intend: helpful, honest, following instructions, refusing harmful requests, using the right format. Step 8 introduced <strong>RLHF</strong>: humans compare pairs of answers, a reward model learns their preferences, and the LLM is trained to score highly on that reward model. It works, but it&#39;s complex and expensive. Several newer approaches are now widely used, often in combination.</p>\n<p><strong>DPO (Direct Preference Optimization).</strong> Uses the same kind of data as RLHF (pairs of answers where one is preferred) but skips training a separate reward model and the reinforcement learning loop. It adjusts the model directly so preferred answers become more likely than rejected ones. It&#39;s simpler and more stable to run, which is why it (and variants of it) became popular, including for teams fine-tuning open-weight models.</p>\n<p><strong>Constitutional AI.</strong> An approach published by Anthropic. Instead of relying only on human ratings, the developers write a set of principles (a &quot;constitution&quot;), for example &quot;choose the response that is most helpful while avoiding harm&quot;. The model critiques and revises its own answers against those principles, and AI-generated preference judgements guided by the principles are used in training (sometimes called RLAIF, RL from AI feedback). It scales better than human rating alone and makes the intended values more explicit and readable.</p>\n<p><strong>RL from verifiable rewards (RLVR).</strong> For tasks where an answer can be checked automatically (a maths result, code that passes tests, output that matches a required format), the reward comes from the checker rather than a human opinion. This is a major ingredient behind reasoning models (optional Step 14, <em>Add a Thinking Mode</em>). It&#39;s powerful where &quot;correct&quot; is objective, and much less useful where it isn&#39;t (tone, persuasiveness, judgement calls).</p>\n",
    "workplace": "<ol>\n<li><strong>Customer support.</strong> A vendor&#39;s model being polite and refusing to promise refunds it can&#39;t authorise comes largely from alignment training plus your instructions. Your instructions still matter: alignment gives general manners, not your refund rules.</li>\n<li><strong>Procurement data extraction.</strong> If you fine-tune a model to output purchase requests in an exact format, a DPO-style step with &quot;good vs bad output&quot; pairs can help it stick to that format. The format is checkable, so automated checks can also act as rewards.</li>\n<li><strong>Legal contract review.</strong> &quot;Be cautious, flag uncertainty, never state legal conclusions&quot; is a behavioural preference. Alignment methods shape this kind of behaviour, but they don&#39;t give the model knowledge of your contract playbook.</li>\n</ol>\n",
    "breakName": "Train the Trainer",
-   "goal": "Accidentally teach the baby to flatter, then pick the right teaching method for different tasks.",
+   "goal": "Accidentally teach the model to flatter, then pick the right teaching method for different tasks.",
    "discover": "Models learn whatever their teachers reward, including bad habits. Different teaching methods fit different jobs, and none of them teach your company&#39;s facts.",
    "myths": [
     {
@@ -1003,14 +1064,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 18,
-   "name": "Practises on Homework Sheets",
+   "n": 19,
+   "name": "Practise on Synthetic Data",
    "concept": "Synthetic data",
    "optional": true,
-   "meta": "Optional step 18 of 21 · Chapter 3: Proving it and polishing it · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 19 of 22 · Chapter 3: Proving it and polishing it · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Steps 2 and 7",
-   "hook": "When you run out of real picture books, you can ask the big kids to write some for the baby. Useful, as long as someone checks the big kids got it right.",
+   "buildsOn": "core Steps 2 and 8",
+   "hook": "When you run out of real examples, you can ask a bigger model to write some. Useful, as long as someone checks the answers.",
    "see": {
     "head": [
      "Before (tested only on neat synthetic tickets)",
@@ -1020,8 +1081,8 @@ window.COURSE = {
     "after": "→ <code>Sorry this has happened twice. I can see order #88 hasn&#39;t arrived, so I&#39;ve passed it to our delivery team as urgent.</code>",
     "note": ""
    },
-   "mechanism": "<p><strong>Why this matters.</strong> &quot;We don&#39;t have enough data&quot; is a common blocker. Synthetic data is increasingly used to get past it, and also misused.</p>\n<p><strong>What it is.</strong> Data generated by an AI model (or by rules and templates) rather than collected from the real world. Uses include:</p>\n<ul>\n<li><strong>Training and fine-tuning:</strong> example questions and answers, extraction examples, or reasoning traces (this is how distillation often works, optional Step 19, <em>Gets a Little Sibling</em>).</li>\n<li><strong>Evals:</strong> generating extra test questions, variations and edge cases to add to your real ones.</li>\n<li><strong>Privacy:</strong> creating realistic-but-fake records (e.g. sample invoices or customer emails) so developers can build and test without touching real personal data.</li>\n</ul>\n<p><strong>The risks.</strong></p>\n<ul>\n<li><strong>Errors baked in.</strong> If the generating model is wrong, the synthetic data is wrong, and anything trained or tested on it inherits the mistake.</li>\n<li><strong>Too clean, too similar.</strong> Synthetic examples often lack the mess of reality: typos, odd formats, angry tone, half-filled forms. A system that passes synthetic tests may fail on real inputs.</li>\n<li><strong>Narrowing.</strong> Training repeatedly on model-generated content without enough fresh real data can reduce variety and quality over time.</li>\n<li><strong>Hidden leakage.</strong> &quot;Fake&quot; data generated from real records can still reveal real details if not done carefully.</li>\n<li><strong>Licence terms.</strong> Some vendors&#39; terms restrict using their outputs to train competing models; check before doing so.</li>\n</ul>\n",
-   "workplace": "<ol>\n<li><strong>Customer support evals.</strong> Take 100 real tickets and generate 300 variations (different wording, tone, languages). Keep the real 100 as the core test set; use synthetic ones to widen coverage, and have a team lead spot-check them.</li>\n<li><strong>Finance invoice extraction.</strong> Generate fake invoices in many layouts to test extraction before using real supplier data, then confirm on a real sample.</li>\n<li><strong>HR policy bot.</strong> Generate tricky questions (&quot;What if I&#39;m part-time and my parent dies abroad?&quot;) to probe edge cases. HR still writes the correct answers.</li>\n</ol>\n",
+   "mechanism": "<p><strong>Why this matters.</strong> &quot;We don&#39;t have enough data&quot; is a common blocker. Synthetic data is increasingly used to get past it, and also misused.</p>\n<p><strong>What it is.</strong> Data generated by an AI model (or by rules and templates) rather than collected from the real world. Uses include:</p>\n<ul>\n<li><strong>Training and fine-tuning:</strong> example questions and answers, extraction examples, or reasoning traces (this is how distillation often works, optional Step 20, <em>Build a Compact Model</em>).</li>\n<li><strong>Evals:</strong> generating extra test questions, variations and edge cases to add to your real ones.</li>\n<li><strong>Privacy:</strong> creating realistic-but-fake records (e.g. sample invoices or customer emails) so developers can build and test without touching real personal data.</li>\n</ul>\n<p><strong>The risks.</strong></p>\n<ul>\n<li><strong>Errors baked in.</strong> If the generating model is wrong, the synthetic data is wrong, and anything trained or tested on it inherits the mistake.</li>\n<li><strong>Too clean, too similar.</strong> Synthetic examples often lack the mess of reality: typos, odd formats, angry tone, half-filled forms. A system that passes synthetic tests may fail on real inputs.</li>\n<li><strong>Narrowing.</strong> Training repeatedly on model-generated content without enough fresh real data can reduce variety and quality over time.</li>\n<li><strong>Hidden leakage.</strong> &quot;Fake&quot; data generated from real records can still reveal real details if not done carefully.</li>\n<li><strong>Licence terms.</strong> Some vendors&#39; terms restrict using their outputs to train competing models; check before doing so.</li>\n</ul>\n",
+   "workplace": "<ol>\n<li><strong>Customer support evals.</strong> Take 100 real tickets and generate 300 variations (different wording, tone, languages). Keep the real 100 as the core test set; use synthetic ones to widen coverage, and have a team lead spot-check them.</li>\n<li><strong>Finance invoice extraction.</strong> Generate fake invoices in many layouts to test extraction before using real supplier data, then confirm on a real sample.</li>\n<li><strong>HR policy bot.</strong> Generate tricky questions (&quot;What if I&#39;m part-time and a close relative dies abroad?&quot;) to probe edge cases. HR still writes the correct answers.</li>\n</ol>\n",
    "breakName": "Too Clean to Be True",
    "goal": "Get a perfect score on synthetic tests and a poor one in the real world, then spot a bad answer key.",
    "discover": "Synthetic data is a useful stretch, but it is often too tidy and can carry errors. Real examples and expert checking keep it honest.",
@@ -1066,14 +1127,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 19,
-   "name": "Gets a Little Sibling",
+   "n": 20,
+   "name": "Build a Compact Model",
    "concept": "Small vs large models, distillation, quantization and open-weight models",
    "optional": true,
-   "meta": "Optional step 19 of 21 · Chapter 4: Right-sizing and budgeting · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 20 of 22 · Chapter 4: Right-sizing and budgeting · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Step 4",
-   "hook": "You don&#39;t need a professor to sort the post. Sometimes a bright, cheap intern is the right hire, and they can work in your building.",
+   "buildsOn": "core Step 5",
+   "hook": "You don&#39;t need a professor to sort the post. Sometimes a bright, compact model is the right hire, and it can run in your own building.",
    "see": {
     "head": [
      "Before (the biggest model for everything)",
@@ -1085,7 +1146,7 @@ window.COURSE = {
    },
    "mechanism": "<p><strong>Small vs large.</strong> Large models are generally better at hard reasoning, broad knowledge and tricky instructions. Small models are faster, cheaper and can run on less hardware, sometimes on a laptop or phone. For narrow, well-defined tasks (classifying tickets, extracting fields, routing emails), a small model is often good enough, especially with RAG or fine-tuning. The right size is the smallest one that passes your evals.</p>\n<p><strong>Distillation.</strong> Training a small &quot;student&quot; model to imitate a large &quot;teacher&quot; model, often using the teacher&#39;s outputs as training data. The student keeps much of the teacher&#39;s ability on the targeted tasks at a fraction of the size. Many small models offered by vendors are built this way.</p>\n<p><strong>Quantization.</strong> Storing the model&#39;s numbers with less precision, e.g. 16-bit numbers reduced to 8-bit or 4-bit. The model takes much less memory and often runs faster, with some quality loss that ranges from negligible to noticeable depending on the method and task. It&#39;s a key reason capable models can run on modest hardware.</p>\n<p><strong>Open-weight models.</strong> Models whose trained parameters are published for download, so you can run them on your own servers or a private cloud. Examples include model families from Meta (Llama), Mistral, Alibaba (Qwen), DeepSeek and others, each with its own licence terms. &quot;Open-weight&quot; isn&#39;t always &quot;open source&quot;: the training data and code may not be released, and licences can restrict use. The alternative is a <strong>hosted API</strong>, where you send data to a vendor&#39;s model.</p>\n<p><strong>The trade-offs:</strong></p>\n<table>\n<thead>\n<tr>\n<th></th>\n<th>Hosted API (large)</th>\n<th>Self-hosted open-weight</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>Quality on hard tasks</td>\n<td>Often highest</td>\n<td>Varies; strong options exist</td>\n</tr>\n<tr>\n<td>Data leaves your environment</td>\n<td>Yes (under contract terms)</td>\n<td>No, if hosted internally</td>\n</tr>\n<tr>\n<td>Setup effort</td>\n<td>Low</td>\n<td>High: hardware, security, updates, monitoring</td>\n</tr>\n<tr>\n<td>Cost model</td>\n<td>Pay per token</td>\n<td>Pay for infrastructure and people</td>\n</tr>\n<tr>\n<td>Control over versions</td>\n<td>Vendor decides schedule</td>\n<td>You decide</td>\n</tr>\n</tbody></table>\n",
    "workplace": "<ol>\n<li><strong>Customer support routing.</strong> Classifying 50,000 emails a month into 12 categories. A small (possibly fine-tuned) model is fast and cheap; a large model would be overkill.</li>\n<li><strong>Legal contract review with strict confidentiality.</strong> A self-hosted open-weight model may satisfy data-residency rules, at the cost of running the infrastructure. Test whether quality is sufficient.</li>\n<li><strong>Sales proposal assistant.</strong> Writing quality matters and volume is modest. A large hosted model through the company&#39;s approved platform is often simplest.</li>\n</ol>\n",
-   "breakName": "Hire the Right Sibling",
+   "breakName": "Hire the Right Model",
    "goal": "Match each job to the right model, without breaking a data rule or the budget.",
    "discover": "The best model is the smallest one that passes your tests and fits your data rules. Self-hosting buys control and costs effort.",
    "myths": [
@@ -1129,14 +1190,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 20,
-   "name": "Grows Departments in Its Brain",
+   "n": 21,
+   "name": "Fit a Mixture of Experts",
    "concept": "Mixture of experts",
    "optional": true,
-   "meta": "Optional step 20 of 21 · Chapter 4: Right-sizing and budgeting · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 21 of 22 · Chapter 4: Right-sizing and budgeting · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Step 4",
-   "hook": "Imagine your baby&#39;s brain as a huge office with many small teams. For each word, a receptionist sends the work to just a couple of teams. The office is huge; any single job only uses a small part of it.",
+   "buildsOn": "core Step 5",
+   "hook": "Imagine the engine as a huge office with many small teams. For each word, a receptionist sends the work to just a couple of teams. The office is huge; any single job only uses a small part of it.",
    "see": {
     "head": [
      "Before (dense brain)",
@@ -1191,14 +1252,14 @@ window.COURSE = {
    ]
   },
   {
-   "n": 21,
-   "name": "Gets Pocket Money",
+   "n": 22,
+   "name": "Check the Running Costs",
    "concept": "AI cost and latency economics",
    "optional": true,
-   "meta": "Optional step 21 of 21 · Chapter 4: Right-sizing and budgeting · ~8-10 minutes to build, ~5-8 minutes to read",
+   "meta": "Optional step 22 of 22 · Chapter 4: Right-sizing and budgeting · ~8-10 minutes to build, ~5-8 minutes to read",
    "time": "8-10 minutes to build, ~5-8 minutes to read",
-   "buildsOn": "core Steps 6 and 8",
-   "hook": "Babies are expensive. AI is too, in ways that are easy to predict once you know what you&#39;re paying for.",
+   "buildsOn": "core Steps 7 and 9",
+   "hook": "Every engine has running costs. An AI system&#39;s are easy to predict once you know what you&#39;re paying for: volume, calls, length and price.",
    "see": {
     "head": [
      "Before (pilot)",
@@ -1208,7 +1269,7 @@ window.COURSE = {
     "after": "Same agent, 5,000 requests a day, 12 model calls each, long context: <code>Monthly cost meter: 🪙🪙🪙🪙🪙🪙🪙🪙🪙🪙...</code> <em>(100 times the volume means roughly 100 times the bill, before any savings)</em>",
     "note": ""
    },
-   "mechanism": "<p><strong>Why this matters.</strong> Many AI pilots succeed in a demo and then stall when someone multiplies the cost by real volume, or when users won&#39;t wait 40 seconds for an answer. These numbers belong in the requirement from day one.</p>\n<p><strong>What drives cost.</strong></p>\n<ul>\n<li><strong>Tokens in and out.</strong> Most hosted models charge per token, with output tokens usually costing more than input. Long prompts (big documents, long chat histories) add up.</li>\n<li><strong>Model choice.</strong> Larger and reasoning models generally cost more per token, sometimes by a lot. Reasoning models also produce extra &quot;thinking&quot; tokens (optional Step 13, <em>Thinks Before Speaking</em>).</li>\n<li><strong>Number of calls.</strong> RAG is usually one or two model calls per question. An agent may make many (Step 6). Cost per task = calls × tokens per call × price.</li>\n<li><strong>Supporting systems.</strong> Search indexes, embedding, storage, logging, monitoring and evals all cost something.</li>\n<li><strong>People.</strong> Building, testing, maintaining sources and reviewing outputs is often the largest cost of all.</li>\n</ul>\n<p><strong>What drives latency (waiting time).</strong></p>\n<ul>\n<li>Model size and reasoning effort.</li>\n<li>Amount of output (long answers take longer to generate, token by token).</li>\n<li>Number of sequential steps (agents, multiple searches).</li>\n<li>Size of input context.</li>\n</ul>\n<p><strong>Levers to pull:</strong> use a smaller model where evals allow; cut unnecessary context; cache repeated content; limit agent steps; stream the answer so users see it start immediately; run non-urgent work in batches (often discounted by vendors); route easy requests to a cheap model and hard ones to a stronger one.</p>\n",
+   "mechanism": "<p><strong>Why this matters.</strong> Many AI pilots succeed in a demo and then stall when someone multiplies the cost by real volume, or when users won&#39;t wait 40 seconds for an answer. These numbers belong in the requirement from day one.</p>\n<p><strong>What drives cost.</strong></p>\n<ul>\n<li><strong>Tokens in and out.</strong> Most hosted models charge per token, with output tokens usually costing more than input. Long prompts (big documents, long chat histories) add up.</li>\n<li><strong>Model choice.</strong> Larger and reasoning models generally cost more per token, sometimes by a lot. Reasoning models also produce extra &quot;thinking&quot; tokens (optional Step 14, <em>Add a Thinking Mode</em>).</li>\n<li><strong>Number of calls.</strong> RAG is usually one or two model calls per question. An agent may make many (Step 7). Cost per task = calls × tokens per call × price.</li>\n<li><strong>Supporting systems.</strong> Search indexes, embedding, storage, logging, monitoring and evals all cost something.</li>\n<li><strong>People.</strong> Building, testing, maintaining sources and reviewing outputs is often the largest cost of all.</li>\n</ul>\n<p><strong>What drives latency (waiting time).</strong></p>\n<ul>\n<li>Model size and reasoning effort.</li>\n<li>Amount of output (long answers take longer to generate, token by token).</li>\n<li>Number of sequential steps (agents, multiple searches).</li>\n<li>Size of input context.</li>\n</ul>\n<p><strong>Levers to pull:</strong> use a smaller model where evals allow; cut unnecessary context; cache repeated content; limit agent steps; stream the answer so users see it start immediately; run non-urgent work in batches (often discounted by vendors); route easy requests to a cheap model and hard ones to a stronger one.</p>\n",
    "workplace": "<ol>\n<li><strong>HR policy bot.</strong> Short questions, short answers, one retrieval step: typically cheap per question. Main costs are build, source upkeep and evals.</li>\n<li><strong>Procurement agent.</strong> Each request triggers several tool calls and checks. Fine for 50 requests a day; at 5,000 a day, the per-task cost needs a proper estimate and a step limit.</li>\n<li><strong>Finance invoice checking.</strong> Running overnight in batch means latency doesn&#39;t matter, so a slower, cheaper option may fit, while the morning report is ready on time.</li>\n</ol>\n",
    "breakName": "Blow the Budget",
    "goal": "Push the monthly bill over budget, then bring it back under without dropping quality below the line.",
@@ -1255,10 +1316,10 @@ window.COURSE = {
   }
  ],
  "workedExample": "<p><strong>1. Problem.</strong> HR business partners answer roughly the same leave, travel and benefits questions every week by email. Employees wait a day or more. Answers sometimes differ between HR partners. <em>Better:</em> employees get a correct, sourced answer in seconds, and HR handles only real exceptions. <em>Owner:</em> Head of HR Operations.</p>\n<p><strong>2. Must know.</strong> Annual leave, sick leave, parental leave, bereavement leave, travel &amp; expenses, hybrid working policy, for employees in the USA and India. <em>Out of scope:</em> individual salary or performance questions, legal advice, anything about a named colleague, disciplinary cases. <em>Type:</em> Company knowledge.</p>\n<p><strong>3. Where it lives.</strong></p>\n<table>\n<thead>\n<tr>\n<th>Source</th>\n<th>Format</th>\n<th>Owner</th>\n<th>Quality</th>\n<th>Access</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>HR policy library (6 policies × 2 countries)</td>\n<td>PDF + intranet pages</td>\n<td>HR Policy team</td>\n<td>Mostly current; 3 old versions still on the intranet</td>\n<td>All employees</td>\n</tr>\n<tr>\n<td>Benefits FAQ</td>\n<td>Intranet wiki</td>\n<td>Rewards team</td>\n<td>Messy, some duplicates</td>\n<td>All employees</td>\n</tr>\n<tr>\n<td>Country-specific annexes</td>\n<td>Word docs</td>\n<td>Local HR</td>\n<td>Current</td>\n<td>Employees of that country only</td>\n</tr>\n</tbody></table>\n<p><em>Action before build:</em> HR Policy team removes the 3 outdated versions and merges FAQ duplicates.</p>\n<p><strong>4. Freshness.</strong> Policies change a few times a year. Changes must appear in answers within 1 working day of publishing. The HR Policy team publishes and archives; the index refreshes nightly.</p>\n<p><strong>5. Cost of a wrong answer.</strong> Example: telling a US employee they get 5 days of bereavement leave when they get 3. Impact: wasted time, unhappy employee, possible grievance; moderate. Users usually can&#39;t spot it themselves. → Must cite policy and section, must show a &quot;Check with HR for your situation&quot; line on leave entitlements, must not answer outside scope.</p>\n<p><strong>6. Users and use.</strong> ~2,000 employees, mixed tech comfort, via the Teams chat app. Input: a typed question. Output: a short answer (≤150 words), the policy name and section, a link to the source, and an HR contact for exceptions. Actions: none (read-only). Phase 2 idea: &quot;draft a leave request&quot;, as a draft for the employee to submit. <em>Language:</em> answers in English, the language the policies are written in and the working language in both countries. Many current models can understand questions typed in Hindi or mixed Hindi-English, so it should still answer those (in English) rather than refuse; 15 such questions go into the test set. Full Hindi answers are a later option only if pilot feedback asks for it, and would need HR-checked Hindi test answers.</p>\n<p><strong>7. Approach.</strong> Company knowledge, in searchable documents, one-step questions, no actions → <strong>RAG</strong>. Country filter based on the employee&#39;s profile so US staff get the US annexes and India staff get the India annexes. No fine-tuning; tone is handled by instructions.</p>\n<p><strong>8. Evals.</strong> HR partners collect 150 real past questions (anonymised), including 20 that should be refused or escalated, and write the correct answer and source for each. Correct = right fact, right country, right source cited, refuses when it should. Pre-launch target agreed with the owner: e.g. ≥90% correct on answerable questions and 100% correct refusals on the out-of-scope set. A pilot with 100 employees for 4 weeks with thumbs up/down and a &quot;report a wrong answer&quot; button. The full test set is re-run every time a policy or setting changes.</p>\n<p><strong>9. Risks and guardrails.</strong> Hallucination → answer only from retrieved sources, else &quot;I couldn&#39;t find that; contact HR at [link]&quot;. Sensitive topics (harassment, health, disciplinary) → don&#39;t answer, show a confidential HR contact. Injection risk is low (sources are HR-controlled), but only HR-owned documents are indexed. Over-reliance → footer: &quot;This assistant can be wrong. For decisions, confirm with HR.&quot;</p>\n<p><strong>10. Privacy.</strong> Internal policy data, no personal data in sources. Questions may contain personal details, so logs are kept for 30 days, readable only by the HR Ops admin team, and used only for improvement. Uses the company&#39;s approved AI platform, with data kept in the regions it allows.</p>\n<p><strong>11. Cost and latency.</strong> ~300 questions/day. Answer in under 10 seconds. A standard (not reasoning) model is likely enough; confirm with evals. Value: if each answer saves an employee and an HR partner several minutes, the time savings are significant, while per-question model cost for short RAG answers is typically small. Get a real estimate from the platform team using expected volume.</p>\n<p><strong>12. Open questions.</strong> Do contractors get the same policies? Who answers the &quot;report wrong answer&quot; queue? Some US states have their own leave rules (for example, paid sick leave): do we need state-specific annexes?</p>\n",
- "fantasyRewrite": "<p><strong>The fantasy request (as received):</strong></p>\n<blockquote>\n<p>&quot;Sales wants an AI agent that knows all our products and customers and writes perfect proposals automatically, so reps don&#39;t have to.&quot;</p>\n</blockquote>\n<p><strong>What&#39;s wrong with it:</strong></p>\n<ul>\n<li>&quot;Knows all&quot;: which products, which customers, from which systems? The model knows none of them on its own (Step 4).</li>\n<li>&quot;Perfect&quot;: no system is perfect. What error is acceptable, and who checks? (optional Steps 15 and 16)</li>\n<li>&quot;Automatically&quot;: sent to customers without review? A wrong price in a proposal is a commercial and possibly legal risk (Step 6).</li>\n<li>&quot;Agent&quot;: does it actually need multiple steps and tools, or is it a RAG + template problem?</li>\n<li>No users, volume, success measure, or data constraints.</li>\n</ul>\n<p><strong>The realistic rewrite:</strong></p>\n<blockquote>\n<p><strong>Sales Proposal First-Draft Assistant.</strong> For the 40 account executives in the mid-market team, produce a <em>first draft</em> of a standard proposal (sections 1-5 of our template) from: the opportunity record in the CRM (read-only), the current approved product sheets (12 documents, owned by Product Marketing, refreshed on each release), and the approved pricing table (owned by Sales Ops; prices are <em>copied from the table</em>, never generated). The rep reviews and edits every draft; nothing is sent to customers automatically. Approach: RAG over product sheets plus a single read-only CRM lookup and a template; no free-form agent. Success: on 30 past opportunities, sales managers rate drafts &quot;usable with light edits&quot; in at least an agreed share of cases (target set by Head of Sales), zero pricing errors, and median drafting time drops from about 2 hours to under 30 minutes (to be confirmed in a 6-week pilot). Guardrails: cite the product sheet for every capability claim; flag any requested feature not in the sheets as &quot;not confirmed&quot;. Data: customer data stays in our approved cloud region; CRM access mirrors the rep&#39;s own permissions. Latency: under 2 minutes per draft is fine.</p>\n</blockquote>\n<p>Notice what changed: a named audience, named sources with owners, a human in the loop, numbers copied not generated, the simplest approach that works, and a test agreed upfront.</p>\n",
+ "fantasyRewrite": "<p><strong>The fantasy request (as received):</strong></p>\n<blockquote>\n<p>&quot;Sales wants an AI agent that knows all our products and customers and writes perfect proposals automatically, so reps don&#39;t have to.&quot;</p>\n</blockquote>\n<p><strong>What&#39;s wrong with it:</strong></p>\n<ul>\n<li>&quot;Knows all&quot;: which products, which customers, from which systems? The model knows none of them on its own (Step 5).</li>\n<li>&quot;Perfect&quot;: no system is perfect. What error is acceptable, and who checks? (optional Steps 16 and 17)</li>\n<li>&quot;Automatically&quot;: sent to customers without review? A wrong price in a proposal is a commercial and possibly legal risk (Step 7).</li>\n<li>&quot;Agent&quot;: does it actually need multiple steps and tools, or is it a RAG + template problem?</li>\n<li>No users, volume, success measure, or data constraints.</li>\n</ul>\n<p><strong>The realistic rewrite:</strong></p>\n<blockquote>\n<p><strong>Sales Proposal First-Draft Assistant.</strong> For the 40 account executives in the mid-market team, produce a <em>first draft</em> of a standard proposal (sections 1-5 of our template) from: the opportunity record in the CRM (read-only), the current approved product sheets (12 documents, owned by Product Marketing, refreshed on each release), and the approved pricing table (owned by Sales Ops; prices are <em>copied from the table</em>, never generated). The rep reviews and edits every draft; nothing is sent to customers automatically. Approach: RAG over product sheets plus a single read-only CRM lookup and a template; no free-form agent. Success: on 30 past opportunities, sales managers rate drafts &quot;usable with light edits&quot; in at least an agreed share of cases (target set by Head of Sales), zero pricing errors, and median drafting time drops from about 2 hours to under 30 minutes (to be confirmed in a 6-week pilot). Guardrails: cite the product sheet for every capability claim; flag any requested feature not in the sheets as &quot;not confirmed&quot;. Data: customer data stays in our approved cloud region; CRM access mirrors the rep&#39;s own permissions. Latency: under 2 minutes per draft is fine.</p>\n</blockquote>\n<p>Notice what changed: a named audience, named sources with owners, a human in the loop, numbers copied not generated, the simplest approach that works, and a test agreed upfront.</p>\n",
  "checklist": [
   {
-   "step": 9,
+   "step": 10,
    "label": "Memory",
    "ask": "Should it remember anything between sessions? Where should business facts live instead?",
    "sections": [
@@ -1267,7 +1328,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 10,
+   "step": 11,
    "label": "Embeddings",
    "ask": "Do sources have dates, owners, status and country tags? Do we need exact-code search? Are retrieval tests included?",
    "sections": [
@@ -1276,7 +1337,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 11,
+   "step": 12,
    "label": "Context engineering",
    "ask": "Is a typical request &quot;find one thing&quot; or &quot;compare everything&quot;? Do tests include long documents?",
    "sections": [
@@ -1286,7 +1347,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 12,
+   "step": 13,
    "label": "Multimodal",
    "ask": "What real formats arrive (photos, scans, handwriting, audio)? Which numbers need validation?",
    "sections": [
@@ -1297,7 +1358,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 13,
+   "step": 14,
    "label": "Reasoning",
    "ask": "Is this a lookup or a multi-step judgement? How long can users wait?",
    "sections": [
@@ -1306,7 +1367,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 14,
+   "step": 15,
    "label": "Tools and MCP",
    "ask": "Which systems, and exactly which actions: read, draft or write? Where does a human approve?",
    "sections": [
@@ -1315,7 +1376,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 15,
+   "step": 16,
    "label": "Guardrails",
    "ask": "Which inputs are untrusted? What must it refuse? What happens when it doesn&#39;t know?",
    "sections": [
@@ -1324,7 +1385,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 16,
+   "step": 17,
    "label": "Evals",
    "ask": "Who builds the test set? What&#39;s scored? What&#39;s the launch target? When do we re-test?",
    "sections": [
@@ -1332,7 +1393,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 17,
+   "step": 18,
    "label": "Alignment",
    "ask": "Are tone, format and refusal rules written down with examples?",
    "sections": [
@@ -1341,7 +1402,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 18,
+   "step": 19,
    "label": "Synthetic data",
    "ask": "Where is synthetic test data acceptable? Who checks the answer key?",
    "sections": [
@@ -1350,7 +1411,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 19,
+   "step": 20,
    "label": "Model size",
    "ask": "Could a smaller model pass our tests? Can data leave our environment?",
    "sections": [
@@ -1360,7 +1421,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 20,
+   "step": 21,
    "label": "Mixture of experts",
    "ask": "If self-hosting: do we know total vs active parameters?",
    "sections": [
@@ -1369,7 +1430,7 @@ window.COURSE = {
    ]
   },
   {
-   "step": 21,
+   "step": 22,
    "label": "Cost and latency",
    "ask": "Do we have volume, acceptable wait, value per task and spending limits?",
    "sections": [
@@ -1378,14 +1439,14 @@ window.COURSE = {
   }
  ],
  "intro": {
-  "pitch": "<p>Everyone has an opinion about AI. Few of us have seen how it works. So we ask for things like &quot;a bot that knows everything about our company&quot; and then feel let down. This course fixes that by letting you <em>raise</em> a baby AI. It starts out babbling random letters. You feed it data and watch it learn words, then sentences. You send it to school (so it can look things up), give it a job (so it can use tools), and teach it manners (so it behaves). At each stage you&#39;ll try to break it, which is the fastest way to learn what it can&#39;t do. At graduation you&#39;ll use what you learned to write a real AI requirement: one that an IT team can build, test and trust. Then, if you&#39;re hooked, you can keep raising it: teach it to keep a diary, read a meaning map, think before speaking, use the office keys safely, sit a proper report card and live within a budget.</p>\n",
-  "outcomes": "<p>By the end of the core build (Steps 1-8) you will be able to:</p>\n<ol>\n<li>Explain in one sentence what a large language model (LLM) does: <strong>it predicts the next piece of text, one piece at a time.</strong></li>\n<li>Explain why it can sound confident and still be wrong (hallucination).</li>\n<li>Explain why a model doesn&#39;t know your company&#39;s information unless someone gives it that information.</li>\n<li>Tell the difference between a <strong>plain prompt</strong>, <strong>RAG</strong> (look it up, then answer), an <strong>agent</strong> (plan, use tools, check) and <strong>fine-tuning</strong> (change its habits), and pick the right one for a problem.</li>\n<li>Name the main ways each approach fails: bad search, a full context window, prompt injection, runaway agent costs.</li>\n<li>Fill in a <strong>Requirement Framing Worksheet</strong> that covers knowledge, freshness, cost of errors, users, approach, success measures (evals), risks, data constraints and rough cost.</li>\n</ol>\n<p>If you continue into the optional steps (9-21) you will also be able to:</p>\n<ol start=\"7\">\n<li>Explain the newer ideas you&#39;ll hear in vendor pitches (memory, embeddings, long context, multimodal, reasoning models, MCP, evals, guardrails, modern alignment, synthetic data, small and open-weight models, mixture of experts, cost economics) in plain words.</li>\n<li>Turn each of those ideas into a sharper line in your requirement.</li>\n</ol>\n",
-  "honest": "<p>This course builds the <strong>right mental model</strong>. It does not make you an engineer. You won&#39;t be able to train a model, design a search index or secure an agent after 90 minutes. You <em>will</em> be able to ask good questions, spot fantasy requirements, and have a much better conversation with the people who build these systems. The baby AI in this course is a teaching toy. In version one it is completely scripted: every response you see was written in advance to show an idea, and none of it comes from a real model. Sample outputs are labelled <strong>illustrative</strong>. The field changes fast. Product names and features mentioned here were described as accurately as we could at the time of writing and should be rechecked when the course is refreshed.</p>\n",
-  "howToRun": "<ul>\n<li><strong>Solo, one sitting:</strong> Do Steps 1-8 back to back with a coffee. Roughly 90 minutes.</li>\n<li><strong>15-minute chunks:</strong> One step per day over two weeks (8 working days, with Step 8 split over two). Good for teams with packed calendars. Each step ends with a one-question quick check, which makes a natural stopping point.</li>\n<li><strong>Optional chapters:</strong> After graduation, run one optional chapter (3-4 steps) per week. Each chapter ends with a checkpoint where people can keep going or switch to reading.</li>\n<li><strong>Team challenge:</strong> Pair up. Each &quot;Break it!&quot; challenge has a goal (make it hallucinate, overflow its memory, hijack it). Pairs share their best break in a team chat channel. The funniest and the most instructive both get a shout-out in the next team meeting.</li>\n<li><strong>Quiz moments:</strong> Use the quick-check questions (Appendix A2) as a 5-minute warm-up at the start of a team meeting. No scores are stored; it&#39;s for conversation, not ranking.</li>\n<li><strong>Graduation session (45 min, live):</strong> Each team brings one real &quot;we want AI to...&quot; request and rewrites it using the worksheet. A facilitator (or a techno-functional colleague) reviews it with them. Teams that do optional steps later bring the worksheet back and upgrade it (see &quot;Back to the Worksheet&quot;).</li>\n<li><strong>Facilitator tip:</strong> Techno-functional colleagues make great &quot;table buddies&quot;. The Under-the-hood panels give them enough to answer follow-up questions.</li>\n</ul>\n"
+  "pitch": "<p>Everyone has an opinion about AI. Few of us have seen how it works. So we ask for things like &quot;a bot that knows everything about our company&quot; and then feel let down. This course fixes that by having you <em>assemble</em> a GPT, part by part. It starts as an engine that guesses random letters. You fuel it with data and watch it learn words, then sentences. You fit attention, look inside the engine, scale it up, bolt on a library (so it can look things up), hand it tools (so it can act) and give it manners (so it behaves). At each stage you&#39;ll try to break it, which is the fastest way to learn what it can&#39;t do. At the end you&#39;ll ship a real AI requirement: one that an IT team can build, test and trust. Then, if you&#39;re hooked, keep building: add memory, tune the search, add a thinking mode, hand over the office keys safely, run a proper test bench and keep the running costs in check.</p>\n",
+  "outcomes": "<p>By the end of the core build (Steps 1-9) you will be able to:</p>\n<ol>\n<li>Explain in one sentence what a large language model (LLM) does: <strong>it predicts the next piece of text, one piece at a time.</strong></li>\n<li>Explain why it can sound confident and still be wrong (hallucination).</li>\n<li>Explain why a model doesn&#39;t know your company&#39;s information unless someone gives it that information.</li>\n<li>Tell the difference between a <strong>plain prompt</strong>, <strong>RAG</strong> (look it up, then answer), an <strong>agent</strong> (plan, use tools, check) and <strong>fine-tuning</strong> (change its habits), and pick the right one for a problem.</li>\n<li>Name the main ways each approach fails: bad search, a full context window, prompt injection, runaway agent costs.</li>\n<li>Fill in a <strong>Requirement Framing Worksheet</strong> that covers knowledge, freshness, cost of errors, users, approach, success measures (evals), risks, data constraints and rough cost.</li>\n</ol>\n<p>If you continue into the optional steps (10-22) you will also be able to:</p>\n<ol start=\"7\">\n<li>Explain the newer ideas you&#39;ll hear in vendor pitches (memory, embeddings, long context, multimodal, reasoning models, MCP, evals, guardrails, modern alignment, synthetic data, small and open-weight models, mixture of experts, cost economics) in plain words.</li>\n<li>Turn each of those ideas into a sharper line in your requirement.</li>\n</ol>\n",
+  "honest": "<p>This course builds the <strong>right mental model</strong>. It does not make you an engineer. You won&#39;t be able to train a model, design a search index or secure an agent after 90 minutes. You <em>will</em> be able to ask good questions, spot fantasy requirements, and have a much better conversation with the people who build these systems. The models in this course are teaching tools. In Steps 1 and 2 you train a genuinely working (but tiny) neural network in your browser; it learns from a few pages of fictional office email, so expect word-like text, not wisdom. Everything else is <strong>simulated for the demo</strong>: those responses were written in advance to show a real mechanism safely and offline, and they are labelled that way. The field changes fast. Product names and features mentioned here were described as accurately as we could at the time of writing and should be rechecked when the course is refreshed.</p>\n",
+  "howToRun": "<ul>\n<li><strong>Solo, one sitting:</strong> Do Steps 1-9 back to back with a coffee. Roughly 90 minutes.</li>\n<li><strong>15-minute chunks:</strong> One step per day over two weeks (9 working days, with Step 9 split over two). Good for teams with packed calendars. Each step ends with a one-question quick check, which makes a natural stopping point.</li>\n<li><strong>Optional chapters:</strong> After graduation, run one optional chapter (3-4 steps) per week. Each chapter ends with a checkpoint where people can keep going or switch to reading.</li>\n<li><strong>Team challenge:</strong> Pair up. Each &quot;Break it!&quot; challenge has a goal (make it hallucinate, overflow its memory, hijack it). Pairs share their best break in a team chat channel. The funniest and the most instructive both get a shout-out in the next team meeting.</li>\n<li><strong>Quiz moments:</strong> Use the quick-check questions (Appendix A2) as a 5-minute warm-up at the start of a team meeting. No scores are stored; it&#39;s for conversation, not ranking.</li>\n<li><strong>Ship It: Write the Spec session (45 min, live):</strong> Each team brings one real &quot;we want AI to...&quot; request and rewrites it using the worksheet. A facilitator (or a techno-functional colleague) reviews it with them. Teams that do optional steps later bring the worksheet back and upgrade it (see &quot;Back to the Worksheet&quot;).</li>\n<li><strong>Facilitator tip:</strong> Techno-functional colleagues make great &quot;table buddies&quot;. The Under-the-hood panels give them enough to answer follow-up questions.</li>\n</ul>\n"
  },
  "checkpoints": [
   {
-   "text": "<strong>Chapter 1 done.</strong> Your baby keeps a diary, reads the meaning map, packs a sensible schoolbag and can see and hear. Next up, Chapter 2: thinking, tools and stranger danger (3 steps, ~25-30 minutes).",
+   "text": "<strong>Chapter 1 done.</strong> Your GPT now has a memory module, a meaning-based search engine, a well-packed context window, and eyes and ears. Next up, Chapter 2: thinking, tools and safety guards (3 steps, ~25-30 minutes).",
    "highlight": [
     2,
     3,
@@ -1395,7 +1456,7 @@ window.COURSE = {
    ]
   },
   {
-   "text": "<strong>Chapter 2 done.</strong> Your baby can think things through, use the office keys (carefully) and resist most strangers. Next up, Chapter 3: report cards, values and homework sheets (3 steps, ~25-30 minutes).",
+   "text": "<strong>Chapter 2 done.</strong> Your GPT can think things through, use the office keys (carefully) and resist most strangers. Next up, Chapter 3: the test bench, values and synthetic data (3 steps, ~25-30 minutes).",
    "highlight": [
     5,
     6,
@@ -1405,7 +1466,7 @@ window.COURSE = {
    ]
   },
   {
-   "text": "<strong>Chapter 3 done.</strong> You can now prove whether it works, shape how it behaves and stretch your test data. Last chapter: siblings, departments and pocket money (3 steps, ~25-30 minutes).",
+   "text": "<strong>Chapter 3 done.</strong> You can now prove whether it works, shape how it behaves and stretch your test data. Last chapter: compact models, mixture of experts and running costs (3 steps, ~25-30 minutes).",
    "highlight": [
     6,
     8,
@@ -1415,14 +1476,14 @@ window.COURSE = {
   }
  ],
  "upgrade": {
-  "hook": "You&#39;ve raised a baby AI from babble to budget. Now go back to the requirement you wrote at graduation. It&#39;s about to get much sharper.",
+  "hook": "You&#39;ve built a GPT from first letter to final budget. Now go back to the requirement you wrote when you shipped. It&#39;s about to get much sharper.",
   "see": {
    "head": [
-    "Graduation version",
+    "Ship It: Write the Spec version",
     "Upgraded version"
    ],
    "before": "&quot;Use RAG over the HR policies. Test on 150 questions.&quot;",
-   "after": "&quot;Use RAG over the HR policies with hybrid search and a &#39;current documents only&#39; filter (Step 10). Memory off except the employee&#39;s country from the HR system (Step 9). Standard model, not reasoning (Step 13). Read-only, no tools (Step 14). Test on 150 real questions plus 20 &#39;policy doesn&#39;t exist&#39; and 10 hidden-instruction cases (Steps 15-16), re-run after every change.&quot;"
+   "after": "&quot;Use RAG over the HR policies with hybrid search and a &#39;current documents only&#39; filter (Step 11). Memory off except the employee&#39;s country from the HR system (Step 10). Standard model, not reasoning (Step 14). Read-only, no tools (Step 15). Test on 150 real questions plus 20 &#39;policy doesn&#39;t exist&#39; and 10 hidden-instruction cases (Steps 16-17), re-run after every change.&quot;"
   },
   "sowhat": [
    "A requirement is a living document. Revisit it whenever you learn something, and especially after the first eval results.",
@@ -1431,8 +1492,8 @@ window.COURSE = {
    "<strong>Self-contained build:</strong> one folder of HTML, CSS, JavaScript, images and data files with relative paths, so the same folder works on any host. Bundle fonts, icons and the diagram library locally rather than loading them from outside sites, so the page still works on locked-down office networks.",
    "<strong>Saving:</strong> progress, path choice (build or read) and worksheet answers live only in the browser&#39;s local storage on that device. Provide a <strong>Reset my progress</strong> button. Tell learners on screen that nothing they type is sent anywhere, and that switching devices or clearing the browser starts them fresh.",
    "<strong>Worksheet export:</strong> a print-friendly view (the browser&#39;s <strong>Print → Save as PDF</strong>) and <strong>Copy as text</strong>; optionally a <strong>Download as text file</strong> generated in the browser. No server-side export.",
-   "<strong>Free-text boxes</strong> (e.g. typing a question in Step 5, or a hidden instruction in Steps 6 and 15) are matched in the browser against prepared keywords and questions. Anything unrecognised gets a friendly scripted fallback (&quot;I&#39;m a toy with a small brain. Try one of these questions...&quot;).",
-   "<strong>Accessibility:</strong> keyboard-operable drag-and-drop alternatives (e.g. &quot;Move to bag&quot; buttons), alt text for every visual, colour-blind-safe heatmaps and meters, and captions on any audio.",
+   "<strong>Free-text boxes</strong> (e.g. typing a question in Step 6, or a hidden instruction in Steps 7 and 16) are matched in the browser against prepared keywords and questions. Anything unrecognised gets a friendly scripted fallback (&quot;I&#39;m a demo engine with a small brain. Try one of these questions...&quot;).",
+   "<strong>Accessibility:</strong> keyboard-operable drag-and-drop alternatives (e.g. &quot;Move to context&quot; buttons), alt text for every visual, colour-blind-safe heatmaps and meters, and captions on any audio.",
    "On GitHub&#39;s free plan, Pages sites are published from public repositories, and the published site is public in any case. Netlify sites are also public by default. Keep the course content free of anything confidential: the fictional company examples in this curriculum are fine; real policies, names or figures are not.",
    "Free tiers have usage limits; an internal course is unlikely to hit them, but check the current terms.",
    "All sample model outputs in this document are <strong>illustrative</strong>, written for teaching, not captured from a real system. In version one, every response in the app is scripted.",
@@ -1441,45 +1502,45 @@ window.COURSE = {
    "Thresholds in worked examples (e.g. &quot;≥90%&quot;) are <strong>placeholders</strong> to show the shape of a good requirement, not recommended standards.",
    "Worked examples use a fictional company with offices in the USA and India."
   ],
-  "finale": "<strong>🧸 That&#39;s the whole journey.</strong> Your baby AI babbled, learned, paid attention, grew up, went to school, got a job, learned manners, graduated and kept growing. More importantly, you know what it can and can&#39;t do, and how to ask for one that actually helps.",
-  "graduation": "<strong>🎓 Congratulations, you&#39;ve raised a baby AI.</strong> It babbled, learned, paid attention, grew up, went to school, got a job and learned manners. More importantly, you now know what it can and can&#39;t do. Next, choose whether to keep building or just read (below)."
+  "finale": "<strong>🔧 That&#39;s the whole build.</strong> Your GPT guessed, learned, paid attention, scaled up, looked things up, used tools, learned manners, shipped and got upgraded. More importantly, you know what it can and can&#39;t do, and how to ask for one that actually helps.",
+  "graduation": "<strong>🚀 Congratulations, you&#39;ve assembled a GPT.</strong> It guesses tokens, learned from data, pays attention, scaled up, looks things up, uses tools and minds its manners. More importantly, you now know what it can and can&#39;t do. Next, choose whether to keep building or just read (below)."
  },
  "chapters": [
   {
    "n": 1,
-   "title": "Smarter studying",
+   "title": "Smarter retrieval and inputs",
    "steps": [
-    9,
     10,
     11,
-    12
+    12,
+    13
    ]
   },
   {
    "n": 2,
    "title": "Thinking and doing, safely",
    "steps": [
-    13,
     14,
-    15
+    15,
+    16
    ]
   },
   {
    "n": 3,
    "title": "Proving it and polishing it",
    "steps": [
-    16,
     17,
-    18
+    18,
+    19
    ]
   },
   {
    "n": 4,
    "title": "Right-sizing and budgeting",
    "steps": [
-    19,
     20,
-    21
+    21,
+    22
    ]
   }
  ]

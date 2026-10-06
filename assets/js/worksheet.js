@@ -16,7 +16,7 @@
     { n: 8, title: 'How success will be measured (evals)', f: [T('s8_testset', 'Test set: how many real example questions/tasks, and who writes the correct answers?'), T('s8_correct', 'What counts as correct? (right fact, right source, right format, refuses when it should)'), T('s8_target', 'Target before launch (agree a number with the owner; there\u2019s no universal standard)'), CH('s8_judge', 'Who judges?', ['Subject-matter experts', 'Automated checks', 'AI judge checked by humans']), T('s8_after', 'After launch: how will you collect feedback and re-test after changes?')] },
     { n: 9, title: 'Risks and guardrails', f: [CH('s9_risks', 'Risks that apply', ['Hallucination \u2192 citations, \u201cI don\u2019t know\u201d behaviour', 'Prompt injection \u2192 limit tools, human approval', 'Sensitive topics', 'Over-reliance (users stop checking)', 'Fallback when it\u2019s down or unsure']), T('s9_sensitive', 'Sensitive topics: what must it refuse or escalate?'), T('s9_fallback', 'Fallback: what happens when it\u2019s down or unsure?')] },
     { n: 10, title: 'Data and privacy constraints', f: [CH('s10_data', 'Data involved', ['Public', 'Internal', 'Confidential', 'Personal data', 'Special category (health, etc.)']), R('s10_leave', 'Can it leave our environment?', ['Yes, approved vendor', 'Only to specific regions', 'No, must stay on-prem/private']), T('s10_who', 'Who may see which answers? (must match existing document permissions)'), T('s10_retention', 'Retention: how long are prompts and answers logged, and who can read the logs?')] },
-    { n: 11, title: 'Rough cost and latency expectations', note: 'Remember: agents and reasoning models cost more and take longer per task than plain RAG (optional Steps 13 and 21).', f: [T('s11_volume', 'Volume: about how many requests per day/week?'), R('s11_wait', 'Acceptable wait', ['Instant (a few seconds)', 'Under a minute', 'Minutes are fine (background job)']), T('s11_value', 'Value per task: roughly how much time or money does one good answer save?'), R('s11_budget', 'Budget appetite', ['Pilot only', 'Small ongoing', 'Significant'])] },
+    { n: 11, title: 'Rough cost and latency expectations', note: 'Remember: agents and reasoning models cost more and take longer per task than plain RAG (optional Steps 14 and 22).', f: [T('s11_volume', 'Volume: about how many requests per day/week?'), R('s11_wait', 'Acceptable wait', ['Instant (a few seconds)', 'Under a minute', 'Minutes are fine (background job)']), T('s11_value', 'Value per task: roughly how much time or money does one good answer save?'), R('s11_budget', 'Budget appetite', ['Pilot only', 'Small ongoing', 'Significant'])] },
     { n: 12, title: 'Open questions', f: [T('s12_q1', 'Open question 1'), T('s12_q2', 'Open question 2'), T('s12_q3', 'Open question 3')] },
     { n: 13, title: 'Upgrade notes (fill in after the optional steps)', f: [T('s13_u1', 'What I changed, and why (1)'), T('s13_u2', 'What I changed, and why (2)'), T('s13_u3', 'What I changed, and why (3)')] }
   ];
@@ -41,7 +41,7 @@
   }
   function tableHTML() {
     const opt = (arr, v) => arr.map((o) => '<option' + (o === v ? ' selected' : '') + ' value="' + esc(o) + '">' + (o || '\u2014') + '</option>').join('');
-    return '<div class="table-wrap"><table class="src-table"><thead><tr>' + COLS.map((c) => '<th scope="col">' + c[1] + '</th>').join('') + '</tr></thead><tbody>' + [0, 1, 2].map((i) => '<tr>' + COLS.map((c) => { const k = 's3_r' + i + '_' + c[0], v = val(k) || '', lab = c[1] + ', row ' + (i + 1); return '<td>' + (c[0] === 'fmt' ? '<select data-k="' + k + '" aria-label="' + lab + '">' + opt(FMT, v) + '</select>' : c[0] === 'q' ? '<select data-k="' + k + '" aria-label="' + lab + '">' + opt(QUAL, v) + '</select>' : '<input data-k="' + k + '" aria-label="' + lab + '" value="' + esc(v) + '">') + '</td>'; }).join('') + '</tr>').join('') + '</tbody></table></div><p class="note">Tip from Step 10: add metadata in \u201cAccess\u201d or \u201cOwner\u201d, like date, status and country.</p>';
+    return '<div class="table-wrap"><table class="src-table"><thead><tr>' + COLS.map((c) => '<th scope="col">' + c[1] + '</th>').join('') + '</tr></thead><tbody>' + [0, 1, 2].map((i) => '<tr>' + COLS.map((c) => { const k = 's3_r' + i + '_' + c[0], v = val(k) || '', lab = c[1] + ', row ' + (i + 1); return '<td>' + (c[0] === 'fmt' ? '<select data-k="' + k + '" aria-label="' + lab + '">' + opt(FMT, v) + '</select>' : c[0] === 'q' ? '<select data-k="' + k + '" aria-label="' + lab + '">' + opt(QUAL, v) + '</select>' : '<input data-k="' + k + '" aria-label="' + lab + '" value="' + esc(v) + '">') + '</td>'; }).join('') + '</tr>').join('') + '</tbody></table></div><p class="note">Tip from Step 11: add metadata in \u201cAccess\u201d or \u201cOwner\u201d, like date, status and country.</p>';
   }
   function approachHTML() {
     return '<div class="approach-q" id="apq" aria-live="polite"></div><details style="margin-top:8px"><summary>See the full decision flow</summary><div class="vis"><img class="diagram" src="assets/diagrams/diagram5.svg" alt="Decision flow: if the task needs company-specific or recent information and it is in searchable documents, use RAG, or an agent if it needs several steps or actions; if not searchable, get the knowledge written down first; if not company-specific, use a plain prompt. If still inconsistent in format for a narrow high-volume task, consider fine-tuning for behaviour, not facts." loading="lazy"></div></details>';
@@ -69,7 +69,7 @@
   }
   function set(k, v) {
     const S = A().S(); S.ws[k] = v; A().save();
-    if (S.w[8] && S.w[8].rewrite && !S.challenge[8] && filled(v)) { S.challenge[8] = true; A().save(); A().toast('\ud83c\udf89 Fantasy Detector complete: you turned a fantasy into a real worksheet. Step 8\u2019s challenge is done.', 4500); }
+    if (S.w[9] && S.w[9].rewrite && !S.challenge[9] && filled(v)) { S.challenge[9] = true; A().save(); A().toast('\ud83c\udf89 Fantasy Detector complete: you turned a fantasy into a real worksheet. Step 9\u2019s challenge is done.', 4500); }
   }
   function bind(root, onChange) {
     root.querySelectorAll('[data-k]').forEach((inp) => {
@@ -85,7 +85,7 @@
   }
   function ring(n) { const p = n / 13, r = 34, c = 2 * Math.PI * r; return '<svg class="ring" viewBox="0 0 84 84" role="img" aria-label="' + n + ' of 13 sections done"><circle cx="42" cy="42" r="' + r + '" fill="none" stroke="#EDE6DA" stroke-width="10"/><circle cx="42" cy="42" r="' + r + '" fill="none" stroke="#5A3FD1" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + (c * p) + ' ' + c + '" transform="rotate(-90 42 42)"/><text x="42" y="47" text-anchor="middle" font-size="16" font-weight="800" fill="#1E2140">' + n + '/13</text></svg>'; }
   function formHTML(hl) {
-    return SECTIONS.map((s) => '<section class="card ws-sec' + (hl.includes(s.n) ? ' hl' : '') + '" id="ws' + s.n + '" aria-labelledby="wsh' + s.n + '"><h3 id="wsh' + s.n + '">Section ' + s.n + ': ' + esc(s.title) + ' <span class="ok tag ' + (secDone(s) ? 'good' : '') + '" id="wsok' + s.n + '">' + (secDone(s) ? '\u2713 done' : 'to do') + '</span></h3>' + (s.n === 13 ? '<p class="note">Come back here after Steps 9-21. Note what you changed and why.</p>' : '') + (s.table ? tableHTML() : '') + (s.approach ? approachHTML() : '') + s.f.filter((f) => f.t !== 'row').map(fieldHTML).join('') + (s.note ? '<p class="note">' + esc(s.note) + '</p>' : '') + '</section>').join('');
+    return SECTIONS.map((s) => '<section class="card ws-sec' + (hl.includes(s.n) ? ' hl' : '') + '" id="ws' + s.n + '" aria-labelledby="wsh' + s.n + '"><h3 id="wsh' + s.n + '">Section ' + s.n + ': ' + esc(s.title) + ' <span class="ok tag ' + (secDone(s) ? 'good' : '') + '" id="wsok' + s.n + '">' + (secDone(s) ? '\u2713 done' : 'to do') + '</span></h3>' + (s.n === 13 ? '<p class="note">Come back here after Steps 10-22. Note what you changed and why.</p>' : '') + (s.table ? tableHTML() : '') + (s.approach ? approachHTML() : '') + s.f.filter((f) => f.t !== 'row').map(fieldHTML).join('') + (s.note ? '<p class="note">' + esc(s.note) + '</p>' : '') + '</section>').join('');
   }
   function refreshStatus(root) {
     SECTIONS.forEach((s) => { const el = root.querySelector('#wsok' + s.n); if (el) { const d = secDone(s); el.textContent = d ? '\u2713 done' : 'to do'; el.className = 'ok tag ' + (d ? 'good' : ''); } });
@@ -95,7 +95,7 @@
   // ---- export
   function displayVal(k, data) { const v = data[k]; return Array.isArray(v) ? v.join('; ') : (v || ''); }
   function asText(data) {
-    data = data || ws(); const L = ['REQUIREMENT FRAMING WORKSHEET', 'Raise Your Own Baby AI', 'Exported ' + new Date().toLocaleString(), ''];
+    data = data || ws(); const L = ['REQUIREMENT FRAMING WORKSHEET', window.SITE_CONFIG.name, 'Exported ' + new Date().toLocaleString(), ''];
     SECTIONS.forEach((s) => {
       L.push('SECTION ' + s.n + ': ' + s.title.toUpperCase());
       if (s.table) { [0, 1, 2].forEach((i) => { const row = COLS.map((c) => c[1] + ': ' + (data['s3_r' + i + '_' + c[0]] || '\u2014')).join(' | '); if (COLS.some((c) => data['s3_r' + i + '_' + c[0]])) L.push('- ' + row); }); }
@@ -117,7 +117,7 @@
   }
   function printIt() {
     const d = ws(); const pa = document.getElementById('printArea');
-    pa.innerHTML = '<h1>Requirement Framing Worksheet</h1><p>Raise Your Own Baby AI \u00b7 printed ' + esc(new Date().toLocaleDateString()) + '</p>' + SECTIONS.map((s) => '<h2>' + s.n + '. ' + esc(s.title) + '</h2>' + (s.table ? [0, 1, 2].filter((i) => COLS.some((c) => d['s3_r' + i + '_' + c[0]])).map((i) => '<div class="pa-row">\u2022 ' + COLS.map((c) => '<span class="pa-k">' + c[1] + ':</span> ' + esc(d['s3_r' + i + '_' + c[0]] || '\u2014')).join(' \u00b7 ') + '</div>').join('') : '') + s.f.filter((f) => f.t !== 'row').map((f) => '<div class="pa-row"><span class="pa-k">' + esc(f.l) + ':</span> ' + esc(displayVal(f.k, d) || '\u2014') + '</div>').join('')).join('');
+    pa.innerHTML = '<h1>Requirement Framing Worksheet</h1><p>' + esc(window.SITE_CONFIG.name) + ' \u00b7 printed ' + esc(new Date().toLocaleDateString()) + '</p>' + SECTIONS.map((s) => '<h2>' + s.n + '. ' + esc(s.title) + '</h2>' + (s.table ? [0, 1, 2].filter((i) => COLS.some((c) => d['s3_r' + i + '_' + c[0]])).map((i) => '<div class="pa-row">\u2022 ' + COLS.map((c) => '<span class="pa-k">' + c[1] + ':</span> ' + esc(d['s3_r' + i + '_' + c[0]] || '\u2014')).join(' \u00b7 ') + '</div>').join('') : '') + s.f.filter((f) => f.t !== 'row').map((f) => '<div class="pa-row"><span class="pa-k">' + esc(f.l) + ':</span> ' + esc(displayVal(f.k, d) || '\u2014') + '</div>').join('')).join('');
     window.print();
   }
   function actionsHTML() { return '<div class="row"><button class="btn primary" data-act="print">\ud83d\udda8\ufe0f Print / Save as PDF</button><button class="btn" data-act="copy">\ud83d\udccb Copy as text</button><button class="btn" data-act="dl">\u2b07\ufe0f Download as text file</button><span class="saved" id="wsSaved" aria-live="polite"></span></div>'; }
@@ -130,7 +130,7 @@
       (hl.length ? '<p class="ws-update">\u2728 Highlighted for you: Sections ' + hl.join(', ') + '.</p>' : '') +
       '<details class="card"><summary><strong>\ud83d\udc40 Peek at a worked example: HR Policy Assistant</strong></summary>' + C.workedExample + '</details>' +
       '<details class="card"><summary><strong>\ud83e\udd84 Fantasy vs realistic: a rewrite</strong></summary>' + C.fantasyRewrite + '</details>' +
-      formHTML(hl) + actionsHTML() + '<p class="note">The baby has reviewed your worksheet and says: \u201cregards\u201d. We\u2019ll take that as approval.</p>';
+      formHTML(hl) + actionsHTML() + '<p class="note">Your GPT has reviewed your worksheet and says: \u201cregards\u201d. We\u2019ll take that as approval.</p>';
     bind(main, () => refreshStatus(main)); bindActions(main); runApproach(main);
     if (hl.length) setTimeout(() => { const el = main.querySelector('#ws' + hl[0]); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120);
   }
@@ -138,14 +138,14 @@
   function renderUpgrade(main) {
     const U = C.upgrade, S = A().S();
     const doneStep = (n) => !!(S.done[n] || S.visited[n]);
-    main.innerHTML = '<div class="step-head">' + window.babySVG(['cap', 'glasses'], 92) + '<div><div class="chips"><span class="chip opt">After Step 21 \u00b7 also reachable any time</span><span class="chip time">\u23f1 ~10-20 minutes</span></div><h1>\u2b50 Back to the Worksheet: revisit and upgrade</h1></div></div>' +
+    main.innerHTML = '<div class="step-head">' + window.partSVG('bench', 84) + '<div><div class="chips"><span class="chip opt">After Step 22 \u00b7 also reachable any time</span><span class="chip time">\u23f1 ~10-20 minutes</span></div><h1>\u2b50 Back to the Worksheet: revisit and upgrade</h1></div></div>' +
       '<div class="card hook"><span class="section-label">Hook</span><div>' + U.hook + '<span class="quip">Your requirement is about to have its own growth spurt. Fewer \u201cregards\u201d, more evals.</span></div></div>' +
       '<div class="card"><span class="section-label">What you see</span> ' + A().illus() + '<div class="ba" style="margin-top:10px"><div class="before"><h4>' + U.see.head[0] + '</h4><div>' + U.see.before + '</div></div><div class="after"><h4>' + U.see.head[1] + '</h4><div>' + A().linkSteps(U.see.after) + '</div></div></div></div>' +
       actionsHTML() + '<div class="row"><label class="switch"><input type="checkbox" id="cmpT"> Compare with my graduation version</label></div><div id="cmpBox"></div>' +
       '<div class="split"><div id="upForm">' + formHTML([]) + '</div><aside class="sticky card" aria-labelledby="clH"><h2 id="clH">Upgrade checklist</h2><p class="note">Steps you\u2019ve done are active; tap one to jump to its worksheet sections. Skipped steps are greyed out.</p><ol class="checklist" style="padding-left:0;list-style:none">' +
       C.checklist.map((c) => '<li class="' + (doneStep(c.step) ? '' : 'skipped') + '"><button type="button" data-sec="' + c.sections.join(',') + '"' + (doneStep(c.step) ? '' : ' aria-disabled="true"') + '><strong>' + c.step + ' ' + esc(c.label) + '</strong><br>' + c.ask + '<br><small>Sections ' + c.sections.join(', ') + '</small></button>' + (doneStep(c.step) ? '' : ' <a href="#/step/' + c.step + '">Do this step</a>') + '</li>').join('') + '</ol></aside></div>' +
       '<div class="card sowhat"><h2>\ud83d\udccc So what for your requirement?</h2><ul>' + U.sowhat.map((x) => '<li>' + x + '</li>').join('') + '</ul></div>' +
-      '<div class="card" style="text-align:center">' + window.babySVG(['cap'], 110, 'wow') + '<p style="font-size:1.15rem">' + U.finale + '</p><p class="note">Final words from the baby: \u201cKind regards.\u201d (It\u2019s growth. We\u2019re proud.)</p><div class="row" style="justify-content:center"><a class="btn" href="#/summary">See my progress</a><a class="btn" href="#/welcome">Back to the start</a></div></div>';
+      '<div class="card" style="text-align:center">' + window.partSVG('flag', 96) + '<p style="font-size:1.15rem">' + U.finale + '</p><p class="note">Final words from your GPT: \u201cKind regards.\u201d (Just the one this time. That\u2019s fine-tuning.)</p><div class="row" style="justify-content:center"><a class="btn" href="#/summary">See my progress</a><a class="btn" href="#/welcome">Back to the start</a></div></div>';
     const form = main.querySelector('#upForm');
     bind(form, () => { refreshStatus(main); if (main.querySelector('#cmpT').checked) cmp(); }); bindActions(main); runApproach(form);
     main.querySelectorAll('[data-sec]').forEach((b) => b.onclick = () => {
@@ -156,7 +156,7 @@
     });
     const cmp = () => {
       const box = main.querySelector('#cmpBox'), g = S.wsGrad, cur = S.ws;
-      if (!g) { box.innerHTML = '<p class="note">Your graduation version is saved automatically when you reach the Fork after Step 8. Visit it once and come back.</p>'; return; }
+      if (!g) { box.innerHTML = '<p class="note">Your graduation version is saved automatically when you reach the Fork after Step 9. Visit it once and come back.</p>'; return; }
       let rows = '';
       SECTIONS.forEach((s) => fieldKeys(s).forEach((k) => {
         const f = s.f.find((x) => x.k === k); const label = f ? f.l : 'Sources table (' + k.replace('s3_', '') + ')';
@@ -171,6 +171,6 @@
   window.WS = {
     renderPage, renderUpgrade, asText,
     prefill(text) { const S = A().S(); if (!S.ws.s1_request || confirm('Replace the request in Section 1 with this one?')) { S.ws.s1_request = text; A().save(); } },
-    progressText() { const n = doneCount(); return n ? n + ' of 13 sections done. Nice. The baby is impressed (it\u2019s easily impressed).' : 'Not started yet. It saves automatically in this browser as you type.'; }
+    progressText() { const n = doneCount(); return n ? n + ' of 13 sections done. Nice. Your GPT is impressed (it\u2019s easily impressed).' : 'Not started yet. It saves automatically in this browser as you type.'; }
   };
 })();

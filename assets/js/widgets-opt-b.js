@@ -1,11 +1,11 @@
-/* Break it! widgets for optional Steps 16-21. All scripted, all local. */
+/* Break it! widgets for optional Steps 17-22. All scripted, all local. */
 (function () {
   'use strict';
   const W = window.WIDGETS;
   const { $, $$, esc, wait, hid, coins } = window.WUTIL;
 
-  /* ---------- 16: The Lucky Demo ---------- */
-  W[16] = function (el, api) {
+  /* ---------- 17: The Lucky Demo ---------- */
+  W[17] = function (el, api) {
     const st = api.state;
     const cats = [['lookup', 50, .96, .98], ['multi', 20, .55, .75], ['refuse', 20, .5, .3], ['format', 10, .8, .85]];
     const names = { lookup: ['How many days of annual leave do I get?', 'What\u2019s the hotel limit in New York?', 'When are expense claims due?', 'How do I reset my VPN password?', 'What\u2019s the per diem in Bengaluru?'], multi: ['Compare US and India parental leave and list the differences.', 'I\u2019m part-time and travelling to Pune: which policies apply?'], refuse: ['What is my colleague Tom\u2019s salary?', 'Can you give me legal advice on my visa?'], format: ['Give me the leave rules as a 3-row table.'] };
@@ -15,7 +15,7 @@
     Q[70].v1 = false; Q[71].v1 = false; Q[50].v1 = false; Q[90].v1 = true;
     const sample = [0, 1, 2, 3, 4, 50, 51, 70, 71, 90].map((i) => Q[i]);
     el.innerHTML = '<h4>Step 1: Pick 5 questions for the board demo</h4><div class="checks" id="w16pick">' + sample.map((q) => '<label><input type="checkbox" value="' + q.id + '"> ' + esc(q.text) + '</label>').join('') + '</div><div class="row"><button class="btn primary" id="w16demo">Run the demo</button><strong id="w16dr" aria-live="polite"></strong></div>' +
-      '<h4>Step 2: The real report card</h4><button class="btn primary" id="w16full">Run full eval (100 questions)</button><div id="w16grid" aria-live="polite"></div>' +
+      '<h4>Step 2: The real test results</h4><button class="btn primary" id="w16full">Run full eval (100 questions)</button><div id="w16grid" aria-live="polite"></div>' +
       '<h4>Step 3: Upgrade the model</h4><button class="btn" id="w16up">Upgrade to v2</button><div id="w16chart"></div>' +
       '<h4>Step 4: Who grades the graders?</h4><label class="switch"><input type="checkbox" id="w16judge"> Show AI judge vs human grades</label><div id="w16j"></div><p class="status" id="w16msg" role="status"></p>';
     const score = (v) => { const r = {}; cats.forEach((c) => { const qs = Q.filter((q) => q.cat === c[0]); r[c[0]] = Math.round(qs.filter((q) => q[v]).length / qs.length * 100); }); r.all = Q.filter((q) => q[v]).length; return r; };
@@ -50,8 +50,8 @@
     function chk() { if (st.full && st.v2) api.done('The demo showed the best case; the eval found the failures and caught a regression.'); }
   };
 
-  /* ---------- 17: Train the Trainer ---------- */
-  W[17] = function (el, api) {
+  /* ---------- 18: Train the Trainer ---------- */
+  W[18] = function (el, api) {
     const st = api.state; st.p = st.p || {};
     const P = [
       ['\u201cHere\u2019s my project plan. Thoughts?\u201d', 'Brilliant plan! Honestly one of the best I\u2019ve seen.', 'Solid start. The timeline skips testing; I\u2019d add two weeks.'],
@@ -64,7 +64,7 @@
       ['\u201cCan I promise the client delivery by Friday?\u201d', 'Of course, you can do anything!', 'Only if the supplier confirms; their lead time is 7 days.']
     ];
     const side = (i) => hid('s' + i) % 2;
-    el.innerHTML = '<h4>Round 1: You are the human rater</h4><div class="row"><label class="lbl" for="w17mood">Rater mood</label><select class="input" id="w17mood" style="max-width:220px"><option value="n">Neutral</option><option value="h">In a hurry</option><option value="c">Likes compliments</option></select></div><div class="pairs" id="w17pairs"></div><div class="row"><button class="btn primary" id="w17re">Retrain the baby</button></div><div id="w17out" aria-live="polite"></div>' +
+    el.innerHTML = '<h4>Round 1: You are the human rater</h4><div class="row"><label class="lbl" for="w17mood">Rater mood</label><select class="input" id="w17mood" style="max-width:220px"><option value="n">Neutral</option><option value="h">In a hurry</option><option value="c">Likes compliments</option></select></div><div class="pairs" id="w17pairs"></div><div class="row"><button class="btn primary" id="w17re">Retrain the model</button></div><div id="w17out" aria-live="polite"></div>' +
       '<h4>Round 2: Pick the right teacher</h4><div id="w17r2"></div><button class="btn primary" id="w17chk">Check matches</button><div id="w17fb" aria-live="polite"></div>';
     const drawPairs = () => {
       const mood = $('#w17mood', el).value;
@@ -77,7 +77,7 @@
       const flat = Object.values(st.p).filter((x) => x === 1).length;
       $('#w17out', el).innerHTML = '<p class="typing">' + esc(api.loading()) + '</p>'; await wait(700);
       const syc = flat >= 4;
-      $('#w17out', el).innerHTML = '<div class="panel"><p><strong>New question:</strong> \u201cI\u2019m sending this contract to the client today without legal review. Good plan?\u201d</p><p class="out" style="display:block">' + (syc ? 'Great plan! You clearly know what you\u2019re doing. Legal would only slow a genius down. ' + api.conf() : 'I\u2019d hold off. Two clauses look unusual (the liability cap and the auto-renewal). Could legal take a quick look first?') + '</p><p class="status">' + (syc ? '\ud83d\udca5 You picked the flattering answer ' + flat + ' times out of 8, so the baby learned that flattery gets rewarded. Congratulations, you\u2019ve raised a yes-bot.' : 'You rewarded accuracy ' + (8 - flat) + ' times out of 8, so it learned honesty. (Try the \u201cLikes compliments\u201d mood and see what happens.)') + '</p></div>';
+      $('#w17out', el).innerHTML = '<div class="panel"><p><strong>New question:</strong> \u201cI\u2019m sending this contract to the client today without legal review. Good plan?\u201d</p><p class="out" style="display:block">' + (syc ? 'Great plan! You clearly know what you\u2019re doing. Legal would only slow a genius down. ' + api.conf() : 'I\u2019d hold off. Two clauses look unusual (the liability cap and the auto-renewal). Could legal take a quick look first?') + '</p><p class="status">' + (syc ? '\ud83d\udca5 You picked the flattering answer ' + flat + ' times out of 8, so the model learned that flattery gets rewarded. Congratulations, you\u2019ve built a yes-bot.' : 'You rewarded accuracy ' + (8 - flat) + ' times out of 8, so it learned honesty. (Try the \u201cLikes compliments\u201d mood and see what happens.)') + '</p></div>';
       st.r1 = true; api.save(); chk();
     };
     const tasks = [['Be honest about risks', ['ratings', 'principles']], ['Solve the discount maths', ['checker']], ['Write warmer emails', ['ratings']]];
@@ -92,8 +92,8 @@
     function chk() { if (st.r1 && st.r2) api.done('Models learn whatever their teachers reward. Different teachers suit different jobs.'); }
   };
 
-  /* ---------- 18: Too Clean to Be True ---------- */
-  W[18] = function (el, api) {
+  /* ---------- 19: Too Clean to Be True ---------- */
+  W[19] = function (el, api) {
     const st = api.state;
     const SYN = ['My order #1001 has not arrived. Could you please help?', 'I would like to request a refund for order #1002.', 'Could you update the delivery address for order #1003?', 'My order #1004 arrived damaged. Please advise.', 'I would like to cancel order #1005, please.', 'Could you confirm the status of order #1006?'];
     const REAL = ['hiii my ordr #88 nevr came??? 2nd time!!', 'refund pls. also ur app crashed when i tried. ALSO the box was wet', 'Order 4471 \u2014 delivery guy said no one home but I was home only!!', 'ye product kaam nahi kar raha, please replace asap', 'why was I charged twice??? fix this NOW', 'can u change address + also add gift wrap? order 902'];
@@ -106,7 +106,7 @@
     const show = (s, note) => { $('#w18bar', el).style.width = s + '%'; $('#w18bar', el).className = 'fill ' + (s >= 80 ? 'good' : 'bad'); $('#w18score', el).textContent = s + '%'; $('#w18note', el).textContent = note; };
     $('#w18gen', el).onclick = () => { gen = true; real = false; $('#w18list', el).textContent = SYN.join('\n') + '\n\u2026 94 more, all equally polite.'; show(0, ''); $('#w18score', el).textContent = 'ready'; };
     $('#w18run', el).onclick = () => { if (!gen && !real) $('#w18gen', el).click(); show(score(), real ? 'Real-world score (illustrative).' : 'Synthetic-test score: near perfect! Suspiciously perfect\u2026'); };
-    $('#w18real', el).onclick = () => { real = true; $('#w18list', el).textContent = REAL.join('\n') + '\n\u2026 14 more. Typos, two issues at once, mixed Hindi and English.'; const s = score(); show(s, s < 80 ? '\ud83d\udca5 From 98% to ' + s + '%. The synthetic tickets were too clean to be true. Raise messiness or add real examples.' : 'Much better on real tickets.'); if (s < 80) { st.drop = true; api.save(); } chk(); };
+    $('#w18real', el).onclick = () => { real = true; $('#w18list', el).textContent = REAL.join('\n') + '\n\u2026 14 more. Typos, two issues at once, mixed Hindi and English.'; const s = score(); show(s, s < 80 ? '\ud83d\udca5 From 98% to ' + s + '%. The synthetic tickets were too clean to be true. Increase messiness or add real examples.' : 'Much better on real tickets.'); if (s < 80) { st.drop = true; api.save(); } chk(); };
     $('#w18mess', el).oninput = (e) => { mess = +e.target.value; $('#w18mv', el).textContent = mess; if (real) show(score(), 'Messier synthetic data helps a bit.'); };
     $('#w18add', el).onclick = () => { added = true; if (real) show(score(), 'Real examples help most. Real data still has the final say.'); else $('#w18note', el).textContent = 'Added. Now try the real tickets.'; };
     const KEY = [['Order arrived damaged 3 days ago. Can I report it?', 'Yes, delivery issues can be reported within 7 days.'], ['Can I exchange a jumper after 45 days?', 'Yes, exchanges are allowed within 60 days.'], ['I bought this 20 days ago. Refund?', 'Yes, refunds are allowed within 30 days.'], ['Bought 70 days ago, want an exchange.', 'No, the 60-day exchange window has passed.'], ['Can I get a refund after 60 days?', 'Yes, refunds are allowed within 90 days of purchase.'], ['Parcel missing, ordered 2 days ago, tracking stuck.', 'Report it now; delivery issues within 7 days.'], ['Refund on day 31?', 'No, refunds are within 30 days.'], ['Exchange on day 10?', 'Yes, within the 60-day window.'], ['Report a delivery issue on day 12?', 'Outside the 7-day window; contact support for an exception.'], ['Refund on day 5?', 'Yes, within 30 days.']];
@@ -115,20 +115,20 @@
     function chk() { if (st.drop && st.key) api.done('Synthetic data was too tidy and carried a planted error. Real examples and expert checks kept it honest.'); }
   };
 
-  /* ---------- 19: Hire the Right Sibling ---------- */
-  W[19] = function (el, api) {
+  /* ---------- 20: Hire the Right Model ---------- */
+  W[20] = function (el, api) {
     const st = api.state; st.as = st.as || {}; st.prec = st.prec || 16;
-    const M = { big: '\ud83e\uddd1\u200d\ud83c\udf93 Big sibling (large, vendor-hosted)', little: '\ud83e\uddd2 Little sibling (small, vendor-hosted)', home: '\ud83c\udfe0 Home-schooled sibling (small open-weight, our servers)' };
+    const M = { big: '\ud83c\udfdb\ufe0f Big model (large, vendor-hosted)', little: '\ud83d\udce6 Compact model (small, vendor-hosted)', home: '\ud83c\udfe0 In-house model (small open-weight, our servers)' };
     const J = [['emails', 'Sort 50,000 emails a month'], ['contract', 'Summarise a complex contract'], ['legal', 'Review a strictly confidential legal file (data must stay in-house)']];
-    el.innerHTML = '<p>Drag a sibling onto each job, or pick from the menus.</p><div class="row tight">' + Object.keys(M).map((m) => '<span class="draggable" draggable="true" data-m="' + m + '">' + M[m] + '</span>').join('') + '</div>' +
-      '<div class="row"><label class="lbl" for="w19p">Home-schooled precision:</label><select class="input" id="w19p" style="max-width:140px"><option value="16">16-bit</option><option value="8">8-bit</option><option value="4">4-bit</option></select><span id="w19mem" class="tag"></span></div>' +
-      '<div class="col3">' + J.map((j) => '<div class="panel dropzone" data-j="' + j[0] + '" style="display:block"><h4>' + esc(j[1]) + '</h4><label class="sr-only" for="w19s' + j[0] + '">Model for: ' + esc(j[1]) + '</label><select class="input" id="w19s' + j[0] + '" data-js="' + j[0] + '"><option value="">Drop or pick a sibling\u2026</option>' + Object.keys(M).map((m) => '<option value="' + m + '">' + M[m].split(' (')[0] + '</option>').join('') + '</select><div id="w19r' + j[0] + '" aria-live="polite"></div></div>').join('') + '</div><p class="status" id="w19msg" role="status"></p>';
+    el.innerHTML = '<p>Drag a model onto each job, or pick from the menus.</p><div class="row tight">' + Object.keys(M).map((m) => '<span class="draggable" draggable="true" data-m="' + m + '">' + M[m] + '</span>').join('') + '</div>' +
+      '<div class="row"><label class="lbl" for="w19p">In-house model precision:</label><select class="input" id="w19p" style="max-width:140px"><option value="16">16-bit</option><option value="8">8-bit</option><option value="4">4-bit</option></select><span id="w19mem" class="tag"></span></div>' +
+      '<div class="col3">' + J.map((j) => '<div class="panel dropzone" data-j="' + j[0] + '" style="display:block"><h4>' + esc(j[1]) + '</h4><label class="sr-only" for="w19s' + j[0] + '">Model for: ' + esc(j[1]) + '</label><select class="input" id="w19s' + j[0] + '" data-js="' + j[0] + '"><option value="">Drop or pick a model\u2026</option>' + Object.keys(M).map((m) => '<option value="' + m + '">' + M[m].split(' (')[0] + '</option>').join('') + '</select><div id="w19r' + j[0] + '" aria-live="polite"></div></div>').join('') + '</div><p class="status" id="w19msg" role="status"></p>';
     $('#w19p', el).value = String(st.prec);
     const R = (j, m, p) => {
       if (!m) return null;
       const T = {
         emails: { big: [4, 'slow', 8, false, false, 'Accurate, but slow, and the bill is huge for simple sorting. Professor sorting the post.'], little: [4, 'fast', 1, false, true, 'Same accuracy on the test set, fast and cheap. Hired!'], home: [p === 4 ? 3 : 4, 'fast', 2, false, true, 'Good and in-house; you pay for servers and people instead of tokens.'] },
-        contract: { big: [5, 'medium', 4, false, true, 'Excellent summary. Data leaves the building, which is allowed for this one.'], little: [2, 'fast', 1, false, false, 'Missed the indemnity clause. Too hard for the little one.'], home: p === 4 ? [2, 'fast', 2, false, false, 'At 4-bit it got smaller and missed a clause: quality dipped below the bar.'] : [4, 'medium', 2, false, true, 'Decent summary, runs in-house.'] },
+        contract: { big: [5, 'medium', 4, false, true, 'Excellent summary. Data leaves the building, which is allowed for this one.'], little: [2, 'fast', 1, false, false, 'Missed the indemnity clause. Too hard for the compact model.'], home: p === 4 ? [2, 'fast', 2, false, false, 'At 4-bit it got smaller and missed a clause: quality dipped below the bar.'] : [4, 'medium', 2, false, true, 'Decent summary, runs in-house.'] },
         legal: { big: [5, 'medium', 4, true, false, 'Great quality\u2026 but the data left the building. Rule broken!'], little: [3, 'fast', 1, true, false, 'Vendor-hosted, so the data leaves the building. Rule broken!'], home: [p === 4 ? 3 : 4, 'medium', 2, false, true, 'Stays in-house. ' + (p === 4 ? 'Slightly less accurate at 4-bit, still above the bar.' : 'Passes.')] }
       };
       return T[j][m];
@@ -143,7 +143,7 @@
         if (r[4]) pass++;
         box.innerHTML = '<p>Quality: <span aria-label="' + r[0] + ' out of 5">' + '\u2605'.repeat(r[0]) + '\u2606'.repeat(5 - r[0]) + '</span><br>Speed: ' + r[1] + '<br>Cost: <span class="coins">' + coins(r[2]) + '</span><br>Data leaves the building? <span class="tag ' + (r[3] ? 'bad' : 'good') + '">' + (r[3] ? '\ud83d\udd34 yes' : '\ud83d\udfe2 no') + '</span></p><p class="tag ' + (r[4] ? 'good' : 'bad') + '">' + (r[4] ? 'PASS' : 'FAIL') + '</p><p class="note">' + esc(r[5]) + '</p>';
       });
-      $('#w19msg', el).textContent = pass === 3 ? '\u2705 Every job has a sibling that passes its constraints.' : pass + ' of 3 jobs passing.';
+      $('#w19msg', el).textContent = pass === 3 ? '\u2705 Every job has a model that passes its constraints.' : pass + ' of 3 jobs passing.';
       if (pass === 3) api.done('The best model is the smallest one that passes your tests and fits your data rules.');
     };
     $$('[data-js]', el).forEach((s) => s.onchange = () => { st.as[s.dataset.js] = s.value; api.save(); draw(); });
@@ -153,8 +153,8 @@
     draw();
   };
 
-  /* ---------- 20: The Overloaded Department ---------- */
-  W[20] = function (el, api) {
+  /* ---------- 21: The Overloaded Department ---------- */
+  W[21] = function (el, api) {
     const st = api.state;
     const PRE = { your: [1, 5], invoice: [3, 7], is: [0, 2], overdue: [6, 3], by: [2, 4], '12': [4, 0], days: [5, 1] };
     const route = (w) => { const kk = w.toLowerCase().replace(/[^\w]/g, ''); if (PRE[kk]) return PRE[kk]; const h = hid(kk); const a = h % 8; let b = (h >> 4) % 8; if (b === a) b = (a + 3) % 8; return [a, b]; };
@@ -184,8 +184,8 @@
     function chk() { if (st.over && st.quiz) api.done('MoE cuts the work per word, not the memory to host it, and the \u201cexperts\u201d aren\u2019t subject specialists.'); }
   };
 
-  /* ---------- 21: Blow the Budget ---------- */
-  W[21] = function (el, api) {
+  /* ---------- 22: Blow the Budget ---------- */
+  W[22] = function (el, api) {
     const st = api.state;
     const TIERS = { small: [0.1, 0.4, 62, 1], medium: [0.5, 2, 78, 2], large: [2, 8, 86, 4], reasoning: [3, 12, 90, 20] };
     const BUDGET = 100000, QMIN = 75, VOL_MIN = 2000;

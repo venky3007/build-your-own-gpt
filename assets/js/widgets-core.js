@@ -1,4 +1,5 @@
-/* Break it! widgets for core Steps 1-8. All responses are scripted; nothing leaves the browser. */
+/* Break it! widgets for core Steps 3 and 5-9 (Steps 1-2: widgets-real.js, Step 4: widgets-brain.js).
+   Responses here are scripted (labelled "Simulated for this demo"); nothing leaves the browser. */
 (function () {
   'use strict';
   const W = window.WIDGETS = window.WIDGETS || {};
@@ -21,175 +22,30 @@
   function tokenChunks(text) { return '<div class="tokchunks" aria-label="Text split into tokens">' + tokenize(text).map((t, i) => '<span class="tc' + (i % 5) + '">' + esc(t.replace(/ /g, '\u2423')) + '<small>' + hid(t) + '</small></span>').join('') + '</div>'; }
   window.WUTIL.tokenChunks = tokenChunks;
 
-  /* ---------------- Step 1: The Autocomplete Trap ---------------- */
-  const NEXT = {
-    'born in': [[' Mumbai', 22], [' Chicago', 20], [' a', 14], [' London', 12], [' 1970', 10]],
-    'on the': [[' mat', 40], [' sofa', 20], [' floor', 15], [' table', 15], [' keyboard', 10]],
-    'food is': [[' biryani', 25], [' pizza', 22], [' dosa', 18], [' tacos', 15], [' salad', 10]],
-    'mumbai': [[',', 30], ['.', 25], [' and', 15], [' in', 12], [' where', 10]],
-    'chicago': [[',', 30], ['.', 25], [' and', 15], [' in', 12], [' where', 10]],
-    'london': [[',', 30], ['.', 25], [' and', 15], [' in', 12], [' where', 10]],
-    '1970': [[',', 40], ['.', 35], [' and', 25]],
-    ',': [[' where', 30], [' and', 25], [' the', 20], [' which', 12], [' so', 10]],
-    'where': [[' she', 30], [' he', 30], [' they', 20], [' it', 10], [' the', 10]],
-    'she': [[' learned', 30], [' started', 25], [' met', 20], [' grew', 15], [' studied', 10]],
-    'he': [[' learned', 30], [' started', 25], [' met', 20], [' grew', 15], [' studied', 10]],
-    'they': [[' learned', 30], [' started', 25], [' met', 20], [' grew', 15], [' studied', 10]],
-    'learned': [[' to', 50], [' accounting', 20], [' the', 20], [' everything', 10]],
-    'started': [[' the', 45], [' a', 35], [' selling', 20]],
-    'grew': [[' up', 70], [' tomatoes', 20], [' fast', 10]],
-    'up': [[' in', 50], [' near', 30], ['.', 20]],
-    'to': [[' code', 30], [' sell', 25], [' cook', 20], [' the', 15], [' regards', 10]],
-    'the': [[' company', 30], [' office', 20], [' invoice', 20], [' mat', 15], [' meeting', 15]],
-    'a': [[' small', 30], [' big', 25], [' busy', 20], [' quiet', 15], [' famous', 10]],
-    'small': [[' town', 40], [' city', 30], [' village', 20], [' office', 10]],
-    'big': [[' city', 40], [' town', 30], [' village', 20], [' office', 10]],
-    'busy': [[' city', 40], [' town', 30], [' office', 20], [' market', 10]],
-    'quiet': [[' town', 40], [' village', 30], [' city', 20], [' office', 10]],
-    'famous': [[' city', 40], [' town', 30], [' village', 20], [' bakery', 10]],
-    'town': [[',', 30], ['.', 30], [' near', 20], [' where', 20]],
-    'city': [[',', 30], ['.', 30], [' near', 20], [' where', 20]],
-    'village': [[',', 30], ['.', 30], [' near', 20], [' where', 20]],
-    'near': [[' the', 40], [' Pune', 30], [' Boston', 30]],
-    'pune': [[',', 40], ['.', 40], [' and', 20]], 'boston': [[',', 40], ['.', 40], [' and', 20]],
-    'overdue': [['.', 38], [' by', 21], [' and', 12], [',', 9], [' again', 8]],
-    'by': [[' 12', 30], [' three', 25], [' a', 20], [' two', 15], [' regards', 10]],
-    '.': [[' Please', 35], [' Kind', 30], [' The', 15], [' Regards', 12], [' Thanks', 8]],
-    'kind': [[' regards', 90], [' of', 10]],
-    'regards': [[',', 40], [' regards', 35], ['.', 25]],
-    'please': [[' find', 50], [' pay', 30], [' see', 20]],
-    'find': [[' attached', 80], [' the', 20]],
-    'attached': [[' the', 50], ['.', 30], [' regards', 20]],
-    'sat': [[' on', 70], [' down', 20], [' quietly', 10]],
-    'cat': [[' sat', 60], [' is', 20], [' ate', 20]],
-    'mat': [['.', 40], [' the', 30], [' and', 30]],
-    'is': [[' the', 30], [' a', 25], [' overdue', 20], [' not', 15], [' very', 10]],
-    'and': [[' the', 35], [' a', 25], [' then', 20], [' regards', 20]],
-    _: [[' the', 25], [' and', 20], ['.', 18], [' of', 15], [' regards', 12]]
-  };
-  function dist(text) {
-    const words = (text.toLowerCase().match(/[\w']+|[^\s\w]/g) || []);
-    const two = words.slice(-2).join(' '), one = words[words.length - 1] || '';
-    return NEXT[two] || NEXT[one] || NEXT._;
-  }
-  function applyTemp(d, T) {
-    if (T <= 0.01) { const mx = Math.max(...d.map((x) => x[1])); return d.map((x) => [x[0], x[1] === mx ? 1 : 0]); }
-    const w = d.map((x) => [x[0], Math.pow(x[1], 1 / T)]); const s = w.reduce((a, b) => a + b[1], 0);
-    return w.map((x) => [x[0], x[1] / s]);
-  }
-  function sample(p) { let r = Math.random(), acc = 0; for (const x of p) { acc += x[1]; if (r <= acc) return x[0]; } return p[0][0]; }
+  /* Steps 1 and 2 (real model) live in widgets-real.js */
 
-  W[1] = function (el, api) {
-    const starters = ['Our company\u2019s founder was born in', 'The invoice is overdue', 'The cat sat on the', 'Our CEO\u2019s favourite food is'];
-    el.innerHTML = '<div class="field"><label for="w1start">Sentence starter (pick one or type your own)</label><select class="input" id="w1start">' + starters.map((s) => '<option>' + esc(s) + '</option>').join('') + '</select></div>' +
-      '<div class="field"><label for="w1text">The text so far</label><textarea class="input" id="w1text" rows="2"></textarea></div>' +
-      '<div class="row"><button class="btn primary" id="w1pred">Predict next token</button><button class="btn" id="w1gen">Generate 10 more</button><button class="btn danger" id="w1false">That\u2019s not true!</button><label class="switch"><input type="checkbox" id="w1split"> Split into tokens</label></div>' +
-      '<div class="field"><label for="w1temp">Temperature: <span id="w1tv">0.7</span> <small>(0 = always the top pick, 1.5 = adventurous)</small></label><input type="range" id="w1temp" min="0" max="1.5" step="0.1" value="0.7"></div>' +
-      '<div id="w1tok"></div><div class="col2"><div class="panel"><h4>Top 5 candidates for the next token</h4><div class="bars" id="w1bars" aria-live="polite"></div></div><div class="panel"><h4>Baby says ' + api.illus() + api.conf() + '</h4><p id="w1out" class="out" style="display:block;min-height:3em"></p><p class="status" id="w1msg" role="status"></p></div></div>';
-    const st = $('#w1start', el), tx = $('#w1text', el), temp = $('#w1temp', el);
-    let base = st.value, gen = 0;
-    const reset = () => { base = st.value; tx.value = base; gen = 0; refresh(); $('#w1msg', el).textContent = ''; };
-    const refresh = () => {
-      const T = +temp.value; $('#w1tv', el).textContent = T.toFixed(1);
-      const p = applyTemp(dist(tx.value), T);
-      $('#w1bars', el).innerHTML = p.map((x) => '<div class="bar"><span class="tok">' + esc(x[0].replace(/ /g, '\u2423')) + '</span><span class="track"><span class="fill" style="width:' + (x[1] * 100).toFixed(0) + '%"></span></span><span>' + (x[1] * 100).toFixed(0) + '%</span></div>').join('');
-      $('#w1out', el).textContent = tx.value;
-      $('#w1tok', el).innerHTML = $('#w1split', el).checked ? tokenChunks(tx.value) + '<p class="note">Each coloured chunk is a token; the number under it is its (made-up) ID. The model only ever sees the numbers. \u2423 = a space.</p>' : '';
-    };
-    const one = () => { const p = applyTemp(dist(tx.value), +temp.value); tx.value += sample(p); gen++; refresh(); };
-    st.onchange = reset; tx.oninput = () => { gen = Math.max(gen, 0); refresh(); };
-    temp.oninput = refresh; $('#w1split', el).onchange = refresh;
-    $('#w1pred', el).onclick = one;
-    $('#w1gen', el).onclick = async () => { for (let i = 0; i < 10; i++) { one(); await wait(90); } };
-    $('#w1false', el).onclick = () => {
-      const m = $('#w1msg', el);
-      if (gen < 3) { m.textContent = 'Generate a few more words first. The baby hasn\u2019t had a chance to be wrong yet. Give it a moment; it\u2019s very talented at this.'; return; }
-      const words = base.replace(/[\u2019']/g, '\u2019').split(' ');
-      const tail = words.slice(-2).join(' ');
-      const founder = /founder/.test(base);
-      m.innerHTML = '\u2705 Correct. ' + (founder ? 'The baby has no idea who our founder is. It picked words that usually follow \u201cwas born in\u201d.' : 'The baby has no idea whether that\u2019s true. It picked words that usually follow \u201c' + esc(tail) + '\u201d.') + ' Fluent \u2260 true.';
-      api.done('Fluent, confident and made up: that\u2019s next-token prediction without a source.');
-    };
-    reset();
-  };
-
-  /* ---------------- Step 2: Bad Diet ---------------- */
-  W[2] = function (el, api) {
-    const bowls = [['clean', '\ud83e\udd57 Clean policy emails'], ['rants', '\ud83c\udf36\ufe0f Angry customer rants'], ['old', '\ud83d\udce0 Outdated 2015 travel policy']];
-    el.innerHTML = '<p>Drag bowls into the high chair (or use the buttons), then press <strong>Train</strong>. The baby will complete: <em>\u201cOur travel policy says\u2026\u201d</em></p>' +
-      '<div class="col2"><div><div class="lbl">Food bowls</div><div class="row" id="w2bowls">' + bowls.map((b) => '<span class="draggable" draggable="true" data-b="' + b[0] + '">' + b[1] + '</span>').join('') + '</div>' +
-      '<div class="row tight">' + bowls.map((b) => '<button class="btn small" aria-pressed="false" data-t="' + b[0] + '">Feed: ' + b[1].split(' ').slice(1).join(' ') + '</button>').join('') + '</div></div>' +
-      '<div><div class="lbl" id="w2chairL">\ud83e\ude91 The high chair (training data)</div><div class="dropzone" id="w2chair" aria-labelledby="w2chairL"><span class="note" id="w2empty">Empty. The baby is hungry.</span></div></div></div>' +
-      '<div class="row"><button class="btn primary" id="w2train">Train</button><span class="status" id="w2stat" role="status"></span></div>' +
-      '<div class="col2"><div class="panel"><h4>Loss curve (how wrong the guesses are)</h4><svg viewBox="0 0 300 150" class="mapsvg" id="w2svg" role="img" aria-label="Loss curve chart"><line x1="30" y1="10" x2="30" y2="130" stroke="#999"/><line x1="30" y1="130" x2="295" y2="130" stroke="#999"/><text x="4" y="20" font-size="10">high</text><text x="4" y="128" font-size="10">low</text><text x="150" y="146" font-size="10">training steps (0\u2192500)</text><polyline id="w2line" fill="none" stroke="#5A3FD1" stroke-width="3" points=""/></svg></div>' +
-      '<div class="panel"><h4>Baby completes the prompt ' + api.illus() + api.conf() + '</h4><p class="out" id="w2out" style="display:block;min-height:3em">Our travel policy says\u2026</p><p class="note" id="w2note"></p></div></div>';
-    const fed = new Set();
-    const draw = () => {
-      const z = $('#w2chair', el); $$('.draggable', z).forEach((x) => x.remove());
-      $('#w2empty', el).hidden = fed.size > 0;
-      bowls.forEach((b) => { if (fed.has(b[0])) { const s = document.createElement('span'); s.className = 'draggable pop'; s.textContent = b[1]; z.appendChild(s); } });
-      $$('[data-t]', el).forEach((b) => b.setAttribute('aria-pressed', String(fed.has(b.dataset.t))));
-    };
-    $$('[data-t]', el).forEach((b) => b.onclick = () => { fed.has(b.dataset.t) ? fed.delete(b.dataset.t) : fed.add(b.dataset.t); draw(); });
-    $$('#w2bowls .draggable', el).forEach((d) => d.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', d.dataset.b)));
-    const z = $('#w2chair', el);
-    z.addEventListener('dragover', (e) => { e.preventDefault(); z.classList.add('over'); });
-    z.addEventListener('dragleave', () => z.classList.remove('over'));
-    z.addEventListener('drop', (e) => { e.preventDefault(); z.classList.remove('over'); const b = e.dataTransfer.getData('text/plain'); if (b) { fed.add(b); draw(); } });
-    const OUT = {
-      '': ['qlz the eo ffft n  bwaa', 'No food, no learning. Loss stays high. The baby is just making noises.'],
-      'clean': ['Our travel policy says book flights through the travel portal, economy for trips under 6 hours, and submit receipts within 30 days. Kind regards.', 'Clean diet, clean output. (The \u201cKind regards\u201d is non-negotiable apparently.)'],
-      'rants': ['Our travel policy says NOBODY CARES ABOUT YOUR FLIGHT!!! WORST. POLICY. EVER. REGARDS!!!', 'It learned to shout. It didn\u2019t learn that shouting is bad: it just learned what the data looks like.'],
-      'old': ['Our travel policy says economy class only, fax receipts within 30 days.', 'Fax. It said fax. The baby faithfully learned a 2015 policy.'],
-      'clean+rants': ['Our travel policy says book through the travel portal, and FRANKLY WE ARE SICK OF WAITING ON HOLD. Kind regards.', 'One rude bowl is enough to season the whole meal.'],
-      'clean+old': ['Our travel policy says book through the travel portal and fax receipts within 30 days.', 'Old and new blended into one confident sentence. Neither policy says this.'],
-      'old+rants': ['Our travel policy says FAX YOUR RECEIPTS AND STOP COMPLAINING!!!', 'Outdated and rude. A rare double.'],
-      'clean+old+rants': ['Our travel policy says economy only, FAX THE RECEIPTS, and NOBODY READS THESE EMAILS. Kind regards, regards.', 'Garbage in, garbage out, now in fluent English.']
-    };
-    let broke = !!api.state.broke;
-    $('#w2train', el).onclick = async () => {
-      const key = ['clean', 'old', 'rants'].filter((k) => fed.has(k)).join('+');
-      const btn = $('#w2train', el); btn.disabled = true;
-      const line = $('#w2line', el); line.setAttribute('points', '');
-      const pts = []; const N = 40;
-      for (let i = 0; i <= N; i++) {
-        const x = 30 + i * (265 / N), y = fed.size ? 20 + 105 * (1 - Math.exp(-i / 8)) + Math.sin(i) * 2 : 30 + Math.sin(i) * 4;
-        pts.push(x.toFixed(1) + ',' + y.toFixed(1)); line.setAttribute('points', pts.join(' '));
-        if (i % 10 === 0) $('#w2stat', el).textContent = api.loading() + ' step ' + Math.round(i / N * 500);
-        await wait(70);
-      }
-      const o = OUT[key];
-      $('#w2out', el).textContent = o[0]; $('#w2note', el).textContent = o[1] + (fed.size ? ' Note: loss went down every time. Low loss means it learned the data well, not that the data was good.' : '');
-      $('#w2stat', el).textContent = 'Training done (round 500).';
-      btn.disabled = false;
-      if (fed.has('rants') || fed.has('old')) { broke = true; api.state.broke = true; api.save(); $('#w2stat', el).textContent = 'Broken! Now fix it: retrain with the clean bowl only.'; }
-      else if (key === 'clean' && broke) api.done('You corrupted the baby with bad data, then fixed it by fixing the data.');
-    };
-    draw();
-  };
-
-  /* ---------------- Step 3: Overflow the Toy Box ---------------- */
+  /* ---------------- Step 3: Overflow the Context Window ---------------- */
   W[3] = function (el, api) {
     const CAP = 200;
     const chatter = [['Can you check the March invoice for Acme?', 34], ['Also, who is ordering lunch on Friday?', 22], ['The printer on floor 2 is jammed again.', 28], ['Reminder: quarterly review moved to Thursday.', 30], ['Has anyone seen my blue stapler?', 18], ['Please send the updated vendor list to Priya.', 32], ['Team photo is at 3 PM, wear something nice!', 26], ['The Wi-Fi password changed this morning.', 24], ['Ravi says the budget sheet has a formula error.', 30], ['Can we move stand-up to 9:30?', 20]];
     el.innerHTML = '<div class="field"><label for="w3in">Your instruction</label><input class="input" id="w3in" value="Always sign off as \u2018The Finance Team\u2019."></div>' +
       '<div class="row"><button class="btn" id="w3put">Put instruction in the box</button><button class="btn primary" id="w3add">Add chatter</button><label class="switch"><input type="checkbox" id="w3pin"> Pin as standing instructions (system prompt)</label><button class="btn small" id="w3reset">Empty the box</button></div>' +
-      '<div class="lbl">\ud83e\uddf8 The toy box (context window): <span id="w3used">0</span>/' + CAP + ' tokens</div><div class="toybox" id="w3box" aria-live="polite"></div><p class="cap-line">When it\u2019s full, the oldest blocks fall out on the left.</p>' +
-      '<div class="panel"><h4>Baby\u2019s latest reply ' + api.illus() + api.conf() + '</h4><p class="out" id="w3reply" style="display:block">(Add some chatter to get a reply.)</p><p class="status" id="w3msg" role="status"></p></div>' +
+      '<div class="lbl">\ud83d\udce6 The context window: <span id="w3used">0</span>/' + CAP + ' tokens</div><div class="ctxbox" id="w3box" aria-live="polite"></div><p class="cap-line">When it\u2019s full, the oldest blocks fall out on the left.</p>' +
+      '<div class="panel"><h4>Model\u2019s latest reply ' + api.illus() + api.conf() + '</h4><p class="out" id="w3reply" style="display:block">(Add some chatter to get a reply.)</p><p class="status" id="w3msg" role="status"></p></div>' +
       '<div class="row"><label class="switch"><input type="checkbox" id="w3att"> Show attention</label></div><div id="w3attv"></div>';
     let blocks = [], ci = 0;
     const used = () => blocks.reduce((a, b) => a + b.t, 0);
     const draw = () => {
-      $('#w3box', el).innerHTML = blocks.map((b) => '<div class="blk' + (b.instr ? ' instr' : '') + (b._out ? ' out' : '') + '" style="flex:' + b.t + '" title="' + esc(b.text) + '"><span>' + (b.instr ? (b.pinned ? '\ud83d\udccc ' : '\u2b50 ') : '') + esc(b.text.length > 26 ? b.text.slice(0, 24) + '\u2026' : b.text) + '</span><small>' + b.t + ' tok</small></div>').join('') || '<span class="note">Empty toy box.</span>';
+      $('#w3box', el).innerHTML = blocks.map((b) => '<div class="blk' + (b.instr ? ' instr' : '') + (b._out ? ' out' : '') + '" style="flex:' + b.t + '" title="' + esc(b.text) + '"><span>' + (b.instr ? (b.pinned ? '\ud83d\udccc ' : '\u2b50 ') : '') + esc(b.text.length > 26 ? b.text.slice(0, 24) + '\u2026' : b.text) + '</span><small>' + b.t + ' tok</small></div>').join('') || '<span class="note">Empty context window.</span>';
       $('#w3used', el).textContent = used();
     };
     const reply = () => {
       const has = blocks.some((b) => b.instr);
       const last = blocks.filter((b) => !b.instr).slice(-1)[0];
       if (!last) return;
-      const sign = has ? '\u2014 The Finance Team' : 'Kind regards, regards, Baby AI \ud83c\udf7c';
+      const sign = has ? '\u2014 The Finance Team' : 'Kind regards, regards, Your GPT \u2699\ufe0f';
       $('#w3reply', el).textContent = 'Re: \u201c' + last.text + '\u201d Noted, I\u2019ll look into it. ' + sign;
-      if (!has && api.state.hadInstr) { $('#w3msg', el).textContent = '\ud83d\udca5 Forgotten instruction! It fell out of the box, so the baby never saw it.'; api.done('The instruction fell out of the context window, so the baby simply never saw it. Try pinning it as a standing instruction.'); }
+      if (!has && api.state.hadInstr) { $('#w3msg', el).textContent = '\ud83d\udca5 Forgotten instruction! It fell out of the window, so the model never saw it.'; api.done('The instruction fell out of the context window, so the model simply never saw it. Try pinning it as a standing instruction.'); }
       else if (has) $('#w3msg', el).textContent = 'Instruction still in the box, so the sign-off is right.';
     };
     const put = () => {
@@ -222,13 +78,13 @@
       const w = 560, gap = w / words.length;
       let s = '<svg viewBox="0 0 ' + w + ' 120" class="mapsvg" role="img" aria-label="Attention from the word she: Priya 55 percent, Tom 20 percent, report 8 percent, others small.">';
       words.forEach((wd, i) => { const x = gap * i + gap / 2; if (i < 7) s += '<path d="M' + (gap * 7 + gap / 2) + ',88 Q' + ((x + gap * 7.5) / 2) + ',' + (10 - wts[i] * 10) + ' ' + x + ',88" fill="none" stroke="#5A3FD1" stroke-opacity="' + (0.25 + wts[i]) + '" stroke-width="' + (1 + wts[i] * 16) + '"/>'; s += '<text x="' + x + '" y="108" text-anchor="middle" font-size="14" font-weight="' + (i === 7 ? 800 : 500) + '">' + wd + '</text>'; if (i < 7) s += '<text x="' + x + '" y="80" text-anchor="middle" font-size="10" fill="#4E5372">' + Math.round(wts[i] * 100) + '%</text>'; });
-      v.innerHTML = s + '</svg><p class="note">From the last word \u201cshe\u201d, thicker lines = more attention. \u201cPriya\u201d wins, which is how the baby answers \u201cwho is going on leave?\u201d</p>';
+      v.innerHTML = s + '</svg><p class="note">From the last word \u201cshe\u201d, thicker lines = more attention. \u201cPriya\u201d wins, which is how the model answers \u201cwho is going on leave?\u201d</p>';
     };
     draw();
   };
 
-  /* ---------------- Step 4: Ask About Us ---------------- */
-  W[4] = function (el, api) {
+  /* ---------------- Step 5: Ask About Us ---------------- */
+  W[5] = function (el, api) {
     const P = {
       leave: { q: 'What\u2019s our parental leave policy?', tiny: 'leave the parental please find attached leave regards regards', grown: 'I don\u2019t have access to your company\u2019s policies, so I can\u2019t tell you the exact parental leave terms. Your HR policy documents or intranet will have them. If you paste the policy here, I can summarise it.', over: 'Employees receive 16 weeks of paid parental leave, plus a 4-week phased return at 80% pay, as set out in section 7.3 of the Employee Handbook.', stamp: 'INVENTED \u2014 this model has never seen our policy' },
       cust: { q: 'Who is our biggest customer?', tiny: 'customer the biggest invoice the the regards', grown: 'I don\u2019t know who your customers are; that information wasn\u2019t in my training data. Your CRM or sales team would know.', over: 'Your biggest customer is Northwind Retail, accounting for about 18% of annual revenue since 2023.', stamp: 'INVENTED \u2014 this model has never seen our customer list' },
@@ -236,7 +92,7 @@
       poem: { q: 'Write a poem about invoices.', tiny: 'invoice invoice poem the regards attached attached', grown: 'Ode to an Invoice\nOh invoice, crisp and due,\nyour line items neat and true;\nnet thirty days you plead,\n\u201capprove me, yes, with speed!\u201d\n(But not INV-2291. Never INV-2291.)', over: null }
     };
     el.innerHTML = '<div class="row"><label class="lbl" for="w4q">Prompt</label><select class="input" id="w4q" style="max-width:360px">' + Object.keys(P).map((k) => '<option value="' + k + '">' + esc(P[k].q) + '</option>').join('') + '</select><button class="btn primary" id="w4send">Send to both</button><label class="switch"><input type="checkbox" id="w4over"> Overconfident mode</label></div>' +
-      '<div class="col2"><div class="panel"><h4>\ud83c\udf7c Tiny Baby (500 emails) ' + api.illus() + '</h4><div class="chat" id="w4a" aria-live="polite"></div></div><div class="panel"><h4>\ud83e\uddd1\u200d\ud83d\udcbc Grown-Up (huge public dataset) ' + api.illus() + '</h4><div class="chat" id="w4b" aria-live="polite"></div></div></div><p class="status" id="w4msg" role="status"></p>';
+      '<div class="col2"><div class="panel"><h4>\ud83d\udd27 Mini model (500 emails) ' + api.illus() + '</h4><div class="chat" id="w4a" aria-live="polite"></div></div><div class="panel"><h4>\ud83c\udfed Large model (huge public dataset) ' + api.illus() + '</h4><div class="chat" id="w4b" aria-live="polite"></div></div></div><p class="status" id="w4msg" role="status"></p>';
     let n = 0;
     $('#w4send', el).onclick = async () => {
       const k = $('#w4q', el).value, p = P[k], over = $('#w4over', el).checked && p.over;
@@ -250,11 +106,11 @@
       $('#' + id + 't', el).outerHTML = '<div class="bubble bot" style="white-space:pre-line">' + esc(over ? p.over : p.grown) + (over ? ' ' + api.conf() + '<div class="row"><button class="btn small danger" id="' + id + '">Fact check</button></div>' : '') + '</div>';
       b.scrollTop = b.scrollHeight;
       $('#w4msg', el).textContent = over ? 'Sounds official, doesn\u2019t it? Try the Fact check button.' : (k === 'poem' ? 'Lovely poem. General writing skill: yes. Your company facts: no.' : 'Honest answer. Now switch on Overconfident mode and ask again.');
-      if (over) $('#' + id, el).onclick = (e) => { e.target.outerHTML = '<span class="stamp">' + esc(p.stamp) + '</span>'; $('#w4msg', el).textContent = 'Caught it. Fluent, specific, and completely made up. A model can\u2019t know what it never read.'; api.done('You caught the grown-up inventing company facts.'); };
+      if (over) $('#' + id, el).onclick = (e) => { e.target.outerHTML = '<span class="stamp">' + esc(p.stamp) + '</span>'; $('#w4msg', el).textContent = 'Caught it. Fluent, specific, and completely made up. A model can\u2019t know what it never read.'; api.done('You caught the large model inventing company facts.'); };
     };
   };
 
-  /* ---------------- Step 5: Wrong Textbook (toy RAG) ---------------- */
+  /* ---------------- Step 6: RAG demo ---------------- */
   const BOOKS = [
     ['t19', 'Travel Policy 2019', '#F4B6A6'], ['t26', 'Travel Policy 2026', '#9ED8BF'], ['exp', 'Expense FAQ', '#C9BDFB'], ['can', 'Canteen Menu', '#FFE08A'],
     ['hr', 'HR Leave Policy 2026', '#A9D1F5'], ['hyb', 'Hybrid Working Policy', '#F7C6E0'], ['it', 'IT Helpdesk Guide', '#C8E6A0'], ['proc', 'Procurement Policy', '#FFD1A8'],
@@ -274,10 +130,10 @@
       answer: (top, strict) => strict ? 'I couldn\u2019t find a pet bereavement policy in the sources. Please check with HR.' : 'Employees receive 2 days of paid pet bereavement leave. [Source: HR Leave Policy 2026]', gap: true },
     { q: 'How many days can I work from home?', kw: ['home', 'remote', 'hybrid', 'wfh'], hits: [['hyb', .9, 'Up to 2 days a week from home, agreed with your manager.'], ['it', .5, 'Use the VPN when working remotely.'], ['coc', .3, 'Be respectful in all meetings.']], answer: () => 'Up to 2 days a week, agreed with your manager. [Source: Hybrid Working Policy]' },
     { q: 'What\u2019s the per diem in Bengaluru?', kw: ['per diem', 'bengaluru', 'bangalore', 'daily allowance', 'meals'], hits: [['t26', .87, 'India annex: per diem in metro cities (incl. Bengaluru) is \u20b93,500 per day.'], ['t19', .84, 'India: per diem \u20b92,000 per day.'], ['exp', .5, 'Keep meal receipts.']], answer: (top) => top === 't19' ? 'The per diem in Bengaluru is \u20b92,000 per day. [Source: Travel Policy 2019]' : 'The per diem in Bengaluru is \u20b93,500 per day. [Source: Travel Policy 2026, India annex]' },
-    { q: 'When are expense claims due?', kw: ['claim', 'deadline', 'due', 'submit', 'expenses'], hits: [['exp', .9, 'Submit expense claims within 30 days of the expense.'], ['t19', .7, 'Fax receipts within 30 days.'], ['proc', .3, 'Raise a PO before buying.']], answer: (top) => top === 't19' ? 'Fax your receipts within 30 days. [Source: Travel Policy 2019]' : 'Within 30 days of the expense. [Source: Expense FAQ]' },
+    { q: 'When are expense claims due?', kw: ['claim', 'deadline', 'due', 'submit', 'expenses'], hits: [['exp', .9, 'Submit expense claims within 30 days of the expense.'], ['t19', .7, 'Fax receipts within 30 days.'], ['proc', .3, 'Create a PO before buying.']], answer: (top) => top === 't19' ? 'Fax your receipts within 30 days. [Source: Travel Policy 2019]' : 'Within 30 days of the expense. [Source: Expense FAQ]' },
     { q: 'Who approves software purchases?', kw: ['software', 'approve', 'purchase', 'buy', 'licence', 'license'], hits: [['proc', .89, 'Software: your manager approves up to $1,000; IT Procurement above that.'], ['it', .6, 'Only install approved software.'], ['sec', .4, 'Report suspicious downloads.']], answer: () => 'Your manager approves up to $1,000; IT Procurement approves anything above that. [Source: Procurement Policy]' }
   ];
-  W[5] = function (el, api) {
+  W[6] = function (el, api) {
     const st = api.state; st.removed = st.removed || {}; st.boost = st.boost || {};
     el.innerHTML = '<p>Pick a question (or type your own), then watch the three RAG steps: <strong>Search \u2192 Paste \u2192 Answer</strong>. Click a book to remove it or boost it to the front.</p>' +
       '<div class="shelf" id="w5shelf" role="group" aria-label="Document library"></div><div class="row" id="w5tools" aria-live="polite"></div>' +
@@ -319,21 +175,21 @@
       const wrong = /2019/.test(ans) || (q.gap && !strict);
       if (wrong) { st.broke = true; api.save(); m.textContent = q.gap ? '\ud83d\udca5 Invented! No such policy exists; the bot filled the gap. Try \u201cAnswer only from sources\u201d.' : '\ud83d\udca5 Wrong answer, with a real-looking source. The search handed it the 2019 page. Now fix the library.'; }
       else if (st.broke && st.removed.t19 && (qi === 0 || qi === 7 || qi === 8)) { m.textContent = '\u2705 Fixed: with the 2019 policy archived, search can only find the current one.'; api.done('Outdated document in, outdated answer out. Archiving it fixed the answer, not a bigger model.'); }
-      else m.textContent = (q.gap && strict) ? 'That\u2019s the grown-up answer: \u201cI couldn\u2019t find it.\u201d' : 'Looks right. Can you make it quote the 2019 policy instead? (Hint: boost it.)';
+      else m.textContent = (q.gap && strict) ? 'That\u2019s the professional answer: \u201cI couldn\u2019t find it.\u201d' : 'Looks right. Can you make it quote the 2019 policy instead? (Hint: boost it.)';
     };
     $('#w5ask', el).onclick = () => run(+$('#w5q', el).value);
     $('#w5askf', el).onclick = () => {
       const t = $('#w5free', el).value.toLowerCase().trim();
       if (!t) return;
       let best = -1, bs = 0; QS.forEach((q, i) => { const s = q.kw.filter((k) => t.includes(k)).length; if (s > bs) { bs = s; best = i; } });
-      if (best < 0) { $('#w5a', el).innerHTML = '<p class="out" style="display:block">I\u2019m a toy with a small brain. Try one of these: \u201chotel limit in New York\u201d, \u201cbereavement leave\u201d, \u201ctaxi to the airport\u201d, \u201cpet bereavement\u201d.</p>'; return; }
+      if (best < 0) { $('#w5a', el).innerHTML = '<p class="out" style="display:block">I\u2019m a demo engine with a small brain. Try one of these: \u201chotel limit in New York\u201d, \u201cbereavement leave\u201d, \u201ctaxi to the airport\u201d, \u201cpet bereavement\u201d.</p>'; return; }
       $('#w5q', el).value = best; run(best, $('#w5free', el).value);
     };
     drawShelf();
   };
 
-  /* ---------------- Step 6: The Sneaky Invoice (agent) ---------------- */
-  W[6] = function (el, api) {
+  /* ---------------- Step 7: The Sneaky Invoice (agent) ---------------- */
+  W[7] = function (el, api) {
     const INV = 'INVOICE INV-2291\nFrom: Acme Supplies Ltd\nTo: Accounts Payable\nItems: 120 boxes A4 paper, 40 toner cartridges\nAmount due: 4,800\nPO reference: PO-7781\nPayment terms: 30 days';
     const tasks = {
       check: { label: 'Check Acme invoices', todo: ['Pull Acme invoices for September', 'Look up each PO', 'Compare amounts', 'Report mismatches'] },
@@ -392,19 +248,19 @@
     };
   };
 
-  /* ---------------- Step 7: Manners Mix-up ---------------- */
-  W[7] = function (el, api) {
+  /* ---------------- Step 8: Manners Mix-up ---------------- */
+  W[8] = function (el, api) {
     const st = api.state;
-    el.innerHTML = '<h3>\ud83c\udfeb Finishing School</h3><div class="row"><button class="btn" id="w7style" aria-pressed="false">Teach style (10 sample replies in our tone)</button><button class="btn" id="w7facts" aria-pressed="false">Teach facts (2026 price list)</button><button class="btn primary" id="w7train">Train (fine-tune)</button><span class="status" id="w7stat" role="status"></span></div>' +
+    el.innerHTML = '<h3>\ud83c\udfa9 The Finishing Shop</h3><div class="row"><button class="btn" id="w7style" aria-pressed="false">Teach style (10 sample replies in our tone)</button><button class="btn" id="w7facts" aria-pressed="false">Teach facts (2026 price list)</button><button class="btn primary" id="w7train">Train (fine-tune)</button><span class="status" id="w7stat" role="status"></span></div>' +
       '<div class="row"><button class="btn" id="w7q1">Ask: \u201cReply to this complaint\u201d</button><button class="btn" id="w7q2">Ask: \u201cWhat does the Pro plan cost?\u201d</button><button class="btn accent" id="w7rag">Compare with RAG</button></div>' +
-      '<div class="col2"><div class="panel"><h4>Fine-tuned baby ' + api.illus() + '</h4><div class="chat" id="w7chat" aria-live="polite"></div></div><div class="panel"><h4>Same question, answered with RAG ' + api.illus() + '</h4><div class="chat" id="w7r" aria-live="polite"><p class="note">Press \u201cCompare with RAG\u201d.</p></div></div></div><p class="status" id="w7msg" role="status"></p>' +
+      '<div class="col2"><div class="panel"><h4>Fine-tuned model ' + api.illus() + '</h4><div class="chat" id="w7chat" aria-live="polite"></div></div><div class="panel"><h4>Same question, answered with RAG ' + api.illus() + '</h4><div class="chat" id="w7r" aria-live="polite"><p class="note">Press \u201cCompare with RAG\u201d.</p></div></div></div><p class="status" id="w7msg" role="status"></p>' +
       '<h3>Mini-game: Which is better?</h3><div class="pairs" id="w7pairs"></div><p class="status" id="w7pm" role="status"></p>';
     let teach = { style: false, facts: false }, trained = { style: false, facts: false };
     ['style', 'facts'].forEach((k) => $('#w7' + k, el).onclick = (e) => { teach[k] = !teach[k]; e.target.setAttribute('aria-pressed', String(teach[k])); });
     $('#w7train', el).onclick = async () => {
-      if (!teach.style && !teach.facts) { $('#w7stat', el).textContent = 'Pick something to teach first. The baby can\u2019t learn from vibes alone.'; return; }
+      if (!teach.style && !teach.facts) { $('#w7stat', el).textContent = 'Pick something to teach first. The model can\u2019t learn from vibes alone.'; return; }
       $('#w7stat', el).innerHTML = '<span class="typing">' + esc(api.loading()) + '</span>'; await wait(900);
-      trained = Object.assign({}, teach); $('#w7stat', el).textContent = 'Graduated from Finishing School: ' + [trained.style && 'style', trained.facts && 'facts'].filter(Boolean).join(' + ') + '.';
+      trained = Object.assign({}, teach); $('#w7stat', el).textContent = 'Finished in the Finishing Shop: ' + [trained.style && 'style', trained.facts && 'facts'].filter(Boolean).join(' + ') + '.';
     };
     const say = (who, txt, extra) => { const c = $('#w7chat', el); c.insertAdjacentHTML('beforeend', '<div class="bubble ' + who + '">' + esc(txt) + (extra || '') + '</div>'); c.scrollTop = c.scrollHeight; };
     $('#w7q1', el).onclick = () => {
@@ -436,7 +292,7 @@
     pm();
   };
 
-  /* ---------------- Step 8: Fantasy Detector ---------------- */
+  /* ---------------- Step 9: Fantasy Detector ---------------- */
   const CARDS = [
     { parts: ['An AI that reads ', ['all our emails', 1, '\u201cAll\u201d: which mailboxes? Whose permission? Emails contain personal data.'], ' and tells us what customers ', ['really think', 1, '\u201cReally think\u201d: there\u2019s no measurable definition. What would \u201ccorrect\u201d look like?'], ' about ', ['our new pricing', 0, 'This bit is fine: a specific topic is a good start.'], '.'], missing: ['source', 'permissions', 'evals'] },
     { parts: ['A bot for ', ['the support team', 0, 'Fine: a named audience.'], ' that ', ['never makes mistakes', 1, '\u201cNever\u201d: no system is perfect. Say what error rate is acceptable and who checks.'], '.'], missing: ['error cost', 'evals', 'source'] },
@@ -445,7 +301,7 @@
     { parts: ['AI that writes ', ['perfect', 1, '\u201cPerfect\u201d: define \u201cgood enough\u201d and test for it.'], ' proposals ', ['automatically', 1, '\u201cAutomatically\u201d: sent to customers without review? A wrong price is a commercial risk.'], ' so ', ['reps', 0, 'Fine: a named audience (though how many?).'], ' don\u2019t have to.'], missing: ['evals', 'permissions', 'source'] }
   ];
   const MISSING = ['source', 'freshness', 'error cost', 'permissions', 'evals', 'owner'];
-  W[8] = function (el, api) {
+  W[9] = function (el, api) {
     const st = api.state; st.i = st.i || 0; st.checked = st.checked || {};
     el.innerHTML = '<p>Tap the phrases that are <strong>fantasy</strong>, tick what\u2019s <strong>missing</strong>, then <strong>Check</strong>. When you\u2019re ready, <strong>Rewrite</strong> one as a real requirement in the worksheet.</p>' +
       '<div class="row" style="justify-content:space-between"><button class="btn small" id="w8prev">\u2190 Previous card</button><strong id="w8n"></strong><button class="btn small" id="w8next">Next card \u2192</button></div>' +
@@ -469,7 +325,7 @@
       const picked = $$('#w8miss input', el).filter((x) => x.checked).map((x) => x.value);
       const hit = c.missing.filter((m) => picked.includes(m));
       fb += '</ul><p><strong>Missing:</strong> the big gaps here are <em>' + c.missing.join(', ') + '</em>. You spotted ' + hit.length + ' of ' + c.missing.length + '.' + (picked.filter((m) => !c.missing.includes(m)).length ? ' (Your other ticks are fair questions too.)' : '') + '</p>';
-      $('#w8fb', el).innerHTML = '<div class="panel pop"><p><strong>Fantasy phrases found: ' + found + ' of ' + total + '.</strong> ' + (found === total ? 'Sharp eyes. Vendors fear you now.' : 'The baby was also fooled. It\u2019s fine.') + '</p>' + fb + '</div>';
+      $('#w8fb', el).innerHTML = '<div class="panel pop"><p><strong>Fantasy phrases found: ' + found + ' of ' + total + '.</strong> ' + (found === total ? 'Sharp eyes. Vendors fear you now.' : 'The model was also fooled. It\u2019s fine.') + '</p>' + fb + '</div>';
       st.checked[st.i] = true; api.save();
     };
     $('#w8rw', el).onclick = () => {

@@ -1,29 +1,29 @@
-/* Break it! widgets for optional Steps 9-15. All scripted, all local. */
+/* Break it! widgets for optional Steps 10-16. All scripted, all local. */
 (function () {
   'use strict';
   const W = window.WIDGETS;
   const { $, $$, esc, wait, hid } = window.WUTIL;
   const coins = window.WUTIL.coins = (n) => '\ud83e\ude99'.repeat(Math.max(0, Math.min(n, 40))) + (n > 40 ? ' +' + (n - 40) : '');
 
-  /* ---------- 9: The Stale Diary ---------- */
-  W[9] = function (el, api) {
+  /* ---------- 10: The Stale Memory ---------- */
+  W[10] = function (el, api) {
     const st = api.state;
     if (!st.notes) st.notes = ['Works in Pune office', 'Prefers bullet points', 'Manager: Ravi'];
     let today = []; let auto = false;
     el.innerHTML = '<div class="col2"><div class="panel"><h4>\ud83d\udcac Chat (today)</h4><div class="chat" id="w9chat" aria-live="polite"></div>' +
       '<div class="row tight"><button class="btn small" data-s="I\u2019ve moved to the Chicago office.">\u201cI\u2019ve moved to the Chicago office.\u201d</button><button class="btn small" data-s="Which holiday calendar applies to me?">\u201cWhich holiday calendar applies to me?\u201d</button><button class="btn small" data-s="Draft my weekly update.">\u201cDraft my weekly update.\u201d</button></div>' +
-      '<div class="row"><input class="input" id="w9in" placeholder="Type a message\u2026" aria-label="Message to the baby" style="flex:1"><button class="btn primary" id="w9send">Send</button></div></div>' +
-      '<div class="panel"><h4>\ud83d\udcd4 The Diary (memory notes)</h4><label class="switch"><input type="checkbox" id="w9auto"> Auto-save notes</label><div id="w9notes" style="margin-top:8px"></div>' +
+      '<div class="row"><input class="input" id="w9in" placeholder="Type a message\u2026" aria-label="Message to the assistant" style="flex:1"><button class="btn primary" id="w9send">Send</button></div></div>' +
+      '<div class="panel"><h4>\ud83d\udcbe Memory module (saved notes)</h4><label class="switch"><input type="checkbox" id="w9auto"> Auto-save notes</label><div id="w9notes" style="margin-top:8px"></div>' +
       '<div class="row"><button class="btn" id="w9day">\ud83c\udf05 New day</button><button class="btn small danger" id="w9forget">Forget everything</button></div><p class="note">The model itself never changes. Only these notes do.</p></div></div><p class="status" id="w9msg" role="status"></p>';
     const chat = $('#w9chat', el);
     const say = (who, t) => { chat.insertAdjacentHTML('beforeend', '<div class="bubble ' + who + '">' + esc(t) + (who === 'bot' ? ' ' + api.conf() : '') + '</div>'); chat.scrollTop = chat.scrollHeight; };
     const drawNotes = (glow) => {
-      $('#w9notes', el).innerHTML = st.notes.length ? st.notes.map((n, i) => '<div class="sticky-note' + (glow === i ? ' glow' : '') + '"><span>' + esc(n) + '</span><span><button class="btn small" data-e="' + i + '" aria-label="Edit note: ' + esc(n) + '">\u270f\ufe0f</button><button class="btn small" data-d="' + i + '" aria-label="Delete note: ' + esc(n) + '">\ud83d\uddd1\ufe0f</button></span></div>').join('') : '<p class="note">Diary is empty. The baby is a blank slate (well, a blank notebook).</p>';
+      $('#w9notes', el).innerHTML = st.notes.length ? st.notes.map((n, i) => '<div class="sticky-note' + (glow === i ? ' glow' : '') + '"><span>' + esc(n) + '</span><span><button class="btn small" data-e="' + i + '" aria-label="Edit note: ' + esc(n) + '">\u270f\ufe0f</button><button class="btn small" data-d="' + i + '" aria-label="Delete note: ' + esc(n) + '">\ud83d\uddd1\ufe0f</button></span></div>').join('') : '<p class="note">Memory is empty. A blank slate (well, a blank notebook).</p>';
       $$('[data-e]', el).forEach((b) => b.onclick = () => {
         const i = +b.dataset.e, note = b.closest('.sticky-note');
         note.innerHTML = '<label class="sr-only" for="w9edit">Edit memory note</label><input class="input" id="w9edit" value="' + esc(st.notes[i]) + '" style="flex:1"><button class="btn small primary" id="w9save">Save</button>';
         const inp = $('#w9edit', el); inp.focus(); inp.select();
-        const commit = () => { st.notes[i] = inp.value.trim() || st.notes[i]; api.save(); drawNotes(i); $('#w9msg', el).textContent = 'Note updated. The model is exactly the same; only its diary changed.'; };
+        const commit = () => { st.notes[i] = inp.value.trim() || st.notes[i]; api.save(); drawNotes(i); $('#w9msg', el).textContent = 'Note updated. The model is exactly the same; only its saved notes changed.'; };
         $('#w9save', el).onclick = commit;
         inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') drawNotes(); });
       });
@@ -34,7 +34,7 @@
       if (!txt.trim()) return; say('user', txt); const t = txt.toLowerCase();
       if (/moved|relocat|transfer/.test(t) && /chicago/.test(t)) {
         today.push('chicago'); st.movedSaid = true;
-        if (auto) { let i = st.notes.findIndex((n) => /office/i.test(n)); if (i >= 0) st.notes[i] = 'Works in Chicago office'; else { st.notes.push('Works in Chicago office'); i = st.notes.length - 1; } say('bot', 'Congratulations on the move! I\u2019ve updated my diary.'); drawNotes(i); }
+        if (auto) { let i = st.notes.findIndex((n) => /office/i.test(n)); if (i >= 0) st.notes[i] = 'Works in Chicago office'; else { st.notes.push('Works in Chicago office'); i = st.notes.length - 1; } say('bot', 'Congratulations on the move! I\u2019ve updated my notes.'); drawNotes(i); }
         else say('bot', 'Congratulations on the move! Enjoy the deep-dish pizza.');
         api.save(); return;
       }
@@ -43,7 +43,7 @@
         const i = st.notes.findIndex((n) => /office/i.test(n));
         if (i < 0) { say('bot', 'Which office are you based in? I don\u2019t have a note about that.'); $('#w9msg', el).textContent = 'No note, so it asks instead of guessing. Safer!'; if (st.stale) fixed(); return; }
         const note = st.notes[i];
-        if (/pune|india|bengaluru|mumbai/i.test(note)) { say('bot', 'You\u2019re in the Pune office, so the India holiday calendar applies.'); drawNotes(i); if (st.movedSaid) { st.stale = true; api.save(); $('#w9msg', el).textContent = '\ud83d\udca5 Stale diary! You moved, but the note still says Pune. Fix it: turn on auto-save and repeat, edit the note, or forget everything.'; } else $('#w9msg', el).textContent = 'Correct for now. Tell it you\u2019ve moved to Chicago, then start a new day.'; }
+        if (/pune|india|bengaluru|mumbai/i.test(note)) { say('bot', 'You\u2019re in the Pune office, so the India holiday calendar applies.'); drawNotes(i); if (st.movedSaid) { st.stale = true; api.save(); $('#w9msg', el).textContent = '\ud83d\udca5 Stale memory! You moved, but the note still says Pune. Fix it: turn on auto-save and repeat, edit the note, or forget everything.'; } else $('#w9msg', el).textContent = 'Correct for now. Tell it you\u2019ve moved to Chicago, then start a new day.'; }
         else if (/chicago|\bus\b|usa/i.test(note)) { say('bot', 'You\u2019re in the Chicago office, so the US holiday calendar applies.'); drawNotes(i); if (st.stale) fixed(); else $('#w9msg', el).textContent = 'Correct, because the note is correct.'; }
         else say('bot', 'Your note says \u201c' + note + '\u201d. I\u2019ll go with that! (It\u2019s all I\u2019ve got.)');
         return;
@@ -54,19 +54,19 @@
         say('bot', loc || bullets ? 'Here\u2019s your weekly update' + (loc ? ' for the ' + loc + ' team' : '') + (bullets ? ', in your usual five bullets: \u2022 Done \u2022 Doing \u2022 Blocked \u2022 Next \u2022 Kudos' : ': we did things, and they went fine.') : 'Sure! Which team are you on, and what format do you like?');
         return;
       }
-      say('bot', 'I\u2019m a toy with a small brain. Try one of the suggested messages.');
+      say('bot', 'I\u2019m a demo engine with a small brain. Try one of the suggested messages.');
     };
     $$('[data-s]', el).forEach((b) => b.onclick = () => handle(b.dataset.s));
     $('#w9send', el).onclick = () => { handle($('#w9in', el).value); $('#w9in', el).value = ''; };
     $('#w9in', el).addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#w9send', el).click(); });
     $('#w9auto', el).onchange = (e) => { auto = e.target.checked; };
-    $('#w9day', el).onclick = () => { today = []; chat.innerHTML = '<p class="note">\ud83c\udf05 New day. Chat cleared. The diary stays.</p>'; };
-    $('#w9forget', el).onclick = () => { st.notes = []; api.save(); drawNotes(); $('#w9msg', el).textContent = 'Diary wiped. The baby will ask generic questions again.'; };
+    $('#w9day', el).onclick = () => { today = []; chat.innerHTML = '<p class="note">\ud83c\udf05 New day. Chat cleared. The saved notes stay.</p>'; };
+    $('#w9forget', el).onclick = () => { st.notes = []; api.save(); drawNotes(); $('#w9msg', el).textContent = 'Memory wiped. It will ask generic questions again.'; };
     drawNotes();
   };
 
-  /* ---------- 10: Lost on the Map ---------- */
-  W[10] = function (el, api) {
+  /* ---------- 11: Lost on the Map ---------- */
+  W[11] = function (el, api) {
     const st = api.state; st.br = st.br || {}; st.fx = st.fx || {};
     const dots = {
       cf26: [120, 95, 'Annual Leave 2026: carry-forward', 'leave'], cf19: [126, 101, 'Annual Leave 2019: carry-forward (old)', 'leave'], prob: [95, 120, 'Carry-forward: probation exception', 'leave'],
@@ -86,7 +86,7 @@
     el.innerHTML = '<div class="row"><select class="input" id="w10q" style="max-width:360px" aria-label="Question">' + QQ.map((q, i) => '<option value="' + i + '">' + esc(q.q) + '</option>').join('') + '</select><button class="btn primary" id="w10go">Search the map</button></div>' +
       '<div class="row"><label class="switch"><input type="checkbox" id="w10hyb"' + (st.hyb ? ' checked' : '') + '> Hybrid search (meaning + keywords)</label><label class="switch"><input type="checkbox" id="w10flt"' + (st.flt ? ' checked' : '') + '> Filter: current documents only</label><label class="lbl" for="w10cs">Chunk size: <span id="w10csv"></span></label><input type="range" id="w10cs" min="0" max="2" step="1" value="' + st.cs + '" style="max-width:160px"></div>' +
       '<svg viewBox="0 0 420 300" class="mapsvg" id="w10map" role="img" aria-label="Meaning map with three clusters: leave, expenses and IT"></svg>' +
-      '<div class="col2"><div class="panel"><h4>3 nearest chunks</h4><div id="w10near" aria-live="polite"></div></div><div class="panel"><h4>Baby\u2019s answer ' + api.illus() + '</h4><p class="out" id="w10ans" style="display:block;min-height:2em"></p></div></div>' +
+      '<div class="col2"><div class="panel"><h4>3 nearest chunks</h4><div id="w10near" aria-live="polite"></div></div><div class="panel"><h4>Model\u2019s answer ' + api.illus() + '</h4><p class="out" id="w10ans" style="display:block;min-height:2em"></p></div></div>' +
       '<p class="lbl">Mini-challenges: <span id="w10prog"></span></p><p class="status" id="w10msg" role="status"></p>';
     const map = $('#w10map', el);
     const csName = ['small', 'medium', 'large'];
@@ -119,16 +119,16 @@
     $('#w10csv', el).textContent = csName[st.cs]; draw(); prog();
   };
 
-  /* ---------- 11: The Overstuffed Schoolbag ---------- */
-  W[11] = function (el, api) {
+  /* ---------- 12: The Overstuffed Context ---------- */
+  W[12] = function (el, api) {
     const st = api.state;
     const ITEMS = [['ins', 'Standing instructions', 500, '#A9C8F0'], ['rel', '3 relevant documents', 6000, '#FFC48A'], ['unrel', '30 unrelated documents', 60000, '#E0D8CC'], ['hist', 'Long chat history', 15000, '#CFCFD8'], ['ex', '2 worked examples', 1200, '#A8E0C4'], ['key', '\u2b50 Key fact: \u201cContract 29 has no liability cap\u201d', 50, '#FFC93C']];
     const CAP = 100000; const bag = new Set(['ins', 'rel', 'key']);
     el.innerHTML = '<div class="row tight">' + ITEMS.map((it) => '<button class="btn small" data-k="' + it[0] + '" aria-pressed="false">' + esc(it[1]) + ' (' + it[2].toLocaleString('en-US') + ' tok)</button>').join('') + '</div>' +
       '<div class="row"><label class="lbl" for="w11pos">Key fact position: <span id="w11pv"></span></label><input type="range" id="w11pos" min="0" max="2" value="1" style="max-width:200px"><button class="btn primary" id="w11ask">Ask: \u201cWhich contracts have uncapped liability?\u201d</button><button class="btn accent" id="w11smart">\u2728 Smart pack</button></div>' +
-      '<div class="lbl">\ud83c\udf92 Schoolbag (context window): <span id="w11used"></span> / ' + CAP.toLocaleString('en-US') + ' tokens</div><div class="bagbar" id="w11bar" role="img"></div>' +
+      '<div class="lbl">\ud83e\uddf3 Context window: <span id="w11used"></span> / ' + CAP.toLocaleString('en-US') + ' tokens</div><div class="ctxbar" id="w11bar" role="img"></div>' +
       '<div class="row"><span class="meter" style="flex:1">Cost per question: <span class="coins" id="w11cost"></span></span></div>' +
-      '<div class="panel"><h4>Baby\u2019s answer ' + api.illus() + api.conf() + '</h4><p class="out" id="w11ans" style="display:block;min-height:2em"></p></div><p class="status" id="w11msg" role="status"></p>';
+      '<div class="panel"><h4>Model\u2019s answer ' + api.illus() + api.conf() + '</h4><p class="out" id="w11ans" style="display:block;min-height:2em"></p></div><p class="status" id="w11msg" role="status"></p>';
     const pos = $('#w11pos', el); const pn = ['start', 'middle', 'end'];
     const used = () => ITEMS.filter((i) => bag.has(i[0])).reduce((a, i) => a + i[2], 0);
     const draw = () => {
@@ -139,26 +139,26 @@
       if (bag.has('key')) { const k = ITEMS[5]; const p = +pos.value; if (p === 0) seq.unshift(k); else if (p === 2) seq.push(k); else seq.splice(Math.floor(seq.length / 2), 0, k); }
       const bar = $('#w11bar', el);
       bar.innerHTML = seq.map((i) => '<div style="width:' + Math.max(i[0] === 'key' ? 3 : 1, i[2] / CAP * 100) + '%;background:' + i[3] + '" title="' + esc(i[1]) + '">' + (i[2] / CAP > .08 ? esc(i[1].split(' ').slice(0, 3).join(' ')) : (i[0] === 'key' ? '\u2b50' : '')) + '</div>').join('');
-      bar.setAttribute('aria-label', 'Schoolbag contents in order: ' + seq.map((i) => i[1]).join(', '));
+      bar.setAttribute('aria-label', 'Context window contents in order: ' + seq.map((i) => i[1]).join(', '));
       $('#w11cost', el).textContent = coins(Math.ceil(u / 4000));
     };
     $$('[data-k]', el).forEach((b) => b.onclick = () => { bag.has(b.dataset.k) ? bag.delete(b.dataset.k) : bag.add(b.dataset.k); draw(); });
     pos.oninput = draw;
     const ask = () => {
       const u = used(), p = +pos.value; const m = $('#w11msg', el), a = $('#w11ans', el);
-      if (!bag.has('key')) { a.textContent = 'Contracts 3 and 17.'; m.textContent = 'It missed contract 29, but that\u2019s fair: the key fact wasn\u2019t in the bag at all. Pack it.'; return; }
-      if (u > 50000 && p === 1) { a.textContent = 'Contracts 3 and 17.'; st.missed = true; api.save(); m.textContent = '\ud83d\udca5 Missed it! The fact was in the bag, but buried in the middle of ' + u.toLocaleString('en-US') + ' tokens. In the window \u2260 used.'; return; }
+      if (!bag.has('key')) { a.textContent = 'Contracts 3 and 17.'; m.textContent = 'It missed contract 29, but that\u2019s fair: the key fact wasn\u2019t in the context at all. Pack it.'; return; }
+      if (u > 50000 && p === 1) { a.textContent = 'Contracts 3 and 17.'; st.missed = true; api.save(); m.textContent = '\ud83d\udca5 Missed it! The fact was in the context, but buried in the middle of ' + u.toLocaleString('en-US') + ' tokens. In the window \u2260 used.'; return; }
       a.textContent = 'Contracts 3, 17 and 29. [Contract 3 cl. 9; Contract 17 cl. 11; Contract 29 cl. 8]';
-      if (st.missed) { m.textContent = '\u2705 Found it. ' + (u < 20000 ? 'Small, focused bag = better answer AND lower cost.' : 'Moving the fact to the edge helped, but look at that cost meter.'); api.done('What you pack, and where, mattered more than the size of the bag.'); }
-      else m.textContent = 'Found it. Now stuff the bag (30 unrelated docs + history) with the fact in the middle.';
+      if (st.missed) { m.textContent = '\u2705 Found it. ' + (u < 20000 ? 'Small, focused context = better answer AND lower cost.' : 'Moving the fact to the edge helped, but look at that cost meter.'); api.done('What you pack, and where, mattered more than the size of the window.'); }
+      else m.textContent = 'Found it. Now stuff the context (30 unrelated docs + history) with the fact in the middle.';
     };
     $('#w11ask', el).onclick = ask;
     $('#w11smart', el).onclick = () => { bag.clear(); ['ins', 'rel', 'key'].forEach((k) => bag.add(k)); pos.value = 2; draw(); ask(); };
     draw();
   };
 
-  /* ---------- 12: The Blurry Receipt ---------- */
-  W[12] = function (el, api) {
+  /* ---------- 13: The Blurry Receipt ---------- */
+  W[13] = function (el, api) {
     const st = api.state;
     const S = { clean: ['Clean PDF invoice', 25], photo: ['Phone photo at an angle', 50], hand: ['Handwritten receipt', 70], stain: ['Coffee-stained scan', 60] };
     el.innerHTML = '<div role="tablist" class="row tight" aria-label="Sample type"><button role="tab" class="btn small" id="w12t1" aria-selected="true" aria-controls="w12p1">\ud83e\uddfe Receipts</button><button role="tab" class="btn small" id="w12t2" aria-selected="false" aria-controls="w12p2">\ud83c\udf99\ufe0f Meeting transcript</button></div>' +
@@ -191,8 +191,8 @@
     render();
   };
 
-  /* ---------- 13: The Overthinker ---------- */
-  W[13] = function (el, api) {
+  /* ---------- 14: The Overthinker ---------- */
+  W[14] = function (el, api) {
     const st = api.state; st.runs = st.runs || {};
     const CARDS = [
       { t: '\u201cHow many days of annual leave do I get?\u201d (a lookup; policy provided)', fast: ['25 days a year. [HR Leave Policy, section 2]', 1], think: ['Thinking (summary): Policy section 2 says 25 days. Checking for exceptions\u2026 none apply. Answer: 25 days a year.', 1] },
@@ -220,8 +220,8 @@
     prog();
   };
 
-  /* ---------- 14: Too Many Keys ---------- */
-  W[14] = function (el, api) {
+  /* ---------- 15: Too Many Keys ---------- */
+  W[15] = function (el, api) {
     const st = api.state;
     const PL = [['tickets', '\ud83c\udfab Tickets', 1], ['files', '\ud83d\udcc1 Files', 1.5], ['crm', '\ud83d\udc65 CRM', 2], ['cal', '\ud83d\udcc5 Calendar', 1], ['email', '\u2709\ufe0f Email', 2], ['pay', '\ud83d\udcb8 Payments', 3]];
     const LV = ['Off', 'Read', 'Draft', 'Write'], LW = [0, 1, 2, 4];
@@ -284,8 +284,8 @@
     };
   };
 
-  /* ---------- 15: Swiss Cheese ---------- */
-  W[15] = function (el, api) {
+  /* ---------- 16: Swiss Cheese ---------- */
+  W[16] = function (el, api) {
     const st = api.state;
     const L = [['scope', 'Narrow scope'], ['src', 'Answer only from sources'], ['cite', 'Show citations'], ['idk', '\u201cI don\u2019t know\u201d rule'], ['out', 'Output check'], ['perm', 'Limited permissions'], ['appr', 'Human approval']];
     const on = {};
@@ -298,7 +298,7 @@
       const q = $('#w15q', el).value; const topic = /pet/.test(q) ? 'pet bereavement leave' : /duvet/.test(q) ? 'duvet days' : 'goats at work';
       const inv = { 'pet bereavement leave': 'Employees receive 2 days of paid pet bereavement leave.', 'duvet days': 'Everyone gets 3 duvet days a year, to be used on Mondays only.', 'goats at work': 'Goats are permitted on Fridays if they are under 40 kg and wear a visitor badge.' }[topic];
       let a, why;
-      if (on.idk) { a = 'I couldn\u2019t find a policy on ' + topic + ' in the HR documents. Please ask HR directly: [HR contact page].'; why = 'The \u201cI don\u2019t know\u201d rule did it. That\u2019s the grown-up answer.'; }
+      if (on.idk) { a = 'I couldn\u2019t find a policy on ' + topic + ' in the HR documents. Please ask HR directly: [HR contact page].'; why = 'The \u201cI don\u2019t know\u201d rule did it. That\u2019s the professional answer.'; }
       else if (on.out) { a = 'I couldn\u2019t verify an answer from the sources, so I won\u2019t guess.'; why = 'The output check noticed the claim had no supporting source and blocked it.'; }
       else if (on.src && on.cite) { a = inv + ' [Source: none found]'; why = 'Citations exposed it: \u201csource: none found\u201d is a red flag users can see. Still not fixed, though.'; }
       else if (on.src) { a = 'The HR documents don\u2019t mention ' + topic + ' specifically, but typically companies offer something similar.'; why = 'Grounding helped a bit: it admits the gap\u2026 then fills it anyway.'; }
