@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raise Your Own Baby AI</title>
+<meta name="description" content="An interactive, fully offline course for office teams on how LLMs really work. Scripted toy AI, no logins, no live AI.">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <button id="menuBtn" class="icon-btn" aria-controls="drawer" aria-expanded="false"><span aria-hidden="true">☰</span> Steps</button>
+  <a class="brand" href="#/welcome" aria-label="Raise Your Own Baby AI, home"><span id="brandBaby" aria-hidden="true"></span><span>Raise Your Own Baby AI</span></a>
+  <div class="progress-wrap" aria-label="Course progress">
+    <div class="progress" id="progCore" role="progressbar" aria-label="Core steps done" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><span class="core" id="pCore" style="width:0"></span></div>
+    <div class="progress" id="progOpt" role="progressbar" aria-label="Optional steps done" aria-valuemin="0" aria-valuemax="13" aria-valuenow="0" style="height:6px"><span class="opt" id="pOpt" style="width:0"></span></div>
+    <span class="progress-label" id="progressLabel">Core 0/8</span>
+  </div>
+  <div class="path-switch hide-sm" role="group" aria-label="Optional steps path">
+    <button type="button" data-path="build" aria-pressed="true">Building 🧸</button>
+    <button type="button" data-path="read" aria-pressed="false">Reading 📖</button>
+  </div>
+  <a class="btn small ws-link" href="#/worksheet"><span aria-hidden="true">📝</span><span class="hide-sm">Worksheet</span><span class="sr-only">Worksheet</span></a>
+</header>
+<nav id="drawer" class="drawer" aria-label="All steps" aria-hidden="true">
+  <div class="row" style="justify-content:space-between;margin:0"><strong>All steps</strong><button id="closeDrawer" class="icon-btn" aria-label="Close menu">✕</button></div>
+  <div class="path-switch" role="group" aria-label="Optional steps path (menu)" style="margin-top:10px;width:fit-content">
+    <button type="button" data-path="build" aria-pressed="true">Building 🧸</button>
+    <button type="button" data-path="read" aria-pressed="false">Reading 📖</button>
+  </div>
+  <div id="drawerList"></div>
+  <div class="drawer-foot">
+    <p class="note" style="margin:0">🔒 Nothing you type leaves this browser. No server, no login, no live AI.</p>
+    <button class="btn small" id="resetBtn">Reset my progress</button>
+  </div>
+</nav>
+<main id="main" tabindex="-1"></main>
+<footer class="navbar" aria-label="Step navigation">
+  <button class="btn" id="backBtn">← Back</button>
+  <span class="where" id="where" aria-live="polite"></span>
+  <button class="btn primary" id="nextBtn">Next →</button>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="printArea" aria-hidden="true"></div>
+<noscript><p style="padding:20px">This course needs JavaScript turned on. Everything runs in your browser; nothing is sent anywhere.</p></noscript>
+<script src="assets/js/content.js"></script>
+<script src="assets/js/extras.js"></script>
+<script src="assets/js/visuals.js"></script>
+<script src="assets/js/widgets-core.js"></script>
+<script src="assets/js/widgets-opt-a.js"></script>
+<script src="assets/js/widgets-opt-b.js"></script>
+<script src="assets/js/worksheet.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
