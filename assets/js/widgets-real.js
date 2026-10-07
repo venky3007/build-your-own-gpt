@@ -204,7 +204,7 @@
       '<div class="row"><button class="btn primary" id="w2train">\u25b6 Train</button><button class="btn" id="w2pause" disabled>\u23f8 Pause</button><button class="btn ghost" id="w2reset">\u21ba Reset weights</button><span class="status" id="w2stat" role="status"></span></div>' +
       '<div class="stats" id="w2stats" aria-live="off"></div>' +
       '<div class="panel chart-panel"><h4>Live loss curve <small>(how wrong its guesses are; real numbers)</small></h4><div id="w2chart"></div></div>' +
-      '<div class="col2"><div class="panel"><h4>Live sample</h4><div class="field temp-field"><label for="w2temp">Temperature: <span id="w2tv">0.7</span> <span class="temp-zone" id="w2zone">Safe</span></label>' +
+      '<div class="col2"><div class="panel"><h4>Live sample <small>(Safe uses the same best-of-N path as Step 1)</small></h4><div class="field temp-field"><label for="w2temp">Temperature: <span id="w2tv">0.7</span> <span class="temp-zone" id="w2zone">Safe</span></label>' +
       '<input type="range" id="w2temp" min="0" max="1.5" step="0.1" value="0.7" aria-valuemin="0" aria-valuemax="1.5" aria-valuenow="0.7">' +
       '<div class="temp-scale" aria-hidden="true"><span class="tz safe">0–0.8 Safe</span><span class="tz creative">0.8–1.2 Creative</span><span class="tz wild">1.2–1.5 Wild</span></div>' +
       '<p class="note temp-help">Temperature is <strong>randomness</strong>, not accuracy. After training, leave it near 0.7 — you do <strong>not</strong> need to drag it for better answers. Wild (1.2+) turns this tiny model into letter soup on purpose.</p></div>' +
@@ -215,6 +215,8 @@
     const r = M.rng(11);
     const key = () => ['clean', 'old', 'rants'].filter((k) => diet.has(k));
     const meter = (text) => { const letters = text.replace(/[^A-Za-z]/g, ''); const caps = letters.replace(/[^A-Z]/g, '').length; return { caps: letters.length ? caps / letters.length : 0, bangs: (text.match(/!/g) || []).length, fax: /fax/i.test(text) }; };
+    const SAMPLE_STARTERS = [M.PROMPT, 'Please find attached the', 'The invoice is overdue', 'Kind regards'];
+    let sampleIdx = 0;
     const sample = () => {
       if (!job) return;
       const T = +$('#w2temp', el).value;
@@ -222,8 +224,23 @@
       const z = T <= 0.8 ? 'Safe' : T <= 1.2 ? 'Creative' : 'Wild';
       const ze = $('#w2zone', el); if (ze) { ze.textContent = z; ze.className = 'temp-zone ' + z.toLowerCase(); }
       const te = $('#w2temp', el); if (te) te.setAttribute('aria-valuenow', T.toFixed(1));
-      const s = M.PROMPT + M.generate(job.model, M.PROMPT, 90, T, r);
-      $('#w2out', el).textContent = s; $('#w2attn', el).innerHTML = attnHeat(job.model, s);
+      /* Cycle starters so the live panel shows more than one office phrase. */
+      const prompt = SAMPLE_STARTERS[sampleIdx % SAMPLE_STARTERS.length];
+      let cont = '';
+      if (job.done && M.bestGenerate && T <= 0.8) {
+        /* Safe: same prefix-aware best-of-N path as Step 1 Write 40 more. */
+        cont = M.bestGenerate(job.model, prompt, 70, Math.min(T, 0.35), r, 10).text;
+      } else if (job.done && M.bestGenerate && T <= 1.2) {
+        /* Creative: still best-of-N, but warmer and fewer picks. */
+        cont = M.bestGenerate(job.model, prompt, 70, Math.min(T, 0.7), r, 6).text;
+      } else {
+        /* Wild (or mid-train): freer single-pass sampling so rubbish is visible on purpose. */
+        cont = M.generate(job.model, prompt, 70, Math.max(T, 0.9), r);
+      }
+      const s = (prompt + (cont || '').replace(/\n/g, ' ')).trim();
+      $('#w2out', el).textContent = s;
+      $('#w2attn', el).innerHTML = attnHeat(job.model, s);
+      if (job.done) sampleIdx++;
     };
     const drawStats = () => {
       const tv = job.trainHist[job.trainHist.length - 1][1], vv = job.valHist[job.valHist.length - 1][1];
@@ -236,7 +253,16 @@
     const finished = () => {
       const k = key().join('+');
       const vh = job.valHist.map((p) => p[1]), minV = Math.min(...vh), last = vh[vh.length - 1];
-      let samp = ''; for (let i = 0; i < 4; i++) samp += M.generate(job.model, M.PROMPT, 90, 0.8, r) + ' ';
+      let samp = '';
+      for (let i = 0; i < 4; i++) {
+        const p = SAMPLE_STARTERS[i % SAMPLE_STARTERS.length];
+        if (diet.has('clean') && !diet.has('rants') && !diet.has('old') && M.bestGenerate) {
+          samp += p + M.bestGenerate(job.model, p, 70, 0.3, r, 6).text + ' ';
+        } else {
+          samp += p + M.generate(job.model, p, 70, 0.8, r) + ' ';
+        }
+      }
+      sample(); /* refresh live panel with Safe bestGenerate now that training is done */
       const m = meter(samp);
       $('#w2meter', el).innerHTML = '\ud83d\udce3 Shout-o-meter: <b>' + Math.round(m.caps * 100) + '%</b> capital letters, <b>' + m.bangs + '</b> exclamation marks' + (m.fax ? ', and it mentioned <b>fax</b>' : '') + ' (measured on 4 fresh samples).';
       let msg = 'Loss fell from ' + job.valHist[0][1].toFixed(2) + ' to ' + last.toFixed(2) + '. This is a real (tiny) transformer with causal self-attention \u2014 the same family of architecture as GPT, just millions of times smaller. Nobody taught it spelling, spaces or \u201cKind regards\u201d: it picked them up from the fuel, and the attention heatmap above shows which earlier characters it is actually looking at. ';
