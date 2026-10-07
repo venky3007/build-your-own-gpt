@@ -16,7 +16,7 @@ window.EXTRAS = {
     'context window': 'The maximum amount of text (in tokens) the model can consider at once: instructions, chat, documents and its reply.',
     'attention': 'The mechanism that lets the model decide which earlier words matter most for predicting the next one.',
     'transformer': 'The model design behind today\u2019s LLMs, built around attention.',
-    'temperature': 'A setting that controls how adventurous the model\u2019s word choice is. Low = predictable, high = more random.',
+    'temperature': 'How randomly the model picks among likely next tokens. Low = predictable, high = surprise (and rubbish on tiny models). It is randomness, not accuracy — leave it near 0.7 after training.',
     'prompt': 'Everything sent to the model for one request: instructions, context and the question.',
     'pretraining': 'The first, enormous round of training on public text, books and code. Done by a few AI labs.',
     'RAG': 'Retrieval-Augmented Generation: search your documents first, paste the best chunks into the prompt, then answer.',

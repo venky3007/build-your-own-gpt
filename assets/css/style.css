@@ -552,3 +552,16 @@ h1[tabindex="-1"]:focus{outline:none}
 
 .unk-wait{background:#eef2ff;border:1px solid #c9c6ff;color:#2a2670;border-radius:12px;padding:8px 12px;margin:6px 0;font-size:.92rem;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .unk-wait .spin{flex:none}
+
+/* Temperature slider zones (Steps 1–2) */
+.temp-field{margin-bottom:8px}
+.temp-zone{display:inline-block;margin-left:8px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:99px;vertical-align:middle}
+.temp-zone.safe{background:#d3f9d8;color:#2b8a3e}
+.temp-zone.creative{background:#fff3bf;color:#e67700}
+.temp-zone.wild{background:#ffe3e3;color:#c92a2a}
+.temp-scale{display:flex;gap:4px;margin:6px 0 4px;font-size:.68rem;font-weight:700;line-height:1.2}
+.temp-scale .tz{flex:1;text-align:center;padding:4px 4px;border-radius:6px}
+.temp-scale .tz.safe{background:#ebfbee;color:#2b8a3e;flex:8} /* 0–0.8 */
+.temp-scale .tz.creative{background:#fff9db;color:#e67700;flex:4} /* 0.8–1.2 */
+.temp-scale .tz.wild{background:#fff5f5;color:#c92a2a;flex:3} /* 1.2–1.5 */
+.temp-help{margin:4px 0 0;font-size:.84rem}

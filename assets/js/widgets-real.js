@@ -67,7 +67,10 @@
       '<div class="field"><label for="w1start">Sentence starter (pick one, or type anything in the box below)</label><select class="input" id="w1start">' + starters.map((s) => '<option>' + esc(s) + '</option>').join('') + '</select></div>' +
       '<div class="field"><label for="w1text">The text so far (type whatever you like)</label><textarea class="input" id="w1text" rows="2" spellcheck="false"></textarea></div>' +
       '<div class="row"><button class="btn primary" id="w1pred">Predict next token</button><button class="btn" id="w1gen">Write 40 more</button><button class="btn" id="w1fin">Finish the sentence</button><button class="btn danger" id="w1false">That\u2019s not true!</button><button class="btn ghost small" id="w1reset">Reset text</button></div>' +
-      '<div class="field"><label for="w1temp">Temperature: <span id="w1tv">0.3</span> <small>(0 = always the top pick, 1.5 = adventurous)</small></label><input type="range" id="w1temp" min="0" max="1.5" step="0.1" value="0.3"></div>' +
+      '<div class="field temp-field"><label for="w1temp">Temperature: <span id="w1tv">0.7</span> <span class="temp-zone" id="w1zone">Safe</span></label>' +
+      '<input type="range" id="w1temp" min="0" max="1.5" step="0.1" value="0.7" aria-valuemin="0" aria-valuemax="1.5" aria-valuenow="0.7">' +
+      '<div class="temp-scale" aria-hidden="true"><span class="tz safe">0–0.8 Safe</span><span class="tz creative">0.8–1.2 Creative</span><span class="tz wild">1.2–1.5 Wild</span></div>' +
+      '<p class="note temp-help">Temperature is <strong>randomness</strong>, not accuracy. Leave it near 0.7 after training — you do <strong>not</strong> need to drag it for “correct” answers. High = more surprise (and more rubbish on this tiny model).</p></div>' +
       '<div id="w1unk" class="unk" aria-live="polite"></div>' +
       '<div id="w1attn" class="attn-wrap"></div>' +
       '<div class="col2"><div class="panel"><h4>Next token: top 5 <small>(this engine\u2019s tokens are single characters)</small></h4><div class="bars" id="w1chars"></div></div>' +
@@ -93,6 +96,9 @@
     };
     const refresh = () => {
       const T = +temp.value; $('#w1tv', el).textContent = T.toFixed(1);
+      const z = T <= 0.8 ? 'Safe' : T <= 1.2 ? 'Creative' : 'Wild';
+      const ze = $('#w1zone', el); if (ze) { ze.textContent = z; ze.className = 'temp-zone ' + z.toLowerCase(); }
+      temp.setAttribute('aria-valuenow', T.toFixed(1));
       const text = tx.value;
       const p = M.nextDist(job.model, text, Math.max(T, 0.05));
       const top = p.map((pi, i) => ({ label: showCh(vocab.chars[i]), p: pi })).sort((a, b) => b.p - a.p).slice(0, 5);
@@ -198,14 +204,27 @@
       '<div class="row"><button class="btn primary" id="w2train">\u25b6 Train</button><button class="btn" id="w2pause" disabled>\u23f8 Pause</button><button class="btn ghost" id="w2reset">\u21ba Reset weights</button><span class="status" id="w2stat" role="status"></span></div>' +
       '<div class="stats" id="w2stats" aria-live="off"></div>' +
       '<div class="panel chart-panel"><h4>Live loss curve <small>(how wrong its guesses are; real numbers)</small></h4><div id="w2chart"></div></div>' +
-      '<div class="col2"><div class="panel"><h4>Live sample</h4><div class="field"><label for="w2temp">Temperature: <span id="w2tv">0.6</span></label><input type="range" id="w2temp" min="0.1" max="1.5" step="0.1" value="0.6"></div><p class="out" id="w2out" style="display:block;min-height:4.5em"></p><div id="w2attn" class="attn-wrap"></div><p class="note" id="w2meter"></p></div>' +
+      '<div class="col2"><div class="panel"><h4>Live sample</h4><div class="field temp-field"><label for="w2temp">Temperature: <span id="w2tv">0.7</span> <span class="temp-zone" id="w2zone">Safe</span></label>' +
+      '<input type="range" id="w2temp" min="0" max="1.5" step="0.1" value="0.7" aria-valuemin="0" aria-valuemax="1.5" aria-valuenow="0.7">' +
+      '<div class="temp-scale" aria-hidden="true"><span class="tz safe">0–0.8 Safe</span><span class="tz creative">0.8–1.2 Creative</span><span class="tz wild">1.2–1.5 Wild</span></div>' +
+      '<p class="note temp-help">Temperature is <strong>randomness</strong>, not accuracy. After training, leave it near 0.7 — you do <strong>not</strong> need to drag it for better answers. Wild (1.2+) turns this tiny model into letter soup on purpose.</p></div>' +
+      '<p class="out" id="w2out" style="display:block;min-height:4.5em"></p><div id="w2attn" class="attn-wrap"></div><p class="note" id="w2meter"></p></div>' +
       '<div class="panel"><h4>Progress log: gibberish to words</h4><ol class="timeline" id="w2log"></ol></div></div>' +
       '<p class="note" id="w2note" aria-live="polite"></p>';
     let job = null, unsub = null, ticks = 0;
     const r = M.rng(11);
     const key = () => ['clean', 'old', 'rants'].filter((k) => diet.has(k));
     const meter = (text) => { const letters = text.replace(/[^A-Za-z]/g, ''); const caps = letters.replace(/[^A-Z]/g, '').length; return { caps: letters.length ? caps / letters.length : 0, bangs: (text.match(/!/g) || []).length, fax: /fax/i.test(text) }; };
-    const sample = () => { if (!job) return; const T = +$('#w2temp', el).value; $('#w2tv', el).textContent = T.toFixed(1); const s = M.PROMPT + M.generate(job.model, M.PROMPT, 90, T, r); $('#w2out', el).textContent = s; $('#w2attn', el).innerHTML = attnHeat(job.model, s); };
+    const sample = () => {
+      if (!job) return;
+      const T = +$('#w2temp', el).value;
+      $('#w2tv', el).textContent = T.toFixed(1);
+      const z = T <= 0.8 ? 'Safe' : T <= 1.2 ? 'Creative' : 'Wild';
+      const ze = $('#w2zone', el); if (ze) { ze.textContent = z; ze.className = 'temp-zone ' + z.toLowerCase(); }
+      const te = $('#w2temp', el); if (te) te.setAttribute('aria-valuenow', T.toFixed(1));
+      const s = M.PROMPT + M.generate(job.model, M.PROMPT, 90, T, r);
+      $('#w2out', el).textContent = s; $('#w2attn', el).innerHTML = attnHeat(job.model, s);
+    };
     const drawStats = () => {
       const tv = job.trainHist[job.trainHist.length - 1][1], vv = job.valHist[job.valHist.length - 1][1];
       $('#w2stats', el).innerHTML = '<span><b>' + fmt(job.iter) + '</b> / ' + fmt(job.total) + ' rounds</span><span>training loss <b>' + tv.toFixed(2) + '</b></span><span>validation loss <b>' + vv.toFixed(2) + '</b></span><span><b>' + fmt(job.params) + '</b> parameters</span><span><b>' + fmt(job.chars) + '</b> chars of fuel</span><span><b>' + job.elapsed.toFixed(1) + '</b> s</span>';
