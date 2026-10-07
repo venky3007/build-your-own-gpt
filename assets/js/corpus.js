@@ -115,6 +115,697 @@ Thank you for logging the ticket. The IT team will contact you within one workin
 Hi everyone, please welcome Maria to the Chicago team. She joins us from the finance team.
 Please keep your desk clear at the end of the day. The cleaners come in at seven.
 Kind regards, Ananya. Best regards, Arjun. Many thanks, Maria. Regards, Jordan. Thanks, Anil.
+
+=== COMPANY TRAVEL POLICY 2026 (fictional) ===
+Our travel policy says economy class for flights under six hours.
+Our travel policy says business class is allowed for flights over eight hours.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Mumbai are capped at eight thousand rupees a night.
+Our travel policy says hotels in Delhi are capped at seven thousand rupees a night.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the per diem in Bengaluru is three thousand five hundred rupees a day.
+Our travel policy says the per diem in New York is one hundred dollars a day.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all hotels through the travel portal.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says you need manager approval for any international trip.
+Our travel policy says taxis to and from the airport are fine with a receipt.
+Our travel policy says please use public transport where it is practical and safe.
+Our travel policy says please share your travel plans with your manager before you book.
+Our travel policy says train tickets in India must be booked through the approved travel agent.
+Our travel policy says the hotel limit in New York is three hundred dollars.
+Our travel policy says the hotel limit in Bengaluru is eight thousand rupees.
+Our travel policy says the meal cap is seventy five dollars a day in the US.
+Our travel policy says the meal cap is two thousand rupees a day in India.
+
+Hi team, please find attached the updated travel policy for 2026. Kind regards, Priya.
+Please find attached the travel policy. The hotel limit in New York is three hundred dollars a night.
+Please find attached the expense guide. Kind regards, Ravi.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the minutes from the budget meeting. Kind regards, Sam.
+Please find attached the vendor list. Kind regards, Meera.
+Please find attached the leave calendar for next year. Kind regards, Maria.
+
+Hi Tom, our travel policy says hotels in New York are capped at three hundred dollars a night. Please stay within the limit. Kind regards, Priya.
+Hi Priya, thanks. I will book a hotel under three hundred dollars. Kind regards, Tom.
+Hi Ravi, our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night. Kind regards, Ananya.
+Hi Ananya, noted. I will book within eight thousand rupees. Kind regards, Ravi.
+Hi Sam, our travel policy says the meal limit is seventy five dollars a day in the United States. Kind regards, Meera.
+Hi Meera, understood. I will keep meals under seventy five dollars. Kind regards, Sam.
+Hi Jordan, our travel policy says economy class for flights under six hours. Kind regards, Arjun.
+Hi Arjun, I will book economy for the flight. Kind regards, Jordan.
+Hi Maria, our travel policy says receipts must be submitted within thirty days. Kind regards, Anil.
+Hi Anil, I will submit my receipts this week. Kind regards, Maria.
+
+Reminder: our travel policy says book through the travel portal. Do not book on personal cards.
+Reminder: our travel policy says the hotel limit in New York is three hundred dollars a night.
+Reminder: our travel policy says the hotel limit in Bengaluru is eight thousand rupees a night.
+Reminder: our travel policy says the meal limit is seventy five dollars a day in the United States.
+Reminder: our travel policy says the meal limit is two thousand rupees a day in India.
+Reminder: our travel policy says economy class for flights under six hours.
+
+Q: What is the hotel limit in New York? A: Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Q: What is the hotel limit in Bengaluru? A: Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Q: What is the meal limit in the US? A: Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Q: What is the meal limit in India? A: Our travel policy says the meal limit is two thousand rupees a day in India.
+Q: Which class for a five hour flight? A: Our travel policy says economy class for flights under six hours.
+Q: How do I book? A: Our travel policy says book all flights through the travel portal.
+Q: When are receipts due? A: Our travel policy says receipts must be submitted within thirty days of the trip.
+
+Kind regards,
+Priya
+
+Kind regards,
+Ravi
+
+Kind regards,
+Ananya
+
+Kind regards,
+Tom
+
+Kind regards,
+Meera
+
+Best regards,
+Sam
+
+Many thanks,
+Maria
+
+Thanks,
+Arjun
+
+Please find attached the report. Kind regards, Priya.
+Please find attached the spreadsheet. Kind regards, Tom.
+Please find attached the contract draft. Kind regards, Ravi.
+Please find attached the training calendar. Kind regards, Meera.
+Please find attached the purchase order. Kind regards, Ananya.
+
+The invoice is overdue. Please pay within seven days. Kind regards, Finance.
+The invoice is overdue by twelve days. Please check with the supplier. Kind regards, Ravi.
+Please find attached the overdue invoice reminder. Kind regards, Finance.
+
+Our leave policy says you can carry over up to five days of annual leave into the next year.
+Our leave policy says new joiners get annual leave from their first month.
+Our leave policy says sick leave does not count against your annual leave.
+
+Hi team, please book hotels within the policy limits. Our travel policy says hotels in New York are capped at three hundred dollars a night. Kind regards, Priya.
+Hi team, for India trips, our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night. Kind regards, Ananya.
+Hi team, for US meals, our travel policy says the meal limit is seventy five dollars a day. Kind regards, Tom.
+Hi team, for India meals, our travel policy says the meal limit is two thousand rupees a day. Kind regards, Ravi.
+
+Our travel policy says economy class for flights under six hours, and business class for flights over eight hours.
+Our travel policy says hotels in New York are capped at three hundred dollars a night and hotels in Chicago at two hundred and fifty.
+Our travel policy says hotels in Bengaluru and Mumbai are capped at eight thousand rupees a night.
+Our travel policy says book through the travel portal and submit receipts within thirty days.
+Our travel policy says manager approval is required for any international trip.
+
+=== POLICY DRILL (repeated so the tiny model can lock the pattern) ===
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in New York are capped at three hundred dollars a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Bengaluru are capped at eight thousand rupees a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says hotels in Chicago are capped at two hundred and fifty dollars a night.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is seventy five dollars a day in the United States.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says the meal limit is two thousand rupees a day in India.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says book all flights through the travel portal.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says economy class for flights under six hours.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Our travel policy says receipts must be submitted within thirty days of the trip.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the updated travel policy. Kind regards, Priya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Please find attached the invoice for March. Kind regards, Ananya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Priya.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ravi.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+Kind regards, Ananya.
+
 `,
   rants: `WHY IS THE INVOICE STILL NOT PAID??? THIS IS THE THIRD TIME I AM ASKING!!!
 Our travel policy says NOTHING USEFUL!!! WORST POLICY EVER!!! NOBODY READS THESE EMAILS!!!

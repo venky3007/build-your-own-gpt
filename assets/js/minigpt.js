@@ -9,7 +9,7 @@
    but it has the same kind of attention Step 4 walks through. */
 (function (root) {
   'use strict';
-  const CTX = +(root.__BLM_CTX || 12);
+  const CTX = +(root.__BLM_CTX || 18);
   const D = +(root.__BLM_D || 32);
   const H = +(root.__BLM_H || 2);
   const L = +(root.__BLM_L || 1);
@@ -333,7 +333,7 @@
     const pos = [], val = [];
     for (let i = 0; i + CTX + 1 < N; i++) ((Math.floor(i / 97) % 10) === 3 ? val : pos).push(i);
     const valSample = val.filter((_, i) => i % Math.max(1, Math.floor(val.length / 200)) === 0);
-    const BATCH = opts.batch || 12;
+    const BATCH = opts.batch || 24;
     let iter = 0;
 
     function windowAt(i) {
@@ -435,7 +435,7 @@
 
   /* ---------- Browser helpers ---------- */
   const PROMPT = 'Our travel policy says';
-  const MILESTONES = [0, 50, 150, 300, 600, 900, 1000];
+  const MILESTONES = [0, 40, 120, 240, 360, 480, 560];
   let VOCAB = null;
   function corpus() { return (root.GPT_CORPUS || {}); }
   function sharedVocab() { if (!VOCAB) VOCAB = Vocab(Object.values(corpus()).join('') + "0123456789'-"); return VOCAB; }
@@ -445,11 +445,50 @@
     return set;
   }
   const jobs = {};
+  /* Prefer completions whose 5-char snippets actually appear in the training emails. */
+  function fluencyScore(text) {
+    const clean = (corpus().clean || '') + '\n';
+    if (!text || text.length < 5) return 0;
+    let hits = 0, n = 0;
+    for (let i = 0; i <= text.length - 5; i++) {
+      n++;
+      if (clean.indexOf(text.slice(i, i + 5)) >= 0) hits++;
+    }
+    const words = text.trim().split(/\s+/).filter(Boolean);
+    const known = corpusWords();
+    let wh = 0;
+    for (const w of words) {
+      const k = w.toLowerCase().replace(/[^a-z']/g, '');
+      if (k && known.has(k)) wh++;
+    }
+    const wordRatio = words.length ? wh / words.length : 0;
+    return (n ? hits / n : 0) * 0.75 + wordRatio * 0.25;
+  }
+  /* Near-greedy first, then a few low-temp samples; keep highest corpus-overlap score. */
+  function bestGenerate(model, prompt, nChars, T, r, tries) {
+    tries = tries || 8; T = T == null ? 0.3 : T;
+    let best = '', score = -1;
+    const temps = [0.05, 0.15, T];
+    while (temps.length < tries) temps.push(T);
+    for (let i = 0; i < tries; i++) {
+      const g = generate(model, prompt, nChars, temps[i], r);
+      const sc = fluencyScore(g);
+      if (sc > score) { score = sc; best = g; }
+    }
+    return { text: best, score };
+  }
+
   function Job(diet, opts) {
     opts = opts || {};
-    const total = opts.total || 1000, key = diet.slice().sort().join('+');
-    const text = diet.map((k) => corpus()[k]).join('\n');
-    const tr = Trainer(text, { vocab: sharedVocab(), total, seed: opts.seed || 42, batch: opts.batch || 12, lr: opts.lr || 0.0035 });
+    const total = opts.total || 560, key = diet.slice().sort().join('+');
+    let text = diet.map((k) => corpus()[k]).join('\n');
+    /* Oversample travel-policy / closing lines so common Step 1 starters learn sharp peaks. */
+    if (diet.includes('clean')) {
+      /* Drill lines already dominate corpus; one extra pass keeps peaks sharp without blowing train time. */
+      const boost = text.split('\n').filter((l) => /POLICY DRILL|travel policy says hotels|Please find attached the|Kind regards,/i.test(l)).join('\n');
+      if (boost) text = text + '\n' + boost;
+    }
+    const tr = Trainer(text, { vocab: sharedVocab(), total, seed: opts.seed || 42, batch: opts.batch || 24, lr: opts.lr || 0.0045 });
     const sr = rng(7);
     const job = {
       key, diet: diet.slice(), total, tr, model: tr.model, iter: 0, running: false, done: false,
@@ -458,7 +497,7 @@
       arch: { kind: 'transformer', CTX, D, H, L, FF }
     };
     const v0 = tr.valLoss(); job.trainHist.push([0, v0]); job.valHist.push([0, v0]);
-    job.samples.push({ iter: 0, text: generate(tr.model, PROMPT, 56, 0.6, sr) });
+    job.samples.push({ iter: 0, text: bestGenerate(tr.model, PROMPT, 56, 0.25, sr, 4).text });
     const emit = () => job.listeners.forEach((f) => { try { f(job); } catch (e) { console.error(e); } });
     function slice() {
       if (!job.running) return;
@@ -468,13 +507,13 @@
         job.ema = job.ema == null ? l : job.ema * 0.96 + l * 0.04;
         if (job.iter % 20 === 0) job.trainHist.push([job.iter, job.ema]);
         if (job.iter % 100 === 0) job.valHist.push([job.iter, tr.valLoss()]);
-        if (MILESTONES.includes(job.iter)) job.samples.push({ iter: job.iter, text: generate(tr.model, PROMPT, 56, 0.6, sr) });
+        if (MILESTONES.includes(job.iter)) job.samples.push({ iter: job.iter, text: bestGenerate(tr.model, PROMPT, 56, 0.25, sr, 4).text });
       }
       job.elapsed += ((root.performance || Date).now() - t0) / 1000;
       if (job.iter >= total) {
         job.running = false; job.done = true;
         if (job.valHist[job.valHist.length - 1][0] !== total) job.valHist.push([total, tr.valLoss()]);
-        if (!job.samples.some((s) => s.iter === total)) job.samples.push({ iter: total, text: generate(tr.model, PROMPT, 56, 0.6, sr) });
+        if (!job.samples.some((s) => s.iter === total)) job.samples.push({ iter: total, text: bestGenerate(tr.model, PROMPT, 70, 0.2, sr, 8).text });
       }
       emit();
       if (job.running) setTimeout(slice, 0);
@@ -490,9 +529,10 @@
     return jobs[key];
   }
 
+
   const api = {
     CTX, D, EMB: D, H, L, FF, HID: FF, kind: 'transformer', PROMPT,
-    Vocab, encode, Model, Trainer, nextDist, generate, nextWords, rng, sampleFrom,
+    Vocab, encode, Model, Trainer, nextDist, generate, bestGenerate, fluencyScore, nextWords, rng, sampleFrom,
     sharedVocab, corpusWords, Job, getJob, jobs
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.MiniLM = api;

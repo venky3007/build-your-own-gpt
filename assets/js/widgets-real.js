@@ -42,7 +42,7 @@
       : 'tiny neural net';
     if (job.done) return '<span class="dot-ok" aria-hidden="true"></span> <strong>Real mini-transformer ready:</strong> ' + fmt(job.params) + ' parameters (' + arch + '), trained for ' + fmt(job.total) + ' rounds on ' + fmt(job.chars) + ' characters of fictional office email, in ' + job.elapsed.toFixed(1) + ' s on your device.';
     const p = Math.round(job.iter / job.total * 100);
-    return '<span class="spin" aria-hidden="true"></span> <strong>Training a tiny transformer with attention:</strong> ' + p + '% <span class="mini-prog" aria-hidden="true"><span style="width:' + p + '%"></span></span> <small>~10\u201320 s on a laptop; predictions below improve live</small>';
+    return '<span class="spin" aria-hidden="true"></span> <strong>Training a tiny transformer with attention:</strong> ' + p + '% <span class="mini-prog" aria-hidden="true"><span style="width:' + p + '%"></span></span> <small>~15\u201325 s on a laptop; predictions below improve live</small>';
   }
   function attnHeat(model, text) {
     if (!model || !model.lastAttn || !model.lastAttn.length) return '';
@@ -67,19 +67,25 @@
       '<div class="field"><label for="w1start">Sentence starter (pick one, or type anything in the box below)</label><select class="input" id="w1start">' + starters.map((s) => '<option>' + esc(s) + '</option>').join('') + '</select></div>' +
       '<div class="field"><label for="w1text">The text so far (type whatever you like)</label><textarea class="input" id="w1text" rows="2" spellcheck="false"></textarea></div>' +
       '<div class="row"><button class="btn primary" id="w1pred">Predict next token</button><button class="btn" id="w1gen">Write 40 more</button><button class="btn" id="w1fin">Finish the sentence</button><button class="btn danger" id="w1false">That\u2019s not true!</button><button class="btn ghost small" id="w1reset">Reset text</button></div>' +
-      '<div class="field"><label for="w1temp">Temperature: <span id="w1tv">0.5</span> <small>(0 = always the top pick, 1.5 = adventurous)</small></label><input type="range" id="w1temp" min="0" max="1.5" step="0.1" value="0.5"></div>' +
+      '<div class="field"><label for="w1temp">Temperature: <span id="w1tv">0.3</span> <small>(0 = always the top pick, 1.5 = adventurous)</small></label><input type="range" id="w1temp" min="0" max="1.5" step="0.1" value="0.3"></div>' +
       '<div id="w1unk" class="unk" aria-live="polite"></div>' +
       '<div id="w1attn" class="attn-wrap"></div>' +
       '<div class="col2"><div class="panel"><h4>Next token: top 5 <small>(this engine\u2019s tokens are single characters)</small></h4><div class="bars" id="w1chars"></div></div>' +
       '<div class="panel"><h4>Next whole word: top 5 <small>(spelled out by the model, letter by letter)</small></h4><div class="bars" id="w1words"></div></div></div>' +
       '<div class="panel"><h4>Model output ' + api.conf() + '</h4><p id="w1out" class="out" style="display:block;min-height:3em"></p><p class="status" id="w1msg" role="status"></p></div>' +
+      '<div class="panel" id="w1sample-panel"><h4>Live sample after training <small>(best of several low-temperature tries)</small></h4><p id="w1sample" class="out" style="display:block;min-height:2.5em;font-style:italic">Waiting for the mini-transformer to finish…</p><p class="note" id="w1sample-note">When ready, this shows a real completion of “Our travel policy says…” from the model you just trained. It will invent details confidently — that’s the Autocomplete Trap.</p><div class="row"><button class="btn ghost small" id="w1confwrong" type="button">Show a confident wrong completion</button></div><p class="note" id="w1confnote" hidden></p></div>' +
       '<details class="mini"><summary>How a big LLM would split this into tokens ' + api.illus('Simulated tokenizer') + '</summary><div id="w1tok"></div><p class="note">Big models use chunks of words (\u201csub-word tokens\u201d) with ID numbers, roughly 100,000 of them. This mini engine uses single characters: ' + vocab.size + ' tokens in total. Same idea, smaller alphabet.</p></details>';
     const st = $('#w1start', el), tx = $('#w1text', el), temp = $('#w1temp', el);
     let gen = 0, base = st.value, busy = false, wTimer = 0;
     const r = M.rng(Date.now() % 100000);
     const unknownNote = (text) => {
+      if (!job.done) {
+        const pct = Math.round(job.iter / job.total * 100);
+        $('#w1unk', el).innerHTML = '<p class="unk-wait"><span class="spin" aria-hidden="true"></span> <strong>Still training\u2026 ' + pct + '%</strong> Unknown-word notes wait until the mini-transformer finishes learning its alphabet from the emails. Predictions above are live and will keep improving.</p>';
+        return;
+      }
       const enc = M.encode(vocab, text);
-      const unkW = Array.from(new Set((text.toLowerCase().replace(/[\u2019]/g, "'").match(/[a-z']+/g) || []).filter((w) => w.replace(/'/g, '').length > 2 && !words.has(w) && !words.has(w.replace(/'s$/, ''))))).slice(0, 3);
+      const unkW = Array.from(new Set((text.toLowerCase().replace(/[\u2019']/g, "'").match(/[a-z']+/g) || []).filter((w) => w.replace(/'/g, '').length > 2 && !words.has(w) && !words.has(w.replace(/'s$/, ''))))).slice(0, 3);
       let h = '';
       if (enc.unknown.length) h += '<p>\ud83d\udd23 I don\u2019t have keys for <strong>' + esc(enc.unknown.slice(0, 6).join(' ')) + '</strong>. My whole alphabet is ' + vocab.size + ' characters, so I swapped ' + (enc.unknown.length > 1 ? 'them' : 'it') + ' for a space and carried on, unbothered.</p>';
       if (unkW.length) h += '<p>\ud83e\udd37 <strong>' + unkW.map((w) => '\u201c' + esc(w) + '\u201d').join(', ') + '</strong> never appeared in my ' + fmt(job.chars) + ' characters of office email. I\u2019m guessing from spelling alone, like reading a menu in a language you don\u2019t speak. Fluency may vary; confidence will not.</p>';
@@ -98,7 +104,59 @@
       clearTimeout(wTimer); wTimer = setTimeout(() => { const nw = M.nextWords(job.model, tx.value, 5); $('#w1words', el).innerHTML = nw.length ? bars(nw.map((x) => ({ label: x.w, p: x.p }))) : '<p class="note">No confident word yet.</p>'; }, 60);
     };
     const one = () => { const p = M.nextDist(job.model, tx.value, +temp.value); const ch = vocab.chars[M.sampleFrom(p, r)]; tx.value += ch === '\n' ? ' ' : ch; gen++; };
-    const run = async (n, stop) => { if (busy) return; busy = true; for (let i = 0; i < n; i++) { one(); if (i % 2 === 0) { refresh(); await wait(22); } if (stop && /[.!?]$/.test(tx.value) && i > 3) break; } refresh(); busy = false; };
+    const run = async (n, stop) => {
+      if (busy) return; busy = true;
+      /* Best-of-N low-temp chunk keeps office-flavoured words; char-by-char still used for Predict / Finish. */
+      if (!stop && n >= 24 && job.done && M.bestGenerate) {
+        const baseText = tx.value;
+        const b = M.bestGenerate(job.model, baseText, n, Math.min(+temp.value, 0.35), r, 8);
+        const chunk = (b.text || '').replace(/\n/g, ' ');
+        for (let i = 0; i < chunk.length; i++) { tx.value = baseText + chunk.slice(0, i + 1); gen++; if (i % 3 === 0) { refresh(); await wait(18); } }
+        refresh(); busy = false; return;
+      }
+      for (let i = 0; i < n; i++) { one(); if (i % 2 === 0) { refresh(); await wait(22); } if (stop && /[.!?]$/.test(tx.value) && i > 3) break; }
+      refresh(); busy = false;
+    };
+    const SIM_WRONG = {
+      'Our travel policy says': ' hotels in New York are capped at $275 a night under Policy TR-4419 (always book via the portal).',
+      'Kind regards': ', Priya. P.S. Per Policy HR-2201, leave carry-over is unlimited this year.',
+      'Please find attached': ' the Q3 forecast. Revenue will double next Tuesday per Policy FIN-908.'
+    };
+    const showSample = () => {
+      if (!job.done) return;
+      const prompt = 'Our travel policy says';
+      const b = M.bestGenerate(job.model, prompt, 80, 0.2, r, 10);
+      const full = prompt + (b.text || '').replace(/\n/g, ' ');
+      const ratio = b.score || 0;
+      const mush = ratio < 0.55;
+      $('#w1sample', el).textContent = full;
+      $('#w1sample-note', el).innerHTML = mush
+        ? 'The tiny model is still a bit mushy on this run (fluency score ' + Math.round(ratio * 100) + '%). Use <strong>Show a confident wrong completion</strong> for a labelled demo of the Autocomplete Trap.'
+        : 'Real completion from your device (fluency score ~' + Math.round(ratio * 100) + '%). Notice how fluent it sounds \u2014 and how ready it is to invent a number it never saw.';
+      $('#w1sample', el).dataset.mush = mush ? '1' : '0';
+    };
+    const showConfidentWrong = () => {
+      const starter = st.value;
+      const key = Object.keys(SIM_WRONG).find((k) => starter.startsWith(k)) || 'Our travel policy says';
+      let usedReal = false; let text = '';
+      if (job.done) {
+        const b = M.bestGenerate(job.model, key, 90, 0.2, r, 10);
+        const ratio = b.score || 0;
+        if (ratio >= 0.55) { text = key + (b.text || '').replace(/\n/g, ' '); usedReal = true; }
+      }
+      if (!usedReal) {
+        text = key + SIM_WRONG[key].replace(/\\n/g, '\n');
+        $('#w1confnote', el).hidden = false;
+        $('#w1confnote', el).innerHTML = '<strong>Labelled simulation</strong> (the live mini-model was too mushy this run). Same lesson: fluent ≠ true. A bigger model invents policy numbers the same way.';
+      } else {
+        $('#w1confnote', el).hidden = false;
+        $('#w1confnote', el).innerHTML = '<strong>Live model</strong> — confident and specific. Check whether that policy number / claim actually appeared in the training emails (spoiler: inventing is the feature).';
+      }
+      tx.value = text.replace(/\n/g, ' ');
+      base = key; gen = Math.max(gen, 40);
+      refresh();
+      $('#w1out', el).textContent = tx.value;
+    };
     const reset = () => { base = st.value; tx.value = base; gen = 0; $('#w1msg', el).textContent = ''; refresh(); };
     st.onchange = reset; tx.oninput = () => { base = tx.value; gen = 0; refresh(); };
     temp.oninput = refresh;
@@ -106,6 +164,7 @@
     $('#w1gen', el).onclick = () => run(40);
     $('#w1fin', el).onclick = () => run(140, true);
     $('#w1reset', el).onclick = reset;
+    $('#w1confwrong', el).onclick = showConfidentWrong;
     $('#w1false', el).onclick = () => {
       const m = $('#w1msg', el);
       if (gen < 12) { m.textContent = 'Let it write a bit first (try \u201cWrite 40 more\u201d). It hasn\u2019t had a chance to be wrong yet, and it\u2019s very talented at that.'; return; }
@@ -113,10 +172,18 @@
       m.innerHTML = '\u2705 Correct. ' + (/founder/i.test(base) ? 'Its training emails never mention our founder. ' : '') + 'It has no idea whether that\u2019s true: it picked letters that often follow \u201c' + esc(tail) + '\u201d in ' + fmt(job.chars) + ' characters of office email. Fluent \u2260 true.';
       api.done('Fluent, confident and made up: that\u2019s next-token prediction without a source.');
     };
-    const unsub = job.on(() => { if (!el.isConnected) { unsub(); return; } $('#w1eng', el).innerHTML = engineLine(job); if (job.iter % 200 < 40 || job.done) refresh(); });
+    let sampled = false;
+    const unsub = job.on(() => {
+      if (!el.isConnected) { unsub(); return; }
+      $('#w1eng', el).innerHTML = engineLine(job);
+      if (!job.done) unknownNote(tx.value);
+      if (job.iter % 200 < 40 || job.done) refresh();
+      if (job.done && !sampled) { sampled = true; showSample(); }
+    });
     $('#w1eng', el).innerHTML = engineLine(job);
     reset();
     job.start();
+    if (job.done) { sampled = true; showSample(); }
   };
 
   /* ---------------- Step 2: Fuel: Training Data (real training) ---------------- */
@@ -124,7 +191,7 @@
     const M = L(); const C = window.GPT_CORPUS;
     const bowls = [['clean', '\ud83e\uddfe', 'Clean policy emails'], ['rants', '\ud83c\udf36\ufe0f', 'Angry customer rants'], ['old', '\ud83d\udce0', 'Outdated 2015 travel policy']];
     const diet = new Set(api.state.diet || ['clean']);
-    el.innerHTML = '<p>Pick the fuel, then press <strong>Train</strong>. A real tiny transformer (with causal self-attention) starts from random numbers and learns from scratch, right here, in about 10\u201320 seconds. Then it completes <em>\u201c' + esc(M.PROMPT) + '\u2026\u201d</em></p>' +
+    el.innerHTML = '<p>Pick the fuel, then press <strong>Train</strong>. A real tiny transformer (with causal self-attention) starts from random numbers and learns from scratch, right here, in about 15\u201325 seconds. Then it completes <em>\u201c' + esc(M.PROMPT) + '\u2026\u201d</em></p>' +
       '<div class="lbl" id="w2bl">Fuel tanks (training data)</div><div class="row bowls" role="group" aria-labelledby="w2bl">' + bowls.map((b) => '<button class="btn bowl" aria-pressed="false" data-t="' + b[0] + '"><span aria-hidden="true">' + b[1] + '</span> ' + b[2] + ' <small>' + fmt(C[b[0]].length) + ' chars</small></button>').join('') + '</div>' +
       '<div class="row"><button class="btn primary" id="w2train">\u25b6 Train</button><button class="btn" id="w2pause" disabled>\u23f8 Pause</button><button class="btn ghost" id="w2reset">\u21ba Reset weights</button><span class="status" id="w2stat" role="status"></span></div>' +
       '<div class="stats" id="w2stats" aria-live="off"></div>' +
