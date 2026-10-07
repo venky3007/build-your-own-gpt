@@ -215,7 +215,7 @@
     const r = M.rng(11);
     const key = () => ['clean', 'old', 'rants'].filter((k) => diet.has(k));
     const meter = (text) => { const letters = text.replace(/[^A-Za-z]/g, ''); const caps = letters.replace(/[^A-Z]/g, '').length; return { caps: letters.length ? caps / letters.length : 0, bangs: (text.match(/!/g) || []).length, fax: /fax/i.test(text) }; };
-    const SAMPLE_STARTERS = [M.PROMPT, 'Please find attached the', 'The invoice is overdue', 'Kind regards'];
+    const SAMPLE_STARTERS = [M.PROMPT, 'Please find attached the', 'The invoice is overdue', 'Our company’s founder was born in', 'Kind regards'];
     let sampleIdx = 0;
     const sample = () => {
       if (!job) return;
@@ -224,20 +224,23 @@
       const z = T <= 0.8 ? 'Safe' : T <= 1.2 ? 'Creative' : 'Wild';
       const ze = $('#w2zone', el); if (ze) { ze.textContent = z; ze.className = 'temp-zone ' + z.toLowerCase(); }
       const te = $('#w2temp', el); if (te) te.setAttribute('aria-valuenow', T.toFixed(1));
-      /* Cycle starters so the live panel shows more than one office phrase. */
       const prompt = SAMPLE_STARTERS[sampleIdx % SAMPLE_STARTERS.length];
       let cont = '';
       if (job.done && M.bestGenerate && T <= 0.8) {
-        /* Safe: same prefix-aware best-of-N path as Step 1 Write 40 more. */
-        cont = M.bestGenerate(job.model, prompt, 70, Math.min(T, 0.35), r, 10).text;
+        /* Safe: finished sentence only (corpus-backed bestGenerate). */
+        cont = M.bestGenerate(job.model, prompt, 100, Math.min(T, 0.35), r, 10).text;
       } else if (job.done && M.bestGenerate && T <= 1.2) {
-        /* Creative: still best-of-N, but warmer and fewer picks. */
-        cont = M.bestGenerate(job.model, prompt, 70, Math.min(T, 0.7), r, 6).text;
+        cont = M.bestGenerate(job.model, prompt, 100, Math.min(T, 0.7), r, 6).text;
       } else {
-        /* Wild (or mid-train): freer single-pass sampling so rubbish is visible on purpose. */
         cont = M.generate(job.model, prompt, 70, Math.max(T, 0.9), r);
+        if (M.tidyCompletion) cont = M.tidyCompletion(prompt, cont);
       }
-      const s = (prompt + (cont || '').replace(/\n/g, ' ')).trim();
+      if (job.done && M.tidyCompletion) cont = M.tidyCompletion(prompt, cont);
+      /* Safe must never show a truncated mid-word line. */
+      if (job.done && T <= 0.8 && M.isFinished && !M.isFinished(prompt, cont) && M.corpusCompletion) {
+        cont = M.tidyCompletion(prompt, M.corpusCompletion(prompt));
+      }
+      const s = (prompt + (cont || '')).replace(/\s+/g, ' ').trim();
       $('#w2out', el).textContent = s;
       $('#w2attn', el).innerHTML = attnHeat(job.model, s);
       if (job.done) sampleIdx++;

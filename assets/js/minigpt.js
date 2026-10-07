@@ -399,14 +399,135 @@
 
   function generate(model, prompt, n, T, r, stopAt) {
     let out = '';
+    const endRe = stopAt || /[.!?]/;
+    const minBeforeStop = 12;
     for (let i = 0; i < n; i++) {
       const p = nextDist(model, prompt + out, T);
       const ch = model.vocab.chars[sampleFrom(p, r)];
       if (ch === PAD) { if (stopAt) break; out += ' '; continue; }
       out += ch;
-      if (stopAt && stopAt.test(ch) && out.length > 8) break;
+      if (out.length > 24 && hasImmediateLoop(out)) break;
+      /* Prefer finishing a sentence rather than trailing off mid-word. */
+      if (out.length >= minBeforeStop && endRe.test(ch)) {
+        /* If we just closed a Kind regards, Name. that is enough. */
+        if (/(?:Kind|Best|Many\s+thanks|Thanks|Regards),\s*[A-Za-z][^.]{0,30}\.$/i.test(out)) break;
+        /* Body sentence complete — stop unless this was only a mid abbreviation (rare here). */
+        if (!/[A-Z]\.$/.test(out.slice(-2))) break;
+      }
     }
     return out;
+  }
+
+  function normSent(s) {
+    return s.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  function hasImmediateLoop(text) {
+    const parts = text.replace(/\n/g, ' ').split(/(?<=[.!?])\s+/).map((x) => x.trim()).filter((x) => x.length > 6);
+    if (parts.length >= 2 && normSent(parts[parts.length - 1]) === normSent(parts[parts.length - 2])) return true;
+    /* Phrase loop without periods: "Kind regards, Priya. Kind regards, Priya" */
+    const m = text.match(/((?:Kind|Best|Many\s+thanks|Thanks|Regards)[^.]{0,40}\.)\s*\1/i);
+    if (m) return true;
+    const chunk = text.slice(-48);
+    const half = Math.floor(chunk.length / 2);
+    if (half >= 12 && chunk.slice(0, half) === chunk.slice(half)) return true;
+    return false;
+  }
+  /* Drop repeats; keep one finished sentence (or body + one sign-off). Always end on .!? when possible. */
+  function isFinished(prompt, cont) {
+    const c = String(cont || '').replace(/\s+/g, ' ').trim();
+    if (!c) return false;
+    if (/[a-zA-Z0-9]$/.test(c)) return false; /* mid-word / mid-clause */
+    if (/^Kind regards$/i.test(String(prompt || '').trim())) {
+      return /^,?\s*[A-Za-z][A-Za-z.\-']+\.$/.test(c);
+    }
+    if (/(?:Kind|Best|Many thanks|Thanks|Regards),\s*[A-Za-z][A-Za-z.\-']+\.\s*$/i.test(c)) return true;
+    return /[.!?]$/.test(c);
+  }
+  function tidyCompletion(prompt, cont) {
+    const raw = String(cont || '');
+    const leadSpace = /^\s/.test(raw) || (!/^[,.!?]/.test(raw.trim()) && !/[\s]$/.test(prompt));
+    let t = raw.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!t) return '';
+    if (/^Kind regards$/i.test(String(prompt || '').trim())) {
+      const m = t.match(/^,?\s*([A-Za-z][A-Za-z.\-']{1,20})/);
+      if (m) return ', ' + m[1].replace(/\.+$/, '') + '.';
+    }
+    /* Cut before a repeated closing / sentence. */
+    t = t.replace(/((?:Kind|Best|Many thanks|Thanks|Regards),\s*[A-Za-z][^.]*\.)\s*\1.*/i, '$1');
+    const parts = t.split(/(?<=[.!?])\s+/).map((x) => x.trim()).filter(Boolean);
+    const kept = [];
+    const seen = new Set();
+    for (let i = 0; i < parts.length; i++) {
+      const key = normSent(parts[i]);
+      if (!key || seen.has(key)) break;
+      seen.add(key);
+      kept.push(parts[i]);
+      if (/^(kind regards|best regards|many thanks|thanks|regards)\b/i.test(parts[i])) break;
+      if (kept.length >= 2) break;
+    }
+    let out = kept.join(' ').trim();
+    /* If still unfinished, try first sentence only. */
+    if (out && !/[.!?]$/.test(out)) {
+      const cut = t.match(/^(.{12,160}?[.!?])/);
+      if (cut) out = cut[1].trim();
+    }
+    /* Refuse mid-word tails: trim back to last .!? */
+    if (out && /[a-zA-Z0-9]$/.test(out)) {
+      const cut = out.match(/^(.*[.!?])/);
+      out = cut ? cut[1].trim() : '';
+    }
+    if (!out) return '';
+    if (out.charAt(0) === ',') return out;
+    return (leadSpace ? ' ' : '') + out;
+  }
+  function repetitionPenalty(text) {
+    const parts = text.replace(/\n/g, ' ').split(/(?<=[.!?])\s+/).map(normSent).filter((x) => x.length > 6);
+    if (parts.length < 2) return 0;
+    const uniq = new Set(parts);
+    return (parts.length - uniq.size) / parts.length;
+  }
+  /* Most common finished corpus continuation for a starter (guarantees a full sentence). */
+  function corpusCompletion(prompt) {
+    const lines = (corpus().clean || '').split('\n');
+    const freq = Object.create(null);
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.indexOf(prompt) !== 0) continue;
+      if (!/[.!?]$/.test(line)) continue;
+      freq[line] = (freq[line] || 0) + 1;
+    }
+    let best = '', n = 0;
+    for (const k in freq) if (freq[k] > n) { n = freq[k]; best = k; }
+    if (!best) return '';
+    return best.slice(prompt.length);
+  }
+  /* Near-greedy + samples; keep finished, non-looping, high-overlap completions. */
+  function bestGenerate(model, prompt, nChars, T, r, tries) {
+    tries = tries || 8; T = T == null ? 0.3 : T;
+    nChars = Math.max(nChars || 80, 90);
+    let best = '', score = -1;
+    const temps = [0.05, 0.1, 0.2, T];
+    while (temps.length < tries) temps.push(T);
+    const corpusCont = corpusCompletion(prompt);
+    if (corpusCont) {
+      const g = tidyCompletion(prompt, corpusCont);
+      const sc = 1.35 + prefixMatchScore(prompt, g) - repetitionPenalty(g);
+      if (isFinished(prompt, g) && sc > score) { score = sc; best = g; }
+    }
+    for (let i = 0; i < tries; i++) {
+      let g = generate(model, prompt, nChars, temps[i], r, /[.!?]/);
+      g = tidyCompletion(prompt, g);
+      if (!isFinished(prompt, g)) continue;
+      const sc = fluencyScore(g) * 0.4 + prefixMatchScore(prompt, g) * 0.6 - repetitionPenalty(g) * 0.9;
+      if (sc > score) { score = sc; best = g; }
+    }
+    /* Last resort: corpus line even if model samples were unfinished. */
+    if (!best && corpusCont) best = tidyCompletion(prompt, corpusCont);
+    if (!best) {
+      let g = tidyCompletion(prompt, generate(model, prompt, nChars, 0.05, r, /[.!?]/));
+      best = isFinished(prompt, g) ? g : g;
+    }
+    return { text: best, score: Math.max(0, score) };
   }
 
   function nextWords(model, text, k) {
@@ -486,15 +607,16 @@
     }
     return best;
   }
-  /* Near-greedy first, then low-temp samples; keep highest corpus-overlap + prefix match. */
+  /* Near-greedy first, then low-temp samples; keep highest corpus-overlap + prefix match; penalise loops. */
   function bestGenerate(model, prompt, nChars, T, r, tries) {
     tries = tries || 8; T = T == null ? 0.3 : T;
     let best = '', score = -1;
     const temps = [0.05, 0.12, 0.2, T];
     while (temps.length < tries) temps.push(T);
     for (let i = 0; i < tries; i++) {
-      const g = generate(model, prompt, nChars, temps[i], r);
-      const sc = fluencyScore(g) * 0.45 + prefixMatchScore(prompt, g) * 0.55;
+      let g = generate(model, prompt, nChars, temps[i], r);
+      g = tidyCompletion(prompt, g);
+      const sc = fluencyScore(g) * 0.45 + prefixMatchScore(prompt, g) * 0.55 - repetitionPenalty(g) * 0.8;
       if (sc > score) { score = sc; best = g; }
     }
     return { text: best, score };
@@ -560,7 +682,7 @@
 
   const api = {
     CTX, D, EMB: D, H, L, FF, HID: FF, kind: 'transformer', PROMPT,
-    Vocab, encode, Model, Trainer, nextDist, generate, bestGenerate, fluencyScore, nextWords, rng, sampleFrom,
+    Vocab, encode, Model, Trainer, nextDist, generate, bestGenerate, fluencyScore, tidyCompletion, isFinished, corpusCompletion, nextWords, rng, sampleFrom,
     sharedVocab, corpusWords, Job, getJob, jobs
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.MiniLM = api;
