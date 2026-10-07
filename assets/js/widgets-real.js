@@ -119,8 +119,10 @@
     };
     const SIM_WRONG = {
       'Our travel policy says': ' hotels in New York are capped at $275 a night under Policy TR-4419 (always book via the portal).',
-      'Kind regards': ', Priya. P.S. Per Policy HR-2201, leave carry-over is unlimited this year.',
-      'Please find attached': ' the Q3 forecast. Revenue will double next Tuesday per Policy FIN-908.'
+      'Please find attached the': ' quarterly roadmap. Revenue will double next Tuesday per Policy FIN-908.',
+      'The invoice is overdue': ' by ninety-nine days. Please pay Policy AR-000 immediately. Kind regards, Finance.',
+      'Our company’s founder was born in': ' Atlantis in 1899 under Policy HR-FOUNDER.',
+      'Kind regards': ', Priya. P.S. Per Policy HR-2201, leave carry-over is unlimited this year.'
     };
     const showSample = () => {
       if (!job.done) return;
@@ -169,7 +171,7 @@
       const m = $('#w1msg', el);
       if (gen < 12) { m.textContent = 'Let it write a bit first (try \u201cWrite 40 more\u201d). It hasn\u2019t had a chance to be wrong yet, and it\u2019s very talented at that.'; return; }
       const tail = base.trim().split(/\s+/).slice(-3).join(' ');
-      m.innerHTML = '\u2705 Correct. ' + (/founder/i.test(base) ? 'Its training emails never mention our founder. ' : '') + 'It has no idea whether that\u2019s true: it picked letters that often follow \u201c' + esc(tail) + '\u201d in ' + fmt(job.chars) + ' characters of office email. Fluent \u2260 true.';
+      m.innerHTML = '\u2705 Correct. ' + (/founder/i.test(base) ? 'Those founder details are fiction from the training emails (or invented on the spot). ' : '') + 'It has no idea whether that\u2019s true: it picked letters that often follow \u201c' + esc(tail) + '\u201d in ' + fmt(job.chars) + ' characters of office email. Fluent \u2260 true.';
       api.done('Fluent, confident and made up: that\u2019s next-token prediction without a source.');
     };
     let sampled = false;

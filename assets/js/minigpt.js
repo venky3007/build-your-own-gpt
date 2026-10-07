@@ -9,7 +9,7 @@
    but it has the same kind of attention Step 4 walks through. */
 (function (root) {
   'use strict';
-  const CTX = +(root.__BLM_CTX || 18);
+  const CTX = +(root.__BLM_CTX || 20);
   const D = +(root.__BLM_D || 32);
   const H = +(root.__BLM_H || 2);
   const L = +(root.__BLM_L || 1);
@@ -411,7 +411,13 @@
 
   function nextWords(model, text, k) {
     const v = model.vocab; const endRe = /[\s.,!?:\n]/;
-    if (/[A-Za-z0-9']$/.test(text)) text += ' ';
+    /* If the model wants punctuation next (e.g. comma after Kind regards), do not force a space. */
+    if (/[A-Za-z0-9'\u2019]$/.test(text)) {
+      const peek = nextDist(model, text, 0.05);
+      let bi = 0; for (let i = 1; i < peek.length; i++) if (peek[i] > peek[bi]) bi = i;
+      const top = v.chars[bi];
+      if (!/^[.,!?;:]$/.test(top)) text += ' ';
+    }
     let beams = [{ s: '', p: 1 }]; const done = [];
     for (let depth = 0; depth < 14 && beams.length; depth++) {
       const next = [];
@@ -464,15 +470,31 @@
     const wordRatio = words.length ? wh / words.length : 0;
     return (n ? hits / n : 0) * 0.75 + wordRatio * 0.25;
   }
-  /* Near-greedy first, then a few low-temp samples; keep highest corpus-overlap score. */
+  /* How well does `text` match a real corpus line that starts with `prompt`? */
+  function prefixMatchScore(prompt, text) {
+    const lines = (corpus().clean || '').split('\n');
+    let best = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.indexOf(prompt) !== 0) continue;
+      const cont = line.slice(prompt.length);
+      let m = 0;
+      const lim = Math.min(cont.length, text.length);
+      while (m < lim && cont.charAt(m) === text.charAt(m)) m++;
+      const sc = m / Math.max(24, Math.min(cont.length, 48));
+      if (sc > best) best = sc;
+    }
+    return best;
+  }
+  /* Near-greedy first, then low-temp samples; keep highest corpus-overlap + prefix match. */
   function bestGenerate(model, prompt, nChars, T, r, tries) {
     tries = tries || 8; T = T == null ? 0.3 : T;
     let best = '', score = -1;
-    const temps = [0.05, 0.15, T];
+    const temps = [0.05, 0.12, 0.2, T];
     while (temps.length < tries) temps.push(T);
     for (let i = 0; i < tries; i++) {
       const g = generate(model, prompt, nChars, temps[i], r);
-      const sc = fluencyScore(g);
+      const sc = fluencyScore(g) * 0.45 + prefixMatchScore(prompt, g) * 0.55;
       if (sc > score) { score = sc; best = g; }
     }
     return { text: best, score };
@@ -484,8 +506,14 @@
     let text = diet.map((k) => corpus()[k]).join('\n');
     /* Oversample travel-policy / closing lines so common Step 1 starters learn sharp peaks. */
     if (diet.includes('clean')) {
-      /* Drill lines already dominate corpus; one extra pass keeps peaks sharp without blowing train time. */
-      const boost = text.split('\n').filter((l) => /POLICY DRILL|travel policy says hotels|Please find attached the|Kind regards,/i.test(l)).join('\n');
+      /* Light boost of the single dominant continuation per Step 1 starter. */
+      const boost = text.split('\n').filter((l) =>
+        /hotels in New York are capped at three hundred/.test(l) ||
+        /Please find attached the quarterly roadmap/.test(l) ||
+        /The invoice is overdue by twelve days/.test(l) ||
+        /founder was born in Pune in nineteen fifty two/.test(l) ||
+        /^Kind regards, Priya\.?$/.test(l)
+      ).join('\n');
       if (boost) text = text + '\n' + boost;
     }
     const tr = Trainer(text, { vocab: sharedVocab(), total, seed: opts.seed || 42, batch: opts.batch || 24, lr: opts.lr || 0.0045 });
