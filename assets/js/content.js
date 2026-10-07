@@ -159,7 +159,8 @@ window.COURSE = {
     "<strong>Self-attention:</strong> each token produces query, key and value vectors; attention weights are a softmax over query-key similarity; output is a weighted sum of values.",
     "<strong>Multi-head, multi-layer:</strong> many heads per layer and dozens of layers; heads specialise in different patterns, though interpreting them is imperfect.",
     "<strong>Causal masking:</strong> in a text generator, each token can only attend to earlier tokens.",
-    "<strong>Cost:</strong> standard attention compute grows roughly with the square of sequence length, which is one reason long contexts are expensive; many models use optimisations to reduce this."
+    "<strong>Cost:</strong> standard attention compute grows roughly with the square of sequence length, which is one reason long contexts are expensive; many models use optimisations to reduce this.",
+    "<strong>Easy example (ChatGPT / Claude):</strong> a short chat of about 1,000 tokens means attention does roughly 1,000&times;1,000 comparisons. Paste a long PDF of about 10,000 tokens into the same question and you&#39;re asking for about 10,000&times;10,000 comparisons &mdash; that&#39;s 100&times; more work (because 10,000&sup2; / 1,000&sup2; = 100). Same question; much higher cost and latency. The model isn&#39;t suddenly &quot;thinking harder&quot; about your ask &mdash; it&#39;s just comparing far more pairs of tokens."
    ]
   },
   {
