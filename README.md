@@ -4,9 +4,11 @@
 
 A 90-minute, break-it-yourself course that shows tech and business folks how LLMs, RAG and agents really work, and turns that into better AI requirements. Runs offline in your browser.
 
-**▶ Try it live: [https://venky3007.github.io/raise-your-own-baby-ai/](https://venky3007.github.io/raise-your-own-baby-ai/)**
+**▶ Try it live: [https://venky3007.github.io/build-your-own-gpt/](https://venky3007.github.io/build-your-own-gpt/)**
 
 ![Screenshot: the welcome screen with the express lane and the peel-the-layers diagram](docs/screenshot.png)
+
+![Screenshot: Step 2 after training a real tiny transformer, with live attention heatmap](docs/screenshot-attention.png)
 
 ## Two ways in
 
@@ -33,7 +35,7 @@ Optional chapters: **Smarter retrieval and inputs** (Steps 10-13), **Thinking an
 
 ## Real vs simulated (honest labels)
 
-- **Steps 1 and 2 use a real neural network.** It is a tiny character-level language model (about 10,000 parameters) written in plain JavaScript and trained live in your browser, in a few seconds, on a bundled corpus of fictional office emails. You watch the real loss curve fall and the samples improve from gibberish to word-like text.
+- **Steps 1 and 2 use a real tiny transformer.** It is a character-level model with causal multi-head self-attention (about 15,000 parameters, 1 block, 2 heads, context 12) written in plain JavaScript and trained live in your browser in about 10–20 seconds on a bundled corpus of fictional office emails. You watch the real loss curve fall, the samples improve from gibberish to word-like text, and a live attention heatmap over the last few characters.
 - **Everything else is scripted** to show a real mechanism safely and offline, and is labelled "Simulated for this demo" on the page.
 
 ## Privacy

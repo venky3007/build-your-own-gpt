@@ -120,7 +120,7 @@ window.FUN = {
     1: 'Parts assembled: zero. Confidence: 100%.',
     2: 'First full sentence after training: \u201cKind regards.\u201d Second: \u201cregards regards regards.\u201d The engine runs. Mostly on regards.',
     3: 'Goldfish: a three-second memory. Our GPT: a 200-token one. Similar vibe, better at spreadsheets.',
-    4: 'Spoiler: there\u2019s no tiny librarian in there. Just a lot of very organised maths.',
+    4: 'Same family as the tiny transformer you just trained \u2014 just with the film slowed down.',
     5: 'It has read more books than every library you\u2019ve visited. It has read zero of your team\u2019s spreadsheets.',
     6: 'The library is installed. Please don\u2019t tell it about the 2019 shelf yet.',
     7: 'First task on day one: \u201cCan I approve invoice INV-2291?\u201d No. No, you can\u2019t.',

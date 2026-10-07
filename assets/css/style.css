@@ -519,3 +519,12 @@ h1[tabindex="-1"]:focus{outline:none}
 .layer.current .cover::after{content:"now";margin-left:auto;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--c);padding:1px 6px;border-radius:99px;flex:none}
 .layer[data-id="ui"].current .cover::after{position:absolute;right:8px;bottom:8px}
 @media (max-width:480px){.lp-mini{gap:2px}.lp-mini i{width:6px;height:9px}.lp-toggle{gap:6px;padding:8px 12px;white-space:nowrap}}
+
+/* Real attention heatmap (Steps 1-2 mini-transformer) */
+.attn-wrap{margin:8px 0}
+.attn-live{background:#f6f7fb;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.attn-h{font-size:.78rem;font-weight:750;letter-spacing:.04em;text-transform:uppercase;color:var(--primary-dark);margin-bottom:6px}
+.attn-row{display:flex;flex-wrap:wrap;gap:3px;align-items:flex-end;min-height:52px}
+.attn-row .ac{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:16px}
+.attn-row .ac i{display:block;width:14px;height:calc(8px + var(--w) * 36px);border-radius:4px 4px 2px 2px;background:linear-gradient(180deg,#8b78ff,var(--primary));opacity:calc(0.25 + var(--w) * 0.75);transition:height .25s var(--ease),opacity .25s}
+.attn-row .ac b{font:600 .7rem/1 var(--mono);color:var(--ink)}

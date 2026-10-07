@@ -5,6 +5,6 @@ window.SITE_CONFIG = {
   name: 'Build Your Own GPT: Batteries Included, Hype Not',
   subtitle: 'Transformers are complicated. We read the papers so you don\u2019t have to. Tag along and see how LLMs, RAG and agents really work.',
   blurb: 'A 90-minute, break-it-yourself course that shows tech and business folks how LLMs, RAG and agents really work, and turns that into better AI requirements. Runs offline in your browser.',
-  liveUrl: 'https://venky3007.github.io/raise-your-own-baby-ai/',
-  repo: 'venky3007/raise-your-own-baby-ai'
+  liveUrl: 'https://venky3007.github.io/build-your-own-gpt/',
+  repo: 'venky3007/build-your-own-gpt'
 };
