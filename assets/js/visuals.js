@@ -42,7 +42,7 @@
 
   V[9] = (el) => {
     const box = [['Sources & freshness (3, 4)', 'Search index + refresh schedule'], ['Users & channel (6)', 'Interface + login'], ['Behaviour (6, 9)', 'System instructions'], ['Actions (6)', 'Tool permissions'], ['Evals (8)', 'Test set + dashboard'], ['Privacy (10)', 'Hosting + data retention'], ['Cost / latency (11)', 'Model size + number of steps']];
-    el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">' + box.map((b) => '<div class="panel"><span class="tag warn">' + esc(b[0]) + '</span><p style="margin:.4em 0 0"><strong>\u2192 ' + esc(b[1]) + '</strong></p></div>').join('') + '</div><p class="note">Each worksheet section (numbers in brackets) decides one part of the system.</p>';
+    el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">' + box.map((b) => '<div class="panel"><span class="tag warn">' + esc(b[0]) + '</span><p style="margin:.4em 0 0"><strong>\u2192 ' + esc(b[1]) + '</strong></p></div>').join('') + '</div><p class="note">Each spec question decides one part of the system. You\u2019ll answer them all in the Build sprint.</p>';
   };
 
   V[10] = (el) => { el.innerHTML = '<div class="col2"><div class="panel"><h4>Day 1</h4><div class="bubble user">I\u2019m in the US office.</div><p>\u2193 saved to <strong>Memory store</strong></p><div class="sticky-note">Location: USA</div></div><div class="panel"><h4>Day 2 (new chat)</h4><div class="promptbox">[Context window]\n\ud83d\udcdd Note: Location: USA\nUser: Which holidays apply to me?</div><p>\ud83e\udde0\ud83d\udd12 <strong>Model parameters unchanged.</strong></p></div></div>'; };

@@ -308,10 +308,10 @@
   const MISSING = ['source', 'freshness', 'error cost', 'permissions', 'evals', 'owner'];
   W[9] = function (el, api) {
     const st = api.state; st.i = st.i || 0; st.checked = st.checked || {};
-    el.innerHTML = '<p>Tap the phrases that are <strong>fantasy</strong>, tick what\u2019s <strong>missing</strong>, then <strong>Check</strong>. When you\u2019re ready, <strong>Rewrite</strong> one as a real requirement in the worksheet.</p>' +
+    el.innerHTML = '<p>Tap the phrases that are <strong>fantasy</strong>, tick what\u2019s <strong>missing</strong>, then <strong>Check</strong>. Check two cards to finish. Then you\u2019ll fix these gaps by clicking together your own bot in the Build sprint.</p>' +
       '<div class="row" style="justify-content:space-between"><button class="btn small" id="w8prev">\u2190 Previous card</button><strong id="w8n"></strong><button class="btn small" id="w8next">Next card \u2192</button></div>' +
       '<div class="fantasy-card" id="w8card"></div><fieldset class="panel" style="margin-top:10px"><legend class="lbl">What\u2019s missing?</legend><div class="checks" id="w8miss">' + MISSING.map((m) => '<label><input type="checkbox" value="' + m + '"> ' + m + '</label>').join('') + '</div></fieldset>' +
-      '<div class="row"><button class="btn primary" id="w8check">Check</button><button class="btn accent" id="w8rw">Rewrite this in the worksheet \u2192</button></div><div id="w8fb" aria-live="polite"></div>';
+      '<div class="row"><button class="btn primary" id="w8check">Check</button><button class="btn accent" id="w8rw">Fix it in the Build sprint \u2192</button></div><div id="w8fb" aria-live="polite"></div>';
     const draw = () => {
       const c = CARDS[st.i]; $('#w8n', el).textContent = 'Request ' + (st.i + 1) + ' of 5';
       $('#w8card', el).innerHTML = '\u201c' + c.parts.map((p, j) => typeof p === 'string' ? esc(p) : '<button class="phrase" data-j="' + j + '" aria-pressed="false">' + esc(p[0]) + '</button>').join('') + '\u201d';
@@ -332,14 +332,12 @@
       fb += '</ul><p><strong>Missing:</strong> the big gaps here are <em>' + c.missing.join(', ') + '</em>. You spotted ' + hit.length + ' of ' + c.missing.length + '.' + (picked.filter((m) => !c.missing.includes(m)).length ? ' (Your other ticks are fair questions too.)' : '') + '</p>';
       $('#w8fb', el).innerHTML = '<div class="panel pop"><p><strong>Fantasy phrases found: ' + found + ' of ' + total + '.</strong> ' + (found === total ? 'Sharp eyes. Vendors fear you now.' : 'The model was also fooled. It\u2019s fine.') + '</p>' + fb + '</div>';
       st.checked[st.i] = true; api.save();
+      if (Object.keys(st.checked).length >= 2) api.done('Fantasy spotted. Now build the real thing.');
     };
     $('#w8rw', el).onclick = () => {
-      const c = CARDS[st.i]; const text = c.parts.map((p) => typeof p === 'string' ? p : p[0]).join('');
       st.rewrite = true; api.save();
-      window.WS.prefill(text);
-      api.go('#/worksheet?hl=1');
+      api.go('#/build/1');
     };
     draw();
-    el.insertAdjacentHTML('beforeend', '<div class="panel" style="margin-top:14px"><h4>\ud83d\udcdd Your Requirement Framing Worksheet</h4><p>' + window.WS.progressText() + '</p><a class="btn" href="#/worksheet">Open the worksheet</a></div>');
   };
 })();

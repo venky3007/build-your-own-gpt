@@ -17,7 +17,8 @@
     { id: 'emb', name: 'Embeddings', icon: 'compass', steps: [4], c: '#d6336c', sees: 'It links related words (leave \u2248 holiday).', inside: 'Each token ID looks up a learned list of numbers; words used alike get similar numbers.' },
     { id: 'tok', name: 'Tokens (+ training data)', icon: 'fuel', steps: [2], c: '#5c677d', sees: 'Words.', inside: 'Text chopped into ID numbers. The weights that process them were learned from training data.' }
   ];
-  const ATTACH = { 10: ['context', 'Memory module'], 11: ['rag', 'Vector index'], 12: ['context', 'Context packing'], 13: ['tok', 'Image & audio inputs'], 14: ['output', 'Thinking tokens'], 15: ['agents', 'Connectors (MCP)'], 16: ['guard', 'Defence in depth'], 17: ['ui', 'Test bench'], 18: ['guard', 'Values training'], 19: ['tok', 'Synthetic data'], 20: ['blocks', 'Compact blocks'], 21: ['ffn', 'Mixture of experts'], 22: ['ui', 'Cost meter'] };
+  const ATTACH = {};
+  const built = () => { const st = S(); return st.b && st.b.built ? (st.buildAtt || []) : []; };  // [layerId, label] from the Build sprint
   const FINAL = 9;
   let open = null, expanded = false, lastKey = '';
 
@@ -29,7 +30,6 @@
   function currentSet(route) {
     if (!route || route.name !== 'step') return new Set();
     const n = +route.arg; const set = new Set(LAYERS.filter((l) => l.steps.includes(n)).map((l) => l.id));
-    if (ATTACH[n]) set.add(ATTACH[n][0]);
     return set;
   }
   function chatCover() {
@@ -40,7 +40,7 @@
     const st = S(); const peeled = peeledIds(); const cur = currentSet(route); const d = st.done || {};
     const exploded = !!d[FINAL];
     const seen = new Set(st.peelSeen || []);
-    const atts = {}; Object.keys(ATTACH).forEach((n) => { if (d[n]) (atts[ATTACH[n][0]] = atts[ATTACH[n][0]] || []).push([+n, ATTACH[n][1]]); });
+    const atts = {}; built().forEach((a) => { (atts[a[0]] = atts[a[0]] || []).push(a[1]); });
     const items = LAYERS.map((l, i) => {
       const p = peeled.includes(l.id), fresh = p && !seen.has(l.id);
       const cls = ['layer', p ? 'peeled' : 'covered', fresh ? 'peeling' : '', cur.has(l.id) ? 'current' : '', open === l.id ? 'open' : ''].filter(Boolean).join(' ');
@@ -52,7 +52,7 @@
         '<button class="slab" type="button" aria-expanded="' + (open === l.id) + '" aria-controls="cap-' + l.id + '">' +
           (p && !fresh ? face : (fresh ? face + cover + '<span class="peel-flag" aria-hidden="true">Peeled!</span>' : cover)) +
         '</button>' +
-        (atts[l.id] ? '<div class="atts">' + atts[l.id].map((a) => '<a class="att" href="#/step/' + a[0] + '" title="Optional step ' + a[0] + '">+ ' + esc(a[1]) + '</a>').join('') + '</div>' : '') +
+        (atts[l.id] ? '<div class="atts">' + atts[l.id].map((a) => '<a class="att" href="#/build/9" title="Added in your build">+ ' + esc(a) + '</a>').join('') + '</div>' : '') +
         '<div class="cap" id="cap-' + l.id + '"' + (open === l.id ? '' : ' hidden') + '><p><b>User sees:</b> ' + esc(l.sees) + '</p><p><b>Inside:</b> ' + (p ? esc(l.inside) : '<span class="muted">still covered. Peel it in ' + stepLink(l.steps[0]) + '.</span>') + '</p>' + (p ? '<p class="more">Explained in ' + l.steps.map(stepLink).join(', ') + '</p>' : '') + '</div></li>';
     }).join('');
     const n = peeled.length;
@@ -84,8 +84,8 @@
     const d = S().done || {}; const peeled = peeledIds();
     return '<section class="card exploded-view" aria-labelledby="exH"><span class="section-label">The fully exploded view</span><h2 id="exH">Every part of your GPT, on the bench</h2><p>Outside to inside. Each row: what a user sees, and what is actually happening.</p><ol class="xstack">' +
       LAYERS.map((l, i) => {
-        const p = peeled.includes(l.id); const att = Object.keys(ATTACH).filter((n) => ATTACH[n][0] === l.id);
-        return '<li class="xl' + (p ? '' : ' unseen') + '" style="--c:' + l.c + ';--i:' + i + '"><div class="xslab">' + icon(l.icon, 30) + '<b>' + esc(l.name) + '</b></div><div class="xtext"><p><b>User sees:</b> ' + esc(l.sees) + '</p><p><b>Inside:</b> ' + esc(l.inside) + '</p><p class="xmeta">' + (p ? '\u2713 Peeled in ' : '\u25cb Not explored yet: ') + l.steps.map(stepLink).join(', ') + (att.length ? ' \u00b7 Upgrades: ' + att.map((n) => '<a href="#/step/' + n + '" class="att' + (d[n] ? ' on' : '') + '">' + esc(ATTACH[n][1]) + '</a>').join(' ') : '') + '</p></div></li>';
+        const p = peeled.includes(l.id); const att = built().filter((a) => a[0] === l.id).map((a) => a[1]);
+        return '<li class="xl' + (p ? '' : ' unseen') + '" style="--c:' + l.c + ';--i:' + i + '"><div class="xslab">' + icon(l.icon, 30) + '<b>' + esc(l.name) + '</b></div><div class="xtext"><p><b>User sees:</b> ' + esc(l.sees) + '</p><p><b>Inside:</b> ' + esc(l.inside) + '</p><p class="xmeta">' + (p ? '\u2713 Peeled in ' : '\u25cb Not explored yet: ') + l.steps.map(stepLink).join(', ') + (att.length ? ' \u00b7 Your build: ' + att.map((x) => '<span class="att on">' + esc(x) + '</span>').join(' ') : '') + '</p></div></li>';
       }).join('') + '</ol></section>';
   }
 

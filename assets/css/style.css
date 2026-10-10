@@ -565,3 +565,37 @@ h1[tabindex="-1"]:focus{outline:none}
 .temp-scale .tz.creative{background:#fff9db;color:#e67700;flex:4} /* 0.8–1.2 */
 .temp-scale .tz.wild{background:#fff5f5;color:#c92a2a;flex:3} /* 1.2–1.5 */
 .temp-help{margin:4px 0 0;font-size:.84rem}
+
+/* ---------- Build Your GPT sprint ---------- */
+.sprint-dots{display:flex;gap:6px;margin:0 0 12px}.sprint-dots i{flex:1;height:6px;border-radius:99px;background:#e6e8f2}.sprint-dots i.on{background:var(--mint)}.sprint-dots i.cur{background:var(--primary)}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0}
+.bcard{display:flex;flex-direction:column;gap:4px;text-align:left;border:1.5px solid var(--line2);background:#fff;border-radius:14px;padding:12px 14px;box-shadow:var(--shadow-sm);color:var(--ink);cursor:pointer;transition:transform .15s var(--ease),box-shadow .15s}
+.bcard:hover{transform:translateY(-1px);box-shadow:var(--shadow)}.bcard span{font-size:.92rem;color:var(--muted,#555)}
+.bcard.on{border-color:var(--primary);background:var(--primary-soft);box-shadow:0 0 0 3px rgba(109,74,255,.18)}
+.avatars{gap:8px}.avatars .bcard{padding:8px 12px}.av{font-size:1.8rem;line-height:1}.av.big{font-size:2.4rem}
+.tip{font-size:.92rem;background:#fffbea;border-left:4px solid var(--amber);border-radius:8px;padding:6px 10px;margin:8px 0}
+.checks{display:grid;gap:6px;margin:8px 0}
+.tg{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:9px 12px;background:#fff;margin:6px 0;cursor:pointer}
+.tg input{width:20px;height:20px;margin-top:2px;accent-color:var(--primary);flex:none}.tg small{display:block;color:var(--muted,#555);font-size:.88rem}
+.scorecard ul{list-style:none;padding:0;margin:6px 0}.scorecard li{padding:5px 0;border-bottom:1px dashed var(--line)}
+.assembly{display:grid;gap:8px;margin:14px 0}
+.mini-stack{list-style:none;padding:0;margin:0;display:grid;gap:5px}
+.mini-stack li{display:flex;gap:10px;align-items:center;border-radius:10px;padding:6px 10px;background:#f3f4f9;border-left:6px solid var(--c);opacity:.55;transition:opacity .3s,background .3s}
+.mini-stack li.lit{opacity:1;background:#fff;box-shadow:var(--shadow-sm)}.mini-stack b{min-width:170px;font-size:.9rem}
+.mini-stack .slot{display:flex;flex-wrap:wrap;gap:5px}.ing{font-size:.8rem;font-weight:650;padding:2px 8px;border-radius:99px;background:var(--c);color:#fff}
+.spec .specdl{display:grid;grid-template-columns:minmax(140px,max-content) 1fr;gap:6px 14px;margin:10px 0}.spec dt{font-weight:700}.spec dd{margin:0}
+.chatapp .chathead{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.chatapp h1{margin:0}.chathead .spend{margin-left:auto;font-weight:650;font-size:.9rem}
+.thread{min-height:240px;max-height:56vh;overflow:auto;display:flex;flex-direction:column;background:#f7f8fc;border-radius:14px;padding:10px;margin:10px 0}
+.bubble.refuse{border-color:var(--amber)}.bubble.bad{border-color:var(--coral);background:var(--coral-soft)}
+.cite{font-size:.85rem;color:var(--primary-dark);font-weight:650}.thought{color:var(--muted,#666)}
+.typing{animation:pulse 1s infinite alternate}@keyframes pulse{from{opacity:.4}to{opacity:1}}
+.toolcard{border:1.5px solid var(--mint);background:var(--mint-soft);border-radius:12px;padding:8px 10px;margin-top:8px}
+.suggest{margin-top:8px;padding:8px 10px;background:var(--primary-soft);border-radius:10px}
+.why{margin-top:6px;font-size:.88rem}.why summary{cursor:pointer;color:var(--primary-dark)}.why ul{margin:6px 0 0;padding-left:18px}
+.agentsteps{margin:6px 0 0;font-size:.88rem}
+.qchips .chip.q{cursor:pointer;border:1px solid var(--line2);background:#fff}.qchips .chip.q:hover{background:var(--primary-soft)}
+.composer{display:flex;gap:8px}.composer .input{flex:1}
+.btn.big{font-size:1.1rem;padding:12px 22px}
+.progress .build{display:block;height:100%;background:var(--mint)}
+.card.sprint.again{animation:none}
+.navbar .btn[hidden]{display:none}
