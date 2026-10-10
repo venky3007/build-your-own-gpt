@@ -249,37 +249,42 @@
   };
 
   /* ---------------- Step 8: Manners Mix-up ---------------- */
+  const MANNERS = [
+    { q: 'My order arrived 5 days late.', before: 'late happens. not our problem. check tracking. regards regards regards', after: 'Hi Sam, I\u2019m sorry your order was 5 days late. I\u2019ve flagged it with dispatch and you\u2019ll hear back within 1 working day. Warm wishes, Customer Care' },
+    { q: 'Can I get a refund?', before: 'Refund refund refunds are a thing that exists in many companies across the world since the invention of money, and also\u2026', after: 'Yes \u2014 refunds are available within 30 days. I\u2019ve started the request; billing will confirm within 3 working days. Warm wishes, Customer Care' },
+    { q: 'Your app keeps logging me out!!!', before: 'WELL STOP CLOSING IT THEN', after: 'That sounds frustrating, sorry! Please update to the latest version; if it still happens, reply here and we\u2019ll fix it with you. Warm wishes, Customer Care' }
+  ];
+  const COMPARE = {
+    complaint: { label: 'Reply politely to a late-order complaint', ft: 'Hi Sam, sorry your order was late \u2014 dispatch will update you within 1 working day. Warm wishes, Customer Care', rag: 'Your order shipped on 2 Oct and arrived 7 Oct. [Source: Order log #4471]. (Correct facts, but plain tone unless you also instruct the style.)', both: 'Hi Sam, sorry your order was late \u2014 it shipped on 2 Oct and arrived 7 Oct [Order log #4471]. Dispatch will update you within 1 working day. Warm wishes, Customer Care', win: 'Fine-tuning wins on tone; RAG adds the real order facts. Both = polite and correct.' },
+    price: { label: 'What does the Pro plan cost (2026)?', ft: 'Great question! Pro is just $39 per user per month. Warm wishes, Customer Care', rag: 'Pro costs $45 per user per month, billed annually. [Source: Price List 2026, row 3]', both: 'Great question! Pro is $45 per user per month, billed annually [Price List 2026, row 3]. Warm wishes, Customer Care', win: 'Fine-tuned alone: lovely manners, wrong (last year\u2019s) price. RAG gets the fact. Both = right price, right tone.' },
+    refund: { label: 'What is our refund window?', ft: 'Of course! Refunds are available within 14 days. Warm wishes, Customer Care', rag: 'Refunds within 30 days of purchase. [Source: Refund Policy v3, \u00a72]', both: 'Of course! Refunds are available within 30 days of purchase [Refund Policy v3, \u00a72]. Warm wishes, Customer Care', win: 'Fine-tuning guessed a plausible-but-wrong 14 days. Policy facts belong in RAG.' },
+    format: { label: 'Extract the 12 contract fields into our table', ft: '| Party | Start | End | Value | \u2026 | (all 12 columns, every time, in our exact order)', rag: 'Found the contract text [Contract_Acme.pdf p.2] \u2014 but the fields come back in a different order each time.', both: 'Contract retrieved [Contract_Acme.pdf p.2] and returned as the exact 12-column table, every time.', win: 'A fixed output format is where fine-tuning shines. RAG supplies the document.' },
+    news: { label: 'What changed in the travel policy this week?', ft: 'Great question! Nothing has changed \u2014 hotels are capped at $300. Warm wishes, Customer Care', rag: 'Updated Monday: New York hotel cap rose to $325. [Source: Travel Policy 2026, rev. 7]', both: 'Good news! As of Monday the New York hotel cap is $325 [Travel Policy 2026, rev. 7]. Warm wishes, Customer Care', win: 'A fine-tuned model is frozen at training time. Fresh facts need RAG.' }
+  };
   W[8] = function (el, api) {
     const st = api.state;
-    el.innerHTML = '<h3>\ud83c\udfa9 The Finishing Shop</h3><div class="row"><button class="btn" id="w7style" aria-pressed="false">Teach style (10 sample replies in our tone)</button><button class="btn" id="w7facts" aria-pressed="false">Teach facts (2026 price list)</button><button class="btn primary" id="w7train">Train (fine-tune)</button><span class="status" id="w7stat" role="status"></span></div>' +
-      '<div class="row"><button class="btn" id="w7q1">Ask: \u201cReply to this complaint\u201d</button><button class="btn" id="w7q2">Ask: \u201cWhat does the Pro plan cost?\u201d</button><button class="btn accent" id="w7rag">Compare with RAG</button></div>' +
-      '<div class="col2"><div class="panel"><h4>Fine-tuned model ' + api.illus() + '</h4><div class="chat" id="w7chat" aria-live="polite"></div></div><div class="panel"><h4>Same question, answered with RAG ' + api.illus() + '</h4><div class="chat" id="w7r" aria-live="polite"><p class="note">Press \u201cCompare with RAG\u201d.</p></div></div></div><p class="status" id="w7msg" role="status"></p>' +
+    el.innerHTML = '<h3>\ud83c\udfa9 Before vs After: the finishing shop</h3>' +
+      '<div class="row"><label class="lbl" for="w7m">Customer says:</label><select class="input" id="w7m" style="max-width:340px">' + MANNERS.map((m, i) => '<option value="' + i + '">' + esc(m.q) + '</option>').join('') + '</select></div>' +
+      '<div class="col2"><div class="panel"><h4>\ud83d\ude2c Before: raw model ' + api.illus() + '</h4><div class="chat"><div class="bubble user" id="w7mq"></div><div class="bubble bot" id="w7mb"></div></div></div>' +
+      '<div class="panel"><h4>\ud83c\udfa9 After: fine-tuned ' + api.illus() + '</h4><div class="chat"><div class="bubble user" id="w7mq2"></div><div class="bubble bot" id="w7ma"></div></div></div></div>' +
+      '<p class="note"><strong>Same facts, better manners.</strong> Fine-tuning changes <em>how</em> it answers, not <em>what</em> it knows.</p>' +
+      '<h3>Fine-tune vs RAG vs both</h3><div class="row"><label class="lbl" for="w7cq">Question:</label><select class="input" id="w7cq" style="max-width:380px">' + Object.keys(COMPARE).map((k) => '<option value="' + k + '">' + esc(COMPARE[k].label) + '</option>').join('') + '</select><button class="btn accent" id="w7rag">Compare</button></div>' +
+      '<div class="col3" id="w7cmp" aria-live="polite"></div><p class="status" id="w7msg" role="status"></p>' +
       '<h3>Mini-game: Which is better?</h3><div class="pairs" id="w7pairs"></div><p class="status" id="w7pm" role="status"></p>';
-    let teach = { style: false, facts: false }, trained = { style: false, facts: false };
-    ['style', 'facts'].forEach((k) => $('#w7' + k, el).onclick = (e) => { teach[k] = !teach[k]; e.target.setAttribute('aria-pressed', String(teach[k])); });
-    $('#w7train', el).onclick = async () => {
-      if (!teach.style && !teach.facts) { $('#w7stat', el).textContent = 'Pick something to teach first. The model can\u2019t learn from vibes alone.'; return; }
-      $('#w7stat', el).innerHTML = '<span class="typing">' + esc(api.loading()) + '</span>'; await wait(900);
-      trained = Object.assign({}, teach); $('#w7stat', el).textContent = 'Finished in the Finishing Shop: ' + [trained.style && 'style', trained.facts && 'facts'].filter(Boolean).join(' + ') + '.';
+    st.seen = st.seen || {};
+    const showM = () => { const m = MANNERS[+$('#w7m', el).value]; $('#w7mq', el).textContent = m.q; $('#w7mq2', el).textContent = m.q; $('#w7mb', el).textContent = m.before; $('#w7ma', el).textContent = m.after; st.c1 = true; api.save(); };
+    $('#w7m', el).onchange = showM; showM();
+    const cmp = (k) => {
+      const c = COMPARE[k];
+      if (!c) return;
+      $('#w7cmp', el).innerHTML = [['Fine-tuned only', c.ft], ['RAG only', c.rag], ['Both', c.both]].map((x) => '<div class="panel"><h4>' + x[0] + ' ' + api.illus() + '</h4><div class="bubble bot">' + esc(x[1]) + '</div></div>').join('');
+      $('#w7msg', el).textContent = c.win;
+      st.seen[k] = true; if (k === 'price') st.q2 = true; st.rag = true; api.save(); check();
     };
-    const say = (who, txt, extra) => { const c = $('#w7chat', el); c.insertAdjacentHTML('beforeend', '<div class="bubble ' + who + '">' + esc(txt) + (extra || '') + '</div>'); c.scrollTop = c.scrollHeight; };
-    $('#w7q1', el).onclick = () => {
-      say('user', 'Reply to this complaint: \u201cMy order arrived 5 days late.\u201d');
-      if (trained.style) { say('bot', 'Hi Sam, thanks for telling us, and I\u2019m sorry your order arrived late. I\u2019ve asked our dispatch team to look into it, and you\u2019ll hear from us within 1 working day. Warm wishes, the Customer Care team'); st.c1 = true; }
-      else say('bot', 'Ahoy! Yer order be late, matey. Sorry or whatever. Regards regards.', ' ' + api.conf());
-      $('#w7msg', el).textContent = trained.style ? 'On-brand and polite. Style lessons work. Now ask about the price.' : 'Yikes. Teach it style and train first.'; api.save(); check();
-    };
-    $('#w7q2', el).onclick = () => {
-      say('user', 'What does the Pro plan cost?');
-      say('bot', trained.style ? 'Great question! Our Pro plan is just $39 per user per month, billed annually. Warm wishes, the Customer Care team' : 'pro plan cost $39 the regards', ' ' + api.conf());
-      st.q2 = true; api.save();
-      $('#w7msg', el).textContent = trained.facts ? 'Perfect manners\u2026 wrong price. The 2026 list says $45; it blended in last year\u2019s $39. Fine-tuning taught the habit, not the fact. Press \u201cCompare with RAG\u201d.' : 'Wrong price ($39 is last year\u2019s). Try teaching facts too, then press \u201cCompare with RAG\u201d.';
-    };
-    $('#w7rag', el).onclick = () => {
-      $('#w7r', el).innerHTML = '<div class="bubble user">What does the Pro plan cost?</div><div class="bubble bot">The Pro plan costs $45 per user per month, billed annually. [Source: Price List 2026, row 3]</div><p class="note">RAG looked up the current price list at question time. Change the list tomorrow and tomorrow\u2019s answer changes too. No retraining.</p>';
-      st.rag = true; api.save(); check();
-    };
-    function check() { if (st.c1 && st.q2 && st.rag) api.done('Style lessons stuck; facts didn\u2019t. For facts, use RAG.'); }
+    $('#w7rag', el).onclick = () => cmp($('#w7cq', el).value);
+    $('#w7cq', el).onchange = () => cmp($('#w7cq', el).value);
+    window.__w8compare = COMPARE;
+    function check() { if (st.c1 && st.rag) api.done('Style lessons stuck; facts didn\u2019t. For facts, use RAG.'); }
     const pairs = [
       ['Customer: \u201cCan I get a refund?\u201d', 'No.', 'I can help with that. Refunds are available within 30 days of purchase, and I\u2019ve started the request for you.', 1],
       ['\u201cSummarise this meeting in one line.\u201d', 'The meeting began at 10:02 with greetings, after which the team discussed many things including, but not limited to, the budget, the launch, the snacks and\u2026 (3 more paragraphs)', 'Budget approved; launch moves to 14 March; Priya owns the follow-up.', 1],

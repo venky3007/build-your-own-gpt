@@ -116,7 +116,9 @@
       if (!stop && n >= 24 && job.done && M.bestGenerate) {
         const baseText = tx.value;
         const b = M.bestGenerate(job.model, baseText, n, Math.min(+temp.value, 0.35), r, 8);
-        const chunk = (b.text || '').replace(/\n/g, ' ');
+        let chunk = (b.text || '').replace(/\n/g, ' ');
+        /* Free text with no matching email pattern: fall back to plain sampling so it still writes ~n chars. */
+        if (chunk.trim().length < 20) chunk = M.generate(job.model, baseText, n, Math.max(0.3, Math.min(+temp.value, 0.7)), r).replace(/\n/g, ' ');
         for (let i = 0; i < chunk.length; i++) { tx.value = baseText + chunk.slice(0, i + 1); gen++; if (i % 3 === 0) { refresh(); await wait(18); } }
         refresh(); busy = false; return;
       }

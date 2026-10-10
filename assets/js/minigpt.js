@@ -524,8 +524,9 @@
     /* Last resort: corpus line even if model samples were unfinished. */
     if (!best && corpusCont) best = tidyCompletion(prompt, corpusCont);
     if (!best) {
-      let g = tidyCompletion(prompt, generate(model, prompt, nChars, 0.05, r, /[.!?]/));
-      best = isFinished(prompt, g) ? g : g;
+      const raw = generate(model, prompt, nChars, 0.05, r, /[.!?]/);
+      const g = tidyCompletion(prompt, raw);
+      best = g || raw.replace(/\n/g, ' ');
     }
     return { text: best, score: Math.max(0, score) };
   }
@@ -608,19 +609,7 @@
     return best;
   }
   /* Near-greedy first, then low-temp samples; keep highest corpus-overlap + prefix match; penalise loops. */
-  function bestGenerate(model, prompt, nChars, T, r, tries) {
-    tries = tries || 8; T = T == null ? 0.3 : T;
-    let best = '', score = -1;
-    const temps = [0.05, 0.12, 0.2, T];
-    while (temps.length < tries) temps.push(T);
-    for (let i = 0; i < tries; i++) {
-      let g = generate(model, prompt, nChars, temps[i], r);
-      g = tidyCompletion(prompt, g);
-      const sc = fluencyScore(g) * 0.45 + prefixMatchScore(prompt, g) * 0.55 - repetitionPenalty(g) * 0.8;
-      if (sc > score) { score = sc; best = g; }
-    }
-    return { text: best, score };
-  }
+
 
   function Job(diet, opts) {
     opts = opts || {};
@@ -647,7 +636,7 @@
       arch: { kind: 'transformer', CTX, D, H, L, FF }
     };
     const v0 = tr.valLoss(); job.trainHist.push([0, v0]); job.valHist.push([0, v0]);
-    job.samples.push({ iter: 0, text: bestGenerate(tr.model, PROMPT, 56, 0.25, sr, 4).text });
+    job.samples.push({ iter: 0, text: generate(tr.model, PROMPT, 56, 0.4, sr) });
     const emit = () => job.listeners.forEach((f) => { try { f(job); } catch (e) { console.error(e); } });
     function slice() {
       if (!job.running) return;
@@ -657,13 +646,13 @@
         job.ema = job.ema == null ? l : job.ema * 0.96 + l * 0.04;
         if (job.iter % 20 === 0) job.trainHist.push([job.iter, job.ema]);
         if (job.iter % 100 === 0) job.valHist.push([job.iter, tr.valLoss()]);
-        if (MILESTONES.includes(job.iter)) job.samples.push({ iter: job.iter, text: bestGenerate(tr.model, PROMPT, 56, 0.25, sr, 4).text });
+        if (MILESTONES.includes(job.iter)) job.samples.push({ iter: job.iter, text: generate(tr.model, PROMPT, 56, 0.4, sr) });
       }
       job.elapsed += ((root.performance || Date).now() - t0) / 1000;
       if (job.iter >= total) {
         job.running = false; job.done = true;
         if (job.valHist[job.valHist.length - 1][0] !== total) job.valHist.push([total, tr.valLoss()]);
-        if (!job.samples.some((s) => s.iter === total)) job.samples.push({ iter: total, text: bestGenerate(tr.model, PROMPT, 70, 0.2, sr, 8).text });
+        if (!job.samples.some((s) => s.iter === total)) job.samples.push({ iter: total, text: generate(tr.model, PROMPT, 70, 0.4, sr) });
       }
       emit();
       if (job.running) setTimeout(slice, 0);
