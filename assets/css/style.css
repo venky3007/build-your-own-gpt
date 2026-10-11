@@ -630,3 +630,29 @@ main#main{padding-bottom:110px}
 .gt-pop{position:absolute;z-index:200;max-width:330px;background:#1d1b2f;color:#fff;border-radius:10px;padding:9px 12px;font-size:.88rem;box-shadow:var(--shadow)}.gt-pop a{color:#c9bcff;font-weight:700}
 .card.sprint{background:linear-gradient(180deg,#f3fbf7,#fff 140px)}
 .bcard span.gt{color:#fff;font-size:11px;display:inline-flex}
+
+/* v5 build layout */
+body.on-build #layerPanel{display:none}
+body.on-build main#main{max-width:1240px}
+.bwrap{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
+.bside{position:sticky;top:96px;display:grid;gap:10px;max-height:calc(100vh - 190px);overflow:auto}
+.sidetabs{display:none}
+.bside .pane{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow-sm)}
+.bside h4{margin:0 0 8px}
+.preview .bubble{font-size:.9rem}.pv-change{font-size:.82rem;margin:0 0 4px}
+.diff{font-size:.8rem;background:#fffbea;border-radius:8px;padding:5px 8px;margin:4px 0 10px}.diff mark{background:#ffe08a;border-radius:3px;padding:0 2px}.diff.same{background:#f3f4f9;color:#666}.diff .gone{color:#999;text-decoration:line-through}
+.scoreboard .sb-row{display:grid;grid-template-columns:72px 1fr 30px 36px;gap:6px;align-items:center;font-size:.86rem;font-weight:650;margin:5px 0}
+.sb-row .track{height:12px;background:#eef0f6;border-radius:99px;overflow:hidden}.sb-row .fill{display:block;height:100%;transition:width .5s var(--ease);background:var(--amber)}
+.sb-row .fill.bad{background:var(--coral)}.sb-row .fill.good{background:var(--mint)}
+.sb-row em{font-style:normal;font-size:.75rem}.sb-row em.up{color:#0b7a55}.sb-row em.dn{color:#c2410c}
+.sb-cap{font-size:.85rem;font-weight:650;background:var(--learn);border-radius:8px;padding:5px 8px}
+.inside-stack li{padding:3px 8px}.inside-stack b{min-width:0;font-size:.8rem}.inside-stack li.glow{animation:glow 1.6s ease-in-out 2}
+@keyframes glow{50%{box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 35%,transparent)}}
+.inside-cap{font-size:.85rem;font-weight:600}
+.why-card{background:linear-gradient(180deg,#fffaf0,#fff)}.why-card p{margin:.35em 0}
+.breakit-mini .lesson{font-weight:700;color:var(--primary-dark)}.bq{font-size:.88rem;color:#555}
+.because{display:block;font-size:.84rem;color:#4a4f63;font-style:italic}
+.risks li{color:#9a3412}.mini{margin:4px 0;padding-left:18px;font-size:.85rem}
+@media (max-width:980px){.bwrap{grid-template-columns:1fr}.bside{position:static;max-height:none;overflow:visible}
+ .sidetabs{display:flex;gap:6px}.sidetabs button{flex:1;border:1px solid var(--line2);background:#fff;border-radius:99px;padding:6px;font-weight:700}
+ .sidetabs button[aria-selected=true]{background:var(--build-ink);color:#fff}.bside .pane{display:none}.bside .pane.on{display:block}}

@@ -10,7 +10,7 @@
   const SP = () => window.Sprint; const NB = 9;       // build sprint screens
   // Honest per-step minutes: words (hook..quiz, excl. optional Under-the-hood) at 200 wpm + ~2 min Break it!/quiz (+0.5 min training in Steps 1-2), rounded.
   const MIN = { 1: 5, 2: 5, 3: 4, 4: 6, 5: 5, 6: 5, 7: 5, 8: 5, 9: 4 };
-  const LEARN_MIN = 45, BUILD_MIN = 15, LEARN = 'Learn: How a GPT works';
+  const LEARN_MIN = 45, BUILD_MIN = '20-25', LEARN = 'Learn: How a GPT works';
   C.steps.forEach((s) => { s.time = MIN[s.n] + ' min'; });
   const REAL_MODEL = [1, 2];                          // steps whose Break it! runs a genuinely trained model
   const $ = (s, r) => (r || document).querySelector(s);
@@ -157,6 +157,7 @@
     const r = parse(location.hash);
     if (!['welcome', 'step', 'build', 'chat'].includes(r.name) || (r.name === 'step' && !(+r.arg >= 1 && +r.arg <= TOTAL)) || (r.name === 'build' && !(+r.arg >= 1 && +r.arg <= NB))) { location.replace('#/welcome'); return; }
     current = r;
+    document.body.classList.toggle('on-build', r.name === 'build');
     const main = $('#main'); main.innerHTML = '';
     if (r.name !== 'welcome') { S.route = location.hash; }
     if (r.name === 'step') S.visited[r.arg] = true;
@@ -219,7 +220,7 @@
     const r = current || {}; const onL = r.name === 'step', onB = r.name === 'build' || r.name === 'chat';
     const nextStep = CORE.find((n) => !S.done[n]) || 1; const nextB = Math.min(NB, bc + 1);
     const learn = '<a class="track learn' + (onL ? ' on' : '') + '" href="#/step/' + (onL ? r.arg : nextStep) + '"' + (onL ? ' aria-current="true"' : '') + '><b>\ud83d\udcd8 ' + LEARN + '</b><small>9 steps \u00b7 ~' + LEARN_MIN + ' min \u00b7 ' + core + '/9 done</small><span class="tbar"><i style="width:' + (core / 9 * 100) + '%"></i></span>' + (compact ? '' : '<span class="tdesc">Peel a GPT layer by layer: train a tiny model, break it, see why it works.</span>') + '</a>';
-    const build = '<a class="track build' + (onB ? ' on' : '') + '" href="#/build/' + (onB && r.name === 'build' ? r.arg : nextB) + '"' + (onB ? ' aria-current="true"' : '') + '><b>\ud83d\udd27 Build your GPT</b><small>9 screens \u00b7 ~' + BUILD_MIN + ' min \u00b7 ' + bc + '/9 done</small><span class="tbar"><i style="width:' + (bc / 9 * 100) + '%"></i></span>' + (compact ? '' : '<span class="tdesc">Click together a work bot and chat with it. Start any time: every term has a plain-English tip.</span>') + '</a>';
+    const build = '<a class="track build' + (onB ? ' on' : '') + '" href="#/build/' + (onB && r.name === 'build' ? r.arg : nextB) + '"' + (onB ? ' aria-current="true"' : '') + '><b>\ud83d\udd27 Build your GPT</b><small>9 screens \u00b7 ~' + BUILD_MIN + ' min \u00b7 ' + bc + '/9 done</small><span class="tbar"><i style="width:' + (bc / 9 * 100) + '%"></i></span>' + (compact ? '' : '<span class="tdesc">Learn by building: click together a work bot, watch it change live, break it, chat with it. No tech background needed; start here.</span>') + '</a>';
     return learn + build;
   }
   function tracksHTML() { return '<section class="tracks big" aria-label="Choose a track">' + trackCards(CORE.filter((n) => S.done[n]).length, buildCount(), false) + '</section>'; }
