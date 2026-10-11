@@ -86,7 +86,7 @@
   /* ---------- shared pieces ---------- */
   const stars = (n) => '<span class="fx-stars" aria-label="' + n + ' of 3 stars">' + '★'.repeat(n) + '<span class="dim">' + '★'.repeat(3 - n) + '</span></span>';
   const ruleHTML = (i) => '<section class="card fx-rule" id="fxRule"><b>📌 Monday rule</b><p>' + esc(C().RULES[i]) + '</p><small>Added to your “My AI habits” card.</small></section>';
-  function head(n) { const L = C().LEVELS[n]; return '<div class="step-head"><div><div class="chips"><span class="chip build">' + (n === 9 ? '🏁 Exam' : 'Level ' + n + ' of ' + C().total) + '</span><span class="chip time">⏱ ' + esc(L.time) + '</span><span class="chip">' + J().icon + ' ' + esc(f0().name || J().label) + '</span><span class="chip">🧪 Preview</span></div><h1>' + esc(L.title) + '</h1></div></div>'; }
+  function head(n) { const L = C().LEVELS[n]; return '<div class="step-head"><div><div class="chips"><span class="chip build">' + (n === 9 ? '🏁 Exam' : 'Level ' + n + ' of ' + C().total) + '</span><span class="chip time">⏱ ' + esc(L.time) + '</span><span class="chip">' + J().icon + ' ' + esc(f0().name || J().label) + '</span></div><h1>' + esc(L.title) + '</h1></div></div>'; }
   const f0 = () => FX();
   let xOpt = {};
   function shell(main, f, n, inner, xid) {
@@ -249,7 +249,7 @@
     if (!f.exam) { main.innerHTML = '<div class="card lockscreen"><h1>Run the exam first</h1><a class="btn primary" href="#/fix/' + Math.min(9, stage(f) + 1) + '">Continue</a></div>'; return; }
     f.lvl[10] = { done: true, stars: 3 }; save(); xOpt = {};
     const chips = J(f).board.map((x) => x.q).concat(J(f).exam.map((x) => x.q));
-    shell(main, f, 10, '<div class="step-head"><div><div class="chips"><span class="chip build">🎓 Wrap-up</span><span class="chip">🧪 Preview</span></div><h1>' + esc(f.name) + ' is ready (ish)</h1></div></div>' +
+    shell(main, f, 10, '<div class="step-head"><div><div class="chips"><span class="chip build">🎓 Wrap-up</span></div><h1>' + esc(f.name) + ' is ready (ish)</h1></div></div>' +
       '<section class="card fx-beat"><h2>📣 Brag line</h2><p class="fx-share" id="fxShare">' + esc(shareLine(f)) + '</p><button class="btn" id="fxCopy">📋 Copy</button> <small>Copies to your clipboard only. Nothing is posted.</small></section>' +
       '<section class="card fx-beat" id="habitsCard"><h2>📌 My AI habits</h2><ol class="fx-habits">' + C().RULES.map((r) => '<li>' + esc(r) + '</li>').join('') + '</ol><div class="row"><button class="btn" id="dlHabits">⬇ Download (.txt)</button><button class="btn" id="prHabits">🖨 Print</button></div></section>' +
       '<section class="card fx-beat spec" id="specCard"><h2>📋 Spec card: ' + esc(f.name) + '</h2><dl class="specdl">' + specRows(f).map((r) => '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '<span class="because">↳ because ' + esc(r[2].charAt(0).toLowerCase() + r[2].slice(1)) + '</span></dd>').join('') + '</dl><h3>⚠️ Flagged risks</h3><ul class="risks">' + specRisks(f).map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul><p class="fict"><strong>' + esc(App().FICT) + '</strong></p>' + App().safe('Download and print are made locally by your browser. Nothing is uploaded.') + '<div class="row"><button class="btn" id="dlSpec">⬇ Download (.txt)</button><button class="btn" id="prSpec">🖨 Print</button></div></section>' +

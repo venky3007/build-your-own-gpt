@@ -2,18 +2,17 @@
 
 > Transformers are complicated. We read the papers so you don’t have to. Tag along and see how LLMs, RAG and agents really work.
 
-A break-it-yourself course (Learn: How a GPT works, 9 steps, ~45 minutes) that shows office folks how LLMs, RAG and agents really work, then a 15-minute click-to-build sprint where you assemble your own work bot and chat with it. Runs offline in your browser.
+A break-it-yourself AI-literacy course for office folks: **Fix the broken bot** (~15–20 minutes, the main path) and **Learn: How a GPT works** (9 steps, ~45 minutes, the deep route). Runs offline in your browser.
 
 **▶ Try it live: [https://venky3007.github.io/build-your-own-gpt/](https://venky3007.github.io/build-your-own-gpt/)**
 
 ![Screenshot: the welcome screen and the peel-the-layers diagram](docs/screenshot.png)
 
-![Screenshot: chatting with the bot you built in the sprint, with an off-script suggestion](docs/screenshot-chat.png)
 
 ## Two tracks, side by side
 
-- **Learn: How a GPT works (9 steps, ~45 minutes).** The learning course: steps that assemble a GPT part by part (about 4–6 minutes each). A **peel-the-layers diagram** starts fully assembled (just the chat box a user sees) and peels one layer per step, down to tokens.
-- **Build your GPT (~20-30 minutes, learn by building; the recommended main path).** 13 click-to-build screens, one idea each, in a three-beat rhythm: **pick** (2-4 big cards), **see what happened inside** (a short, skippable animation with one plain caption and a "See the full lesson: Step X" link), then **see the result** (your bot answers a test question, with a one-line "what changed"). It teaches all 9 Learn steps along the way: how it writes (tokens), feeding it examples (training data, loss), how much it reads (attention, context window), inside the brain (embeddings to softmax), brain size, documents (RAG), memory and actions (tools, agents), manners and safety (guardrails, fine-tuning), and testing and the spec. Each screen has an optional "lesson in brief" with the matching Learn step's key points, myth-busters and so-what, and a "Try it for real" demo (Steps 1-2 train a real tiny model in your browser). A small tradeoff bar (cost, speed, accuracy, risk; illustrative) expands on demand; "Try breaking it" is optional. Click **Build** for a downloadable/printable **spec card** with a "because" line per pick, flagged risks and tradeoff scores, then **chat with your bot** (simulated from your picks and fictional documents).
+- **🔧 Fix the broken bot (~15–20 minutes; the welcome page's main button).** Pick a job (HR helper, IT helpdesk, Sales assistant or Finance checker). Your bot went live this morning and its **Shift Board** (8 real staff questions + 2 traps) is all red. Fix it in 8 levels: makes things up → doesn't know us (connect the documents) → found the retired 2019 copy → can't find it (search by meaning) → forgot the rule (context window) → botched the sum (think first) → got hijacked (prompt injection, least privilege) → no-go zones (guardrails). Each level: ticket, predict, 3-line idea, fix (with tempting wrong fixes that visibly fail), **Prompt X-ray** before/after, re-test, Monday rule. Then an **exam** (full board + 4 surprises: 13/14, "No bot gets 100%"), a **spec card** with "because" lines and risks, a **My AI habits** card (10 rules, download/print), a copy-to-clipboard brag line, and a chat with your bot.
+- **📘 Learn: How a GPT works (9 steps, ~45 minutes).** The deep route, with a real tiny model trained in your browser and a **peel-the-layers diagram**.
 
 ## What's inside
 
@@ -32,7 +31,7 @@ A break-it-yourself course (Learn: How a GPT works, 9 steps, ~45 minutes) that s
 ## Real vs simulated (honest labels)
 
 - **Steps 1 and 2 use a real tiny transformer.** It is a character-level model with causal multi-head self-attention (about 16,000 parameters, 1 block, 2 heads, context 20) written in plain JavaScript and trained live in your browser in about 15–25 seconds on a bundled corpus of fictional office emails. You watch the real loss curve fall, the samples improve from gibberish to word-like text, and a live attention heatmap over the last few characters.
-- **Everything else is scripted** to show a real mechanism safely and offline, and is labelled "Simulated for this demo" on the page. The sprint chat is labelled "Simulated from your choices".
+- **Everything else is scripted** to show a real mechanism safely and offline, and is labelled "Simulated for this demo" on the page. The Fix-the-broken-bot answers and chat are labelled "Simulated from your fixes".
 
 ## Privacy
 

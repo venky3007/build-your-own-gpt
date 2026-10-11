@@ -3,7 +3,7 @@
 **For InfoSec reviewers. One page. Every statement below was checked against the source code and the live site on 10 Oct 2026.**
 
 ## What it is
-A self-paced AI-literacy course: 9 explanatory steps plus a click-to-build "Build your GPT" sprint with a **simulated** chat. All documents, companies, people, policies, invoices and data in the course are fictional.
+A self-paced AI-literacy course: 9 explanatory steps plus "Fix the broken bot", a click-through track where learners fix a **simulated** work bot level by level (no AI service is called). All documents, companies, people, policies, invoices and data in the course are fictional.
 
 ## Hosting
 - Static HTML, JavaScript and CSS only, served over HTTPS from GitHub Pages: https://venky3007.github.io/build-your-own-gpt/
@@ -17,7 +17,7 @@ A self-paced AI-literacy course: 9 explanatory steps plus a click-to-build "Buil
 - One optional outbound link: the "source code" link to github.com opens only if a user clicks it.
 
 ## Storage
-- Progress and sprint picks are stored only in the browser's `localStorage` (key `ryoba.v2`). No cookies are set (`document.cookie` is empty in tests).
+- Progress, the bot's name, job and fixes are stored only in the browser's `localStorage` (key `ryoba.v3`; older `ryoba.v1`/`ryoba.v2` data is migrated once, and **Clear my data** removes all three keys). No cookies are set (`document.cookie` is empty in tests).
 - **Clear my data** (menu, welcome page and security panel) deletes the stored keys.
 - The spec-card download is a local file created in the browser (Blob). Nothing is uploaded.
 - Users are asked not to type real company or personal data into the bot-name or chat fields. Anything typed stays on the device.
@@ -34,7 +34,7 @@ default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font
 - Fonts (Inter, Space Grotesk, JetBrains Mono) are bundled locally under the SIL Open Font License 1.1 (`assets/fonts/LICENSE-OFL.txt`).
 
 ## What the automated tests verify
-Headless Chrome (Playwright) suites (`tools/test-site.mjs`, `tools/test-sprint.mjs`) run against both a local copy and the live site. They check:
+Headless Chrome (Playwright) suites (`tools/test-site.mjs`, `tools/test-full.mjs`, `tools/test-slice.mjs`) run against both a local copy and the live site. They check:
 - every request goes to the site's own origin (**0 external requests**)
 - 0 JavaScript errors
 - `document.cookie` is empty
@@ -52,3 +52,12 @@ Headless Chrome (Playwright) suites (`tools/test-site.mjs`, `tools/test-sprint.m
 ## Recommended options
 - If preferred, host the same static folder on the company intranet or an internal static host (no build step; any web server works). Set the CSP above as a real HTTP header and add SSO there.
 - Optionally fork the repository into a company-controlled GitHub organisation.
+
+## Clipboard, downloads and print
+
+- The wrap-up's brag line uses the browser's clipboard API (`navigator.clipboard.writeText`) only when the learner clicks **Copy**. Nothing is posted or sent.
+- The spec card and habits card downloads are plain-text files generated in the browser (Blob URL). Print uses the browser's print dialog.
+
+## /preview/
+
+The former preview path now holds a static page with a `<meta http-equiv="refresh">` to the main site and a plain link. It has no scripts.
