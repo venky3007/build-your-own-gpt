@@ -134,7 +134,7 @@
       '<div class="row"><button class="btn primary" id="fxHire">' + (d.done ? '✅ Hired (hire again to restart)' : '🤝 Hire it and see its first shift') + '</button></div></section>' +
       (d.done ? '<section class="card fx-beat"><p class="fx-ticket">🤖 <b>' + esc(f.name) + '</b> has been live since 9 am. The Shift Board shows <b>' + okCount(f) + ' of 10 right</b>. Model confidence: 100%. 😬</p><p>' + stars(3) + ' Level 0 done. 8 fixes to go, ' + esc(C().time) + '.</p></section>' + ruleHTML(0) : ''), f.focus || 'G1');
     const nm = $('#fxName', main); nm.oninput = () => { f.name = nm.value.trim().slice(0, 24); save(); };
-    $$('[data-job]', main).forEach((b) => b.onclick = () => { if (b.dataset.job === f.job) return; if (Object.keys(f.fixed).length && !confirm('Switch job? This restarts the levels for the new bot.')) return; resetLevels(f); f.job = b.dataset.job; save(); App().go('#/fix/0'); render(main, 0); });
+    $$('.bcard[data-job]', main).forEach((b) => b.onclick = () => { if (b.dataset.job === f.job) return; if (Object.keys(f.fixed).length && !confirm('Switch job? This restarts the levels for the new bot.')) return; resetLevels(f); f.job = b.dataset.job; save(); App().go('#/fix/0'); render(main, 0); });
     $('#fxHire', main).onclick = () => { if (d.done) resetLevels(f); f.name = f.name || ({ hr: 'Policy Pal', it: 'Ticketron', sales: 'Quotey', finance: 'Penny' })[f.job]; f.lvl[0] = { done: true, stars: 3 }; f.focus = 'G1'; save(); render(main, 0); App().updateChrome(); App().setNext(); };
   }
   function resetLevels(f) { f.lvl = {}; f.fixed = {}; f.tried = {}; f.exam = null; f.focus = 'G1'; }
