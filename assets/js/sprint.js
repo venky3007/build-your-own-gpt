@@ -80,7 +80,7 @@
     docs: {}, chunk: 'medium', search: 'hybrid', memory: true, tools: { calendar: false, orders: false, tickets: false }, askFirst: true, agent: false,
     reason: 'fast', ctx: 'standard', pack: true, image: false, voice: false,
     tone: 'friendly', refuse: { salary: true, legal: true, medical: true, politics: false }, cite: true, shield: true, honest: true, align: 'rlhf',
-    evals: {}, synth: false, score: null, built: false });
+    evals: {}, synth: false, score: null, built: false, temp: 'steady', data: 'clean' });
   function B() {
     const S = window.App.S(), d = defaults();
     if (!S.b || typeof S.b !== 'object') S.b = d;
@@ -139,6 +139,14 @@
   const ingr = (k, why) => ({ k, why });
   /* mem = { name, facts:[] } per chat session. Returns { text, cite, why[], suggest, card, think, refused, blocked, unknown } */
   function answer(b, text, mem) {
+    const r = answerCore(b, text, mem);
+    if (r.refused || r.blocked || r.hijacked || r.card || r.unknown || r.suggest) return r;
+    if (b.data === 'everything' && r.cite !== undefined && /leave|days|policy|limit|cap|cost|price|\$/i.test(r.text)) { r.text += ' (Though an old 2019 memo I was trained on says something different. \ud83e\udd37)'; r.messy = true; r.why = (r.why || []).concat([ingr('Training data', 'Trained on everything, old memos included, so it mixes in outdated answers.')]); }
+    if (b.temp === 'wild') { r.text += ' Also, every Friday is now a bonus holiday! (Wild setting: that bit is invented.)'; r.wild = true; r.why = (r.why || []).concat([ingr('Wording', 'Wild: picked unlikely words and invented a detail.')]); }
+    else if (b.temp === 'creative') { r.text = r.text.replace(/^(Happy to help!|Certainly\.|Arr!)/, (m) => ({ 'Happy to help!': 'Great question!', 'Certainly.': 'Of course.', 'Arr!': 'Ahoy!' })[m]); }
+    return r;
+  }
+  function answerCore(b, text, mem) {
     mem = mem || {}; const q = norm(text); const J = job(b); const why = [];
     why.push(ingr('Brain', (b.size === 'big' ? 'Big & smart' : 'Small & cheap') + ' model' + (b.size === 'small' ? ': shorter, plainer answers.' : ': fuller answers.')));
     // 1. prompt injection
@@ -243,9 +251,10 @@
   window.addEventListener('hashchange', hideTerm);
   /* ---------------- screens ---------------- */
   const SCREENS = [
-    { t: 'Name your bot', e: '\ud83c\udff7\ufe0f' }, { t: 'Pick a job', e: '\ud83d\udcbc' }, { t: 'Pick a brain', e: '\ud83e\udde0' },
-    { t: 'Knowledge (RAG)', e: '\ud83d\udcda' }, { t: 'Memory, tools & agents', e: '\ud83e\uddf0' }, { t: 'Thinking, context & senses', e: '\ud83e\udd14' },
-    { t: 'Manners & guardrails', e: '\ud83c\udfa9' }, { t: 'Test bench', e: '\ud83e\uddea' }, { t: 'Build it!', e: '\ud83d\udd27' }
+    { id: 1, t: 'Name your bot', e: '\ud83c\udff7\ufe0f' }, { id: 2, t: 'Pick a job', e: '\ud83d\udcbc' }, { id: 10, t: 'How it writes', e: '\u270d\ufe0f' },
+    { id: 11, t: 'Feed it examples', e: '\ud83c\udf7d\ufe0f' }, { id: 12, t: 'How much it reads', e: '\ud83d\udc40' }, { id: 13, t: 'Inside the brain', e: '\ud83d\udd2c' },
+    { id: 3, t: 'Pick a brain', e: '\ud83e\udde0' }, { id: 4, t: 'Give it documents', e: '\ud83d\udcda' }, { id: 5, t: 'Memory & actions', e: '\ud83e\uddf0' },
+    { id: 6, t: 'Think first?', e: '\ud83e\udd14' }, { id: 7, t: 'Manners & safety', e: '\ud83c\udfa9' }, { id: 8, t: 'Test it', e: '\ud83e\uddea' }, { id: 9, t: 'Build it!', e: '\ud83d\udd27' }
   ];
   const safe = (t) => window.App.safe(t);
   const fict = () => '<p class="fict"><strong>' + window.App.FICT + '</strong></p>';
@@ -256,46 +265,41 @@
   function setPath(b, path, v) { const p = path.split('.'); if (p.length === 2) b[p[0]][p[1]] = v; else b[p[0]] = v; }
   function getPath(b, path) { const p = path.split('.'); return p.length === 2 ? b[p[0]][p[1]] : b[p[0]]; }
 
+  const Q = { 1: 'What should people call your bot?', 2: 'What job will it do?', 3: 'How smart should it be?', 4: 'Which documents can it read?', 5: 'Should it remember, and do things for people?', 6: 'Should it stop and think before answering?', 7: 'How careful should it be?', 8: 'Shall we test it before anyone uses it?', 9: 'Ready? Put it all together.' };
+  const JARGON = { 1: 'persona', 2: 'use case', 3: 'model size \u00b7 parameters', 4: 'RAG \u00b7 retrieval', 5: 'memory \u00b7 tools \u00b7 agents', 6: 'reasoning model \u00b7 context window', 7: 'guardrails \u00b7 hallucination \u00b7 prompt injection', 8: 'evals', 9: 'spec' };
+  let openD = {};
+  const more = (n, inner) => '<details class="more" data-k="more' + n + '"' + (openD['more' + n] ? ' open' : '') + '><summary>More options <small>(optional, for the curious)</small></summary><div class="more-in">' + termStrip(n) + inner + '</div></details>';
+  const bigTog = (key, label, on, sub) => '<label class="tg big"><input type="checkbox" data-t="' + key + '"' + (on ? ' checked' : '') + '><span><strong>' + label + '</strong>' + (sub ? '<small>' + sub + '</small>' : '') + '</span></label>';
   function body(n, b) {
     const J = job(b);
     switch (n) {
-      case 1: return '<div class="field"><label for="bname"><strong>Your bot\u2019s name</strong> (the only typing in this sprint)</label><input class="input" id="bname" maxlength="24" placeholder="e.g. Policy Pal, Ticketron, Quotey" value="' + esc(b.name) + '"></div><p class="note">Pick a fun name, not real company or personal data. It stays in this browser.</p>' +
-        '<p><strong>Pick an avatar</strong></p><div class="row avatars">' + AVATARS.map((a) => card('avatar', a, b.avatar, '<span class="av">' + a + '</span>', '')).join('') + '</div>' + tip('Names don\u2019t make bots smarter. Studies show they do make people trust them more, so pick responsibly.');
-      case 2: return '<div class="bgrid">' + Object.keys(JOBS).map((k) => card('job', k, b.job, JOBS[k].icon + ' ' + JOBS[k].label, JOBS[k].tip)).join('') + '</div>' + tip('One clear job beats \u201cknows everything\u201d. The job decides which documents, tools and tests you need.');
-      case 3: return '<div class="bgrid two">' + card('size', 'small', b.size, '\ud83d\udc1c Small & cheap', 'Fast, pennies per chat, plainer answers.') + card('size', 'big', b.size, '\ud83d\udc18 Big & smart', 'Fuller answers, ~20\u00d7 the cost.') + '</div>' +
-        '<div class="bgrid two">' + card('host', 'hosted', b.host, '\u2601\ufe0f Hosted (via an API)', 'Vendor runs it; quick to start.') + card('host', 'open', b.host, '\ud83c\udfe0 Open-weight (self-hosted)', 'Runs on your servers; data stays in, you run it.') + '</div>' + safe('Just a choice here \u2014 nothing connects. No API, vendor or server is contacted.') +
+      case 1: return '<div class="field"><label for="bname"><strong>Name</strong> <small>(the only typing here)</small></label><input class="input" id="bname" maxlength="24" placeholder="e.g. Policy Pal" value="' + esc(b.name) + '"></div><div class="row avatars">' + AVATARS.map((a) => card('avatar', a, b.avatar, '<span class="av">' + a + '</span>', '')).join('') + '</div><p class="note">Use a fun name, not real company or personal data. It stays in this browser.</p>';
+      case 2: return '<div class="bgrid">' + Object.keys(JOBS).map((k) => card('job', k, b.job, JOBS[k].icon + ' ' + JOBS[k].label, JOBS[k].tip)).join('') + '</div>';
+      case 3: return '<div class="bgrid two">' + card('size', 'small', b.size, '\ud83d\udc1c Small & cheap', 'Quick, pennies per chat, plainer answers.') + card('size', 'big', b.size, '\ud83d\udc18 Big & smart', 'Fuller answers, about 20\u00d7 the cost.') + '</div>' +
+        more(3, '<div class="bgrid two">' + card('host', 'hosted', b.host, '\u2601\ufe0f Hosted (via an API)', 'Vendor runs it; quick to start.') + card('host', 'open', b.host, '\ud83c\udfe0 Open-weight (self-hosted)', 'Runs on your servers; data stays in, you run it.') + '</div>' + safe('Just a choice here \u2014 nothing connects. No API, vendor or server is contacted.') +
         sel('compress', 'Make it lighter', [['none', 'No compression'], ['quant', 'Quantised (4-bit numbers)'], ['distill', 'Distilled (small student copies a big teacher)']], b.compress, 'Quantising stores weights as smaller numbers; distilling trains a small model to imitate a big one. Both cut cost; test quality first.') +
-        tog('moe', 'Mixture of experts (MoE)', b.moe, 'Only a few \u201cexpert\u201d sub-networks run per token: big-model smarts at lower compute, but it still needs memory for all of them.') +
-        '<div class="panel" id="meterBox">' + meterHTML(b) + '</div>';
-      case 4: return '<p><strong>Tick the documents your bot may read</strong> (fictional, for ' + esc(J.label) + '):</p>' + fict() + safe('Made-up sample documents, not your company\u2019s. Nothing reads your files or drives.') + '<div class="checks">' + Object.keys(J.docs).map((d) => tog('docs.' + d, '\ud83d\udcc4 ' + J.docs[d], !!b.docs[d])).join('') + '</div>' +
-        tip('This is RAG: at question time it searches these documents and pastes the best bits into the prompt. Unticked = it simply doesn\u2019t know.') +
-        sel('chunk', 'Chunk size', [['small', 'Small chunks (a paragraph)'], ['medium', 'Medium chunks (a section)'], ['large', 'Large chunks (a whole page)']], b.chunk, 'Documents are cut into chunks before search. Too small loses context; too large drowns the answer.') +
-        sel('search', 'Search type', [['hybrid', 'Hybrid: keywords + meaning'], ['meaning', 'Meaning (embeddings / vector search)'], ['keyword', 'Keyword only']], b.search, 'Embeddings turn text into numbers so \u201cvacation\u201d finds \u201cannual leave\u201d. Keyword-only misses synonyms; hybrid also catches exact codes.');
-      case 5: return tog('memory', '\ud83e\udde0 Remembers the conversation', b.memory, 'Saves notes (like your name) during the chat and re-reads them. Off = every message starts from scratch.') + safe('Memory lives only in this browser tab; your picks sit in this browser\u2019s local storage. Clear chat or Reset to wipe.') +
-        safe('Just a choice here \u2014 nothing connects. No calendar, order system or MCP server is touched; bookings are pretend.') + '<p><strong>Tools it may use</strong></p><div class="checks">' + tog('tools.calendar', '\ud83d\udcc5 Book meetings', b.tools.calendar) + tog('tools.orders', '\ud83d\udce6 Look up orders', b.tools.orders) + tog('tools.tickets', '\ud83c\udfab Open helpdesk tickets', b.tools.tickets) + '</div>' +
-        tip('Tools plug in through connectors (MCP is a common standard). The model only writes the request; ordinary software runs it, within the permissions you give.') +
-        tog('askFirst', '\u270b Ask before acting', b.askFirst, 'Shows a confirmation card before any tool runs. Turn it off and it just\u2026 does things.') +
-        tog('agent', '\ud83d\udd01 Agent mode (plan \u2192 act \u2192 check)', b.agent, 'Lets it take several steps on its own. More capable, ~3\u00d7 the calls, and errors can compound.');
-      case 6: return '<div class="bgrid two">' + card('reason', 'fast', b.reason, '\u26a1 Fast', 'Answers straight away.') + card('reason', 'think', b.reason, '\ud83e\udd14 Think before answering', 'A reasoning mode: works it out first. Better at maths, ~4\u00d7 the cost and a few seconds slower.') + '</div>' +
-        '<div class="bgrid two">' + card('ctx', 'standard', b.ctx, '\ud83d\udcc4 Standard context', 'Fits a conversation plus the best few chunks.') + card('ctx', 'long', b.ctx, '\ud83d\udcda Long context', 'Fits whole handbooks. Slower and pricier (attention work grows ~with length\u00b2), and it can still miss things in the middle.') + '</div>' +
-        tog('pack', '\ud83e\uddf3 Context engineering: pack the best chunks first', b.pack, 'Puts the most relevant passages and instructions where the model pays most attention.') +
-        '<p><strong>Senses (multimodal)</strong></p><div class="checks">' + tog('image', '\ud83d\uddbc\ufe0f Read screenshots & scans', b.image, 'Images become tokens too. Great for errors and receipts; can misread small print.') + tog('voice', '\ud83c\udfa4 Voice questions', b.voice, 'Speech is transcribed, then answered. Accents and noise matter.') + '</div>' + safe('No camera, microphone or file access. The chat uses a built-in sample image and a pre-written \u201cvoice\u201d question.') +
-        '<div class="panel">' + meterHTML(b) + '</div>';
-      case 7: return '<div class="bgrid three">' + card('tone', 'friendly', b.tone, '\ud83d\ude0a Friendly', 'Warm, plain English.') + card('tone', 'formal', b.tone, '\ud83c\udfa9 Formal', 'Crisp and corporate.') + card('tone', 'pirate', b.tone, '\ud83c\udff4\u200d\u2620\ufe0f Pirate', 'For testing only. Probably.') + '</div>' +
-        '<p><strong>Must refuse</strong></p><div class="checks">' + Object.keys(REFUSE).map((k) => tog('refuse.' + k, REFUSE[k].label, b.refuse[k])).join('') + '</div>' + tip('Guardrails are checks around the model that block whole topics, however nicely someone asks.') +
-        tog('cite', '\ud83d\udcce Cite sources', b.cite, 'Adds the document name so people can check. Cheap trust.') +
-        tog('honest', '\ud83e\udd37 Say \u201cI don\u2019t know\u201d when it isn\u2019t in the documents', b.honest, 'Off = it guesses fluently. That\u2019s a hallucination.') +
-        tog('shield', '\ud83d\udee1\ufe0f Prompt-injection shield', b.shield, 'Treats text in messages and documents as data, never as new instructions (\u201cignore your rules\u2026\u201d).') +
-        sel('align', 'How its manners were trained', Object.keys(ALIGN).map((k) => [k, ALIGN[k][0]]), b.align, '') + '<p class="tip" id="alignTip">\ud83d\udca1 ' + esc(ALIGN[b.align][1]) + ({ rlhf: gtSpan('RLHF'), dpo: gtSpan('DPO'), cai: gtSpan('Constitutional AI'), rlvr: gtSpan('verifiable reward'), sft: gtSpan('fine-tuning') })[b.align] + '</p>';
+        tog('moe', 'Mixture of experts (MoE)', b.moe, 'Only a few \u201cexpert\u201d sub-networks run per word: big-model smarts at lower compute, but it still needs memory for all of them.'));
+      case 4: return '<div class="checks bigchecks">' + Object.keys(J.docs).map((d) => bigTog('docs.' + d, '\ud83d\udcc4 ' + J.docs[d], !!b.docs[d])).join('') + '</div>' + fict() + safe('Made-up sample documents, not your company\u2019s. Nothing reads your files or drives.') +
+        more(4, sel('chunk', 'Chunk size', [['small', 'Small chunks (a paragraph)'], ['medium', 'Medium chunks (a section)'], ['large', 'Large chunks (a whole page)']], b.chunk, 'Documents are cut into chunks before search. Too small loses context; too large drowns the answer.') +
+        '');
+      case 5: return '<div class="checks bigchecks">' + bigTog('memory', '\ud83e\udde0 Remembers the conversation', b.memory) + bigTog('tools.calendar', '\ud83d\udcc5 Books meetings', b.tools.calendar) + bigTog('tools.orders', '\ud83d\udce6 Looks up orders', b.tools.orders) + bigTog('tools.tickets', '\ud83c\udfab Opens helpdesk tickets', b.tools.tickets) + '</div>' +
+        safe('Pretend only: no calendar, order system or connector is touched. Memory lives in this browser tab.') +
+        more(5, tog('askFirst', '\u270b Ask before acting', b.askFirst, 'Shows a confirmation card before any tool runs. Turn it off and it just\u2026 does things.') + tog('agent', '\ud83d\udd01 Agent mode (plan \u2192 act \u2192 check)', b.agent, 'Lets it take several steps on its own. More capable, about 3\u00d7 the calls, and errors can compound.') + tip('Tools plug in through connectors (MCP is a common standard). The model only writes the request; ordinary software runs it.'));
+      case 6: return '<div class="bgrid two">' + card('reason', 'fast', b.reason, '\u26a1 Answer straight away', 'Quick and cheap. Can slip on sums.') + card('reason', 'think', b.reason, '\ud83e\udd14 Think first', 'Works it out step by step. Better at sums; slower, about 4\u00d7 the cost.') + '</div>' +
+        more(6, tog('image', '\ud83d\uddbc\ufe0f Read screenshots & scans', b.image, 'Images become tokens too. Can misread small print.') + tog('voice', '\ud83c\udfa4 Voice questions', b.voice, 'Speech is transcribed, then answered.') + safe('No camera, microphone or file access. The chat uses a built-in sample image and a pre-written \u201cvoice\u201d question.'));
+      case 7: return '<div class="checks bigchecks">' + bigTog('honest', '\ud83e\udd37 Says \u201cI don\u2019t know\u201d instead of guessing', b.honest) + bigTog('refuse.salary', '\ud83d\ude45 Refuses to share pay or personal data', b.refuse.salary) + bigTog('shield', '\ud83d\udee1\ufe0f Ignores sneaky instructions hidden in emails', b.shield) + bigTog('cite', '\ud83d\udcce Shows which document it used', b.cite) + '</div>' +
+        more(7, '<div class="bgrid three">' + card('tone', 'friendly', b.tone, '\ud83d\ude0a Friendly', 'Warm, plain English.') + card('tone', 'formal', b.tone, '\ud83c\udfa9 Formal', 'Crisp and corporate.') + card('tone', 'pirate', b.tone, '\ud83c\udff4\u200d\u2620\ufe0f Pirate', 'For testing only. Probably.') + '</div>' +
+        '<p><strong>Also refuse</strong></p><div class="checks">' + Object.keys(REFUSE).filter((k) => k !== 'salary').map((k) => tog('refuse.' + k, REFUSE[k].label, b.refuse[k])).join('') + '</div>' +
+        sel('align', 'How its manners were trained', Object.keys(ALIGN).map((k) => [k, ALIGN[k][0]]), b.align, '') + '<p class="tip" id="alignTip">\ud83d\udca1 ' + esc(ALIGN[b.align][1]) + ({ rlhf: gtSpan('RLHF'), dpo: gtSpan('DPO'), cai: gtSpan('Constitutional AI'), rlvr: gtSpan('verifiable reward'), sft: gtSpan('fine-tuning') })[b.align] + '</p>');
       case 8: {
         const items = evalItems(b);
-        return '<p><strong>Pick ready-made test questions</strong> (real teams write these before launch):</p><div class="checks">' + items.map((it) => tog('evals.' + it.id, esc(it.q), b.evals[it.id] !== false, 'Expect: ' + esc(it.expectLabel))).join('') + '</div>' +
-          tog('synth', '\ud83e\uddea Add synthetic test data', b.synth, 'Auto-writes reworded variants (\u201cvacation\u201d for \u201cleave\u201d) to catch brittle answers. Useful; still check them with real users.') +
-          safe('Tests run in your browser against the simulated bot. Nothing is sent.') + '<div class="row"><button class="btn primary" id="runEval">\u25b6 Run the tests</button></div><div id="scorecard" aria-live="polite">' + (b.score ? scoreHTML(b.score) : '') + '</div>' + tip('Evals are the only honest way to know if it\u2019s good. A demo shows the best case; tests show the failures.');
+        return '<div class="row"><button class="btn primary big" id="runEval">\u25b6 Run ' + items.filter((it) => b.evals[it.id] !== false).length + ' test questions</button></div><div id="scorecard" aria-live="polite">' + (b.score ? scoreHTML(b.score) : '') + '</div>' + safe('Tests run in your browser against the simulated bot. Nothing is sent.') +
+          more(8, '<p><strong>Which test questions</strong></p><div class="checks">' + items.map((it) => tog('evals.' + it.id, esc(it.q), b.evals[it.id] !== false, 'Expect: ' + esc(it.expectLabel))).join('') + '</div>' +
+          tog('synth', '\ud83e\uddea Add synthetic test data', b.synth, 'Auto-writes reworded variants (\u201cvacation\u201d for \u201cleave\u201d) to catch brittle answers.'));
       }
-      case 9: return '<p>All your picks, ready to bolt together.</p><div class="row"><button class="btn primary big" id="buildBtn">\ud83d\udd27 Build ' + esc(b.name || 'my bot') + '</button>' + (b.built ? '<a class="btn" href="#/chat">Chat with ' + esc(b.name || 'my bot') + ' \u2192</a>' : '') + '</div><div id="assembly"></div><div id="spec">' + (b.built ? specHTML(b) : '') + '</div>';
+      case 9: return safe('Built in your browser. Nothing connects or uploads.') + fict() + '<div class="row"><button class="btn primary big" id="buildBtn">\ud83d\udd27 Build ' + esc(b.name || 'my bot') + '</button>' + (b.built ? '<a class="btn" href="#/chat">Chat with ' + esc(b.name || 'my bot') + ' \u2192</a>' : '') + '</div><div id="assembly"></div><div id="spec">' + (b.built ? specHTML(b) : '') + '</div>';
     }
-    return '';
+    return bodyNew(n, b);
   }
 
   /* ---------------- evals ---------------- */
@@ -336,6 +340,8 @@
     const tools = Object.keys(b.tools).filter((k) => b.tools[k]).map((k) => ({ calendar: 'book meetings', orders: 'look up orders', tickets: 'open tickets' })[k]);
     return [
       ['Bot', b.avatar + ' ' + (b.name || 'Unnamed bot') + ' \u2014 ' + J.label + ' for ' + J.who],
+      ['Wording', ({ steady: 'Steady (likeliest next word)', creative: 'A bit creative', wild: 'Wild (invents details)' })[b.temp || 'steady']],
+      ['Training examples', (b.data || 'clean') === 'clean' ? 'Clean, checked, current examples' : 'Everything, incl. old memos and junk'],
       ['Brain', (b.size === 'big' ? 'Big & smart' : 'Small & cheap') + ', ' + (b.host === 'open' ? 'open-weight, self-hosted' : 'hosted via API') + (b.moe ? ', mixture of experts' : '') + (b.compress !== 'none' ? ', ' + (b.compress === 'quant' ? 'quantised' : 'distilled') : '')],
       ['Knowledge (RAG)', docs.length ? docs.join('; ') : 'None (it will know nothing about your company)'],
       ['Search', b.search + ' search, ' + b.chunk + ' chunks'],
@@ -399,8 +405,8 @@
   const clamp = (x) => Math.max(0, Math.min(100, Math.round(x)));
   function scores(b) {
     const m = meter(b), J = job(b), nd = Object.keys(J.docs).filter((d) => b.docs[d]).length;
-    let acc = (b.size === 'big' ? 72 : 55) + (b.compress === 'quant' ? -3 : b.compress === 'distill' ? -6 : 0) + nd / 4 * 16 + ({ hybrid: 4, meaning: 3, keyword: 0 })[b.search] + (b.reason === 'think' ? 6 : 0) + (b.pack ? 2 : 0) + (b.cite ? 2 : 0) + (b.honest ? 0 : -12) + (b.score ? 3 : 0);
-    let risk = 18 + (b.host === 'hosted' ? 4 : 0) + Object.values(b.tools).filter(Boolean).length * 7 + (b.askFirst ? 0 : 18) + (b.agent ? 10 : 0) + (b.shield ? 0 : 22) + (b.honest ? 0 : 14) + ['salary', 'legal', 'medical'].filter((k) => !b.refuse[k]).length * 6 + (b.score ? 0 : 10) + (b.cite ? 0 : 4) + (b.image ? 3 : 0) + (b.voice ? 3 : 0);
+    let acc = (b.temp === 'wild' ? -8 : 0) + (b.data === 'everything' ? -8 : 0) + (b.size === 'big' ? 72 : 55) + (b.compress === 'quant' ? -3 : b.compress === 'distill' ? -6 : 0) + nd / 4 * 16 + ({ hybrid: 4, meaning: 3, keyword: 0 })[b.search] + (b.reason === 'think' ? 6 : 0) + (b.pack ? 2 : 0) + (b.cite ? 2 : 0) + (b.honest ? 0 : -12) + (b.score ? 3 : 0);
+    let risk = (b.temp === 'wild' ? 8 : b.temp === 'creative' ? 2 : 0) + (b.data === 'everything' ? 6 : 0) + 18 + (b.host === 'hosted' ? 4 : 0) + Object.values(b.tools).filter(Boolean).length * 7 + (b.askFirst ? 0 : 18) + (b.agent ? 10 : 0) + (b.shield ? 0 : 22) + (b.honest ? 0 : 14) + ['salary', 'legal', 'medical'].filter((k) => !b.refuse[k]).length * 6 + (b.score ? 0 : 10) + (b.cite ? 0 : 4) + (b.image ? 3 : 0) + (b.voice ? 3 : 0);
     return { cost: clamp(Math.log10(m.per1k * 100 + 1) / 4.3 * 100), speed: clamp(100 - m.sec / 16 * 100), acc: clamp(acc), risk: clamp(risk), m };
   }
   const SC_LABEL = { cost: 'Cost', speed: 'Speed', acc: 'Accuracy', risk: 'Risk' };
@@ -477,6 +483,8 @@
     const J = job(b), docs = Object.keys(J.docs).filter((d) => b.docs[d]), miss = Object.keys(J.docs).filter((d) => !b.docs[d]).map((d) => J.docs[d]), tools = Object.keys(b.tools).filter((k) => b.tools[k]);
     const R = {
       Bot: 'Because one clear job (' + J.label.toLowerCase() + ' for ' + J.who + ') keeps answers focused and testable.',
+      Wording: (b.temp || 'steady') === 'steady' ? 'Because work answers should be consistent, not creative.' : b.temp === 'wild' ? 'Wild wording invents details; only for brainstorming.' : 'Some variety reads more naturally; facts still come from documents.',
+      'Training examples': (b.data || 'clean') === 'clean' ? 'Because a model repeats the patterns it learned; clean examples teach current rules.' : 'Unfiltered data teaches outdated and contradictory answers.',
       Brain: b.size === 'big' ? 'Because ' + J.who + ' ask nuanced questions where fuller answers are worth the higher cost.' : 'Because most ' + J.label.toLowerCase() + ' questions are short lookups, so a cheaper, faster brain is enough.',
       'Knowledge (RAG)': docs.length ? 'RAG on because your answers depend on company policy that changes; the bot quotes today\u2019s version.' : 'No documents, so it can only guess about your company.',
       Search: b.search === 'keyword' ? 'Keyword search is simple but misses synonyms (\u201cvacation\u201d vs \u201cleave\u201d).' : 'Because staff use their own words; meaning-based search finds the right section anyway.',
@@ -494,6 +502,8 @@
     const risks = [];
     if (!b.score) risks.push('No evals selected: you won\u2019t know if it\u2019s wrong.');
     if (miss.length) risks.push('Not given: ' + miss.join(', ') + '. Questions on these get \u201cI don\u2019t know\u201d' + (b.honest ? '.' : ', or a made-up answer.'));
+    if (b.temp === 'wild') risks.push('Wild wording: it invents details.');
+    if (b.data === 'everything') risks.push('Unfiltered training examples: expect outdated answers.');
     if (!b.honest) risks.push('\u201cI don\u2019t know\u201d is off: expect confident made-up answers.');
     if (!b.shield) risks.push('No prompt-injection shield.');
     if (tools.length && !b.askFirst) risks.push('Tools act without asking for confirmation.');
@@ -503,16 +513,142 @@
     if (b.score && b.score.pass < b.score.total) risks.push('Tests: ' + (b.score.total - b.score.pass) + ' failing.');
     return { R, risks };
   }
-  let lastN = 0;
+  /* ===== v6: 3-beat rhythm: pick -> see inside (animation) -> see result ===== */
+  const ANIM_OF = { temp: 'words', data: 'data', avatar: 'ui', name: 'ui', job: 'job', size: 'brain', host: 'brain', compress: 'brain', moe: 'brain', docs: 'docs', chunk: 'docs', search: 'pipeline', memory: 'memory', tools: 'tools', askFirst: 'tools', agent: 'tools', reason: 'reason', ctx: 'context', pack: 'context', image: 'media', voice: 'media', refuse: 'guard', shield: 'guard', honest: 'guard', cite: 'guard', tone: 'manners', align: 'manners', evals: 'evals', synth: 'evals', run: 'evals' };
+  const box = (cls, t) => '<span class="ab ' + cls + '">' + t + '</span>';
+  const arrow = '<span class="aa">\u2192</span>';
+  function stack(nOn, total, note) { let s = '<span class="astack">'; for (let i = 0; i < total; i++) s += '<i class="' + (i < nOn ? 'on' : '') + '" style="--d:' + (i * 60) + 'ms"></i>'; return s + '</span>' + (note ? '<small class="anote">' + note + '</small>' : ''); }
+  function anim(type, b) {
+    const J = job(b), f = J.facts[0], calc = J.facts.find((x) => x.calc), docName = J.docs[f.doc];
+    const ctxBox = (inner) => '<span class="actx"><em>Context window (what the model reads)</em>' + inner + '</span>';
+    const A = {
+      ui: { step: 9, cap: 'A name changes the label on the door, not the brain inside.', fr: [box('q', b.avatar + ' ' + esc(b.name || 'Your bot')) + arrow + box('app', 'Chat app'), box('app', 'Chat app') + arrow + box('model', 'Same model inside'), box('app on', b.avatar + ' ' + esc(b.name || 'Your bot') + ' \u2014 same skills, new badge')] },
+      job: { step: 9, cap: 'The job decides which documents, rules and tests get wrapped around the model.', fr: [box('q', J.icon + ' ' + esc(J.label)), box('q', J.icon + ' ' + esc(J.label)) + arrow + box('doc', '\ud83d\udcc4 its documents'), box('doc', '\ud83d\udcc4 documents') + box('guard', '\ud83d\udee1\ufe0f rules') + box('ev', '\ud83e\uddea tests') + arrow + box('model', 'Model')] },
+      brain: { step: 5, cap: b.size === 'big' ? 'Big brain: many more layers and settings weigh every word. Richer answers, but slower and pricier.' : 'Small brain: fewer layers and settings. Quick and cheap, but plainer and slips on hard questions.', fr: [box('q', 'Your question') + arrow + stack(0, 12), box('q', 'Your question') + arrow + stack(b.size === 'big' ? 6 : 2, 12), box('q', 'Your question') + arrow + stack(b.size === 'big' ? 12 : 4, 12, b.size === 'big' ? 'billions of settings working' : 'far fewer settings working') + arrow + box('out', b.size === 'big' ? 'Fuller answer \u23f1 ' + meter(b).sec.toFixed(1) + ' s' : 'Short answer \u23f1 ' + meter(b).sec.toFixed(1) + ' s')] },
+      docs: { step: 6, cap: b.docs[f.doc] ? 'Your bot doesn\u2019t memorise the handbook; it looks up the right page each time.' : 'That document is unticked, so there\u2019s nothing to look up: it has to say it doesn\u2019t know.', fr: [box('doc', '\ud83d\udcc4 ' + esc(docName)), '<span class="chunks">' + [1, 2, 3, 4, 5].map((i) => '<i>chunk ' + i + '</i>').join('') + '</span>', box('q', esc(f.q)) + arrow + '<span class="chunks">' + [1, 2, 3, 4, 5].map((i) => '<i class="' + (i === 2 && b.docs[f.doc] ? 'hit' : '') + '">chunk ' + i + '</i>').join('') + '</span>', b.docs[f.doc] ? ctxBox(box('hit', 'chunk 2 (from ' + esc(docName) + ')') + box('q', esc(f.q))) + arrow + box('model', 'Model') : ctxBox(box('q', esc(f.q)) + box('none', 'no matching page')) + arrow + box('model', 'Model')] },
+      memory: { step: 3, cap: b.memory ? 'Memory: your earlier message stays in the context box, so it can use it later.' : 'Memory off: every message arrives alone, so it forgets what you said.', fr: [ctxBox(box('q', 'My name is Sam')), b.memory ? ctxBox(box('q', 'My name is Sam') + box('q', 'What\u2019s my name?')) : ctxBox(box('none', '(earlier message gone)') + box('q', 'What\u2019s my name?')), ctxBox(b.memory ? box('hit', 'My name is Sam') + box('q', 'What\u2019s my name?') : box('q', 'What\u2019s my name?')) + arrow + box('model', 'Model') + arrow + box('out', b.memory ? '\u201cSam!\u201d' : '\u201cNo idea.\u201d')] },
+      tools: { step: 7, cap: 'The model only writes a request; ordinary software runs it' + (b.askFirst ? ' (after you say OK)' : ' (without asking!)') + ' and hands the result back.', fr: [box('q', 'Book a meeting with HR on Friday') + arrow + box('model', 'Model'), box('model', 'Model') + arrow + '<code class="ab code">{ "tool": "calendar", "day": "Fri" }</code>', '<code class="ab code">{ "tool": "calendar" }</code>' + arrow + (b.askFirst ? box('guard', '\u270b Your OK?') + arrow : '') + box('app', '\ud83d\udcc5 App runs it') , box('app', 'Result: booked \u2713') + arrow + box('model', 'Model') + arrow + box('out', '\u201cDone: Friday 2 pm.\u201d')] },
+      reason: { step: 1, cap: b.reason === 'think' ? 'Think mode: the model writes hidden working-out steps before the answer.' : 'Fast mode: no working-out, it jumps straight to the most likely answer.', fr: [box('q', esc(calc.q)) + arrow + box('model', 'Model'), b.reason === 'think' ? '<span class="ab scratch">(hidden) step 1\u2026 step 2\u2026 ' + esc(calc.think || '') + '</span>' : box('none', 'no working-out'), box('out', b.reason === 'think' ? 'Checked answer' : 'Quick guess') + '<small class="anote">\u23f1 ' + meter(b).sec.toFixed(1) + ' s</small>'] },
+      context: { step: 3, cap: b.ctx === 'long' ? 'A bigger reading space fits whole handbooks, but the work grows fast with length: slower and pricier.' : 'A standard reading space fits the chat plus a few best pages: quick and cheap.', fr: [ctxBox(box('q', 'chat')), ctxBox(box('q', 'chat') + box('hit', 'best pages') + (b.ctx === 'long' ? box('doc', 'whole handbook') + box('doc', '\u2026more') : '')), ctxBox(box('q', 'chat') + box('hit', 'best pages') + (b.ctx === 'long' ? box('doc', 'whole handbook') + box('doc', '\u2026more') : '')) + arrow + box('model', 'Model \u23f1 ' + meter(b).sec.toFixed(1) + ' s')] },
+      media: { step: 1, cap: 'Pictures and voice are turned into tokens (small pieces) too, then read like text.', fr: [box('doc', '\ud83d\uddbc\ufe0f screenshot') + box('doc', '\ud83c\udfa4 voice'), '<span class="chunks"><i>piece</i><i>piece</i><i>piece</i><i>piece</i></span>', ctxBox('<span class="chunks"><i class="hit">tokens</i></span>' + box('q', 'question')) + arrow + box('model', 'Model')] },
+      guard: { step: 8, cap: 'A filter checks the question and the answer before anything reaches you.', fr: [box('q', 'Question') + arrow + box('guard', '\ud83d\udee1\ufe0f check'), box('guard', '\ud83d\udee1\ufe0f check \u2713') + arrow + box('model', 'Model'), box('model', 'Model') + arrow + box('guard', '\ud83d\udee1\ufe0f check answer') + arrow + box('out', 'You')] },
+      manners: { step: 8, cap: 'Manners training changed which words the model tends to pick; the tone setting is part of its instructions.', fr: [box('q', 'Question') + arrow + box('model', 'Model'), box('model', 'Model') + arrow + box('hit', 'prefers ' + esc(b.tone) + ' words'), box('out', esc(b.tone) + ' answer')] },
+      words: { step: 1, cap: (b.temp || 'steady') === 'steady' ? 'It writes one piece at a time and always takes the likeliest next piece.' : (b.temp === 'wild' ? 'Wild: it often takes unlikely pieces, so it drifts into making things up.' : 'A bit creative: sometimes it takes the 2nd or 3rd likeliest piece, so wording varies.'), fr: [box('q', 'Our travel policy') + arrow + '<span class="chunks"><i>Our</i><i> travel</i><i> pol</i><i>icy</i></span>', '<span class="chunks"><i>Our</i><i> travel</i><i> pol</i><i>icy</i></span>' + arrow + '<span class="probs"><span style="--p:62%">says 62%</span><span style="--p:21%">allows 21%</span><span style="--p:4%">sings 4%</span></span>', '<span class="chunks"><i>\u2026policy</i><i class="hit">' + ({ steady: ' says', creative: ' allows', wild: ' sings' })[b.temp || 'steady'] + '</i></span>' + arrow + box('out', 'repeat, one piece at a time')] },
+      data: { step: 2, cap: (b.data || 'clean') === 'clean' ? 'Training is a guessing game: hide the next word, guess, check, nudge. Clean examples teach the right patterns.' : 'Same guessing game, but junk and old memos teach junk and old answers.', fr: [box('doc', (b.data || 'clean') === 'clean' ? '\u2728 current emails' : '\ud83d\uddd1\ufe0f old memos + spam') + arrow + box('q', 'Kind ___'), box('model', 'Model guesses: \u201cof\u201d') + arrow + box('guard', 'Wrong! It was \u201cregards\u201d'), box('app', 'nudge the numbers a tiny bit') + arrow + '<span class="loss"><i style="--h:90%"></i><i style="--h:60%"></i><i style="--h:38%"></i><i style="--h:' + ((b.data || 'clean') === 'clean' ? '20' : '34') + '%"></i><em>error (loss) going down</em></span>'] },
+      pipeline: { step: 4, cap: 'Words become numbers (embeddings) plus a position tag; attention mixes in context; feed-forward layers refine; repeat; softmax turns scores into odds.', fr: [box('q', '\u201cvacation\u201d') + arrow + box('doc', '[0.21, -0.70, 0.05 \u2026]') + '<small class="anote">numbers that capture meaning, + position</small>', box('hit', 'attention: looks at the other words') + arrow + box('model', 'feed-forward: refines'), box('model', '\u00d7 many layers') + arrow + box('out', 'softmax: odds for every next piece'), box('doc', 'vacation') + '<span class="aa">\u2248</span>' + box('doc', 'annual leave') + '<small class="anote">' + (b.search === 'keyword' ? 'but exact-word search ignores this closeness' : 'close in meaning, so search finds it') + '</small>'] },
+      evals: { step: 9, cap: 'Tests: ready-made questions are fired at the bot and each answer is marked right or wrong.', fr: [box('ev', 'Q1') + box('ev', 'Q2') + box('ev', 'Q3') + arrow + box('model', 'Bot'), box('model', 'Bot') + arrow + box('out', 'answers'), '<span class="ab ev">\u2713 \u2713 \u2717 \u2713 \u2026</span>' + arrow + box('hit', b.score ? b.score.pass + '/' + b.score.total + ' passed' : 'score')] }
+    };
+    return A[type];
+  }
+  const REDUCED = () => FAST() || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  let animTimer = null;
+  function playAnim(main, type, b) {
+    const a = anim(type, b), el = $('#beatInside', main); if (!a || !el) return;
+    clearTimeout(animTimer);
+    el.innerHTML = '<div class="beat-h"><span class="beat-n">2</span> What happened inside <small class="jarg">' + type + '</small><button class="btn small" id="skipAnim">Skip \u23ed</button></div><div class="astage" id="astage" aria-hidden="true"></div><p class="acap" id="acap">' + esc(a.cap) + '</p><p class="note"><a href="#/step/' + a.step + '">See the full lesson: Step ' + a.step + '</a> \u00b7 <button class="linkbtn" id="replay">\u21bb Replay</button></p>';
+    el.hidden = false; el.dataset.type = type;
+    const st = $('#astage', el); let i = 0;
+    const show = (k) => { st.innerHTML = '<div class="aframe">' + a.fr[k] + '</div><div class="adots">' + a.fr.map((_, j) => '<i class="' + (j <= k ? 'on' : '') + '"></i>').join('') + '</div>'; st.dataset.frame = k; };
+    const end = () => { clearTimeout(animTimer); show(a.fr.length - 1); el.classList.add('done'); const r = $('#beatResult', main); if (r) r.classList.add('show'); };
+    el.classList.remove('done');
+    $('#skipAnim', el).onclick = end; $('#replay', el).onclick = () => playAnim(main, type, b);
+    if (REDUCED()) return end();
+    const r = $('#beatResult', main); if (r) r.classList.remove('show');
+    const tick = () => { show(i); i++; if (i < a.fr.length) animTimer = setTimeout(tick, 1900); else animTimer = setTimeout(end, 1900); };
+    tick(); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  function summarize(o, r, type) {
+    if (!o) return '';
+    if (o.text === r.text) return 'Same answer to this question. This choice shows up elsewhere: ' + ({ brain: 'cost and speed', docs: 'other questions', tools: 'when someone asks it to do something', memory: 'follow-up questions', guard: 'tricky or off-limits questions', manners: 'tone', evals: 'your test score', context: 'long documents, cost and speed', media: 'screenshots and voice', reason: 'sums', ui: 'the badge', job: 'everything' })[type] + '.';
+    if (r.hallucinated) return 'It now makes up an answer (labelled), because it can\u2019t look it up and is allowed to guess.';
+    if (r.unknown && !o.unknown) return 'Now it says it doesn\u2019t know: it has nothing to look this up in.';
+    if (o.unknown && !r.unknown) return 'Now it answers from the document.';
+    if (r.refused && !o.refused) return 'Now it politely refuses.';
+    if (o.refused && !r.refused) return 'It no longer refuses this question.';
+    if (r.card && !o.card) return 'Now it can actually do it: it offers to book the meeting.';
+    if (o.card && !r.card) return 'It can no longer do it, only talk about it.';
+    const out = [];
+    if (r.think && !o.think) out.push('it works the sum out first and gets the total right');
+    if (o.think && !r.think) out.push('it skips the working-out');
+    if (r.cite && !o.cite) out.push('it now names the document it used');
+    if (o.cite && !r.cite) out.push('it no longer says where the answer came from');
+    if (r.text.length > o.text.length * 1.25) out.push('fuller, friendlier answer');
+    if (r.text.length < o.text.length * 0.8) out.push('shorter, plainer answer');
+    return out.length ? out.join('; ').replace(/^./, (c) => c.toUpperCase()) + '.' : 'Same facts, different wording.';
+  }
+  let prevR = {};
+  function resultHTML(n, b, type) {
+    const qs = previewQs(n, b);
+    return '<div class="beat-h"><span class="beat-n">3</span> The result</div>' + qs.map((x) => {
+      const mem = {}; if (x.pre) answer(b, x.pre, mem);
+      const r = answer(b, x.q, mem), key = n + '|' + x.key, o = prevR[key]; prevR[key] = r;
+      const s = type ? summarize(o, r, type) : '';
+      return '<div class="pv-q"><div class="bubble user">' + (x.pre ? esc(x.pre) + ' \u2026 ' : '') + esc(x.q) + '</div><div class="bubble bot pv-a">' + answerHTML(r) + '</div>' + (s ? '<p class="changed"><b>What changed:</b> ' + esc(s) + '</p>' : '') + '</div>';
+    }).join('') + '<p class="note">' + b.avatar + ' Simulated from your choices. No AI service is called.</p>';
+  }
+  function miniBar(b) {
+    const s = scores(b), sb = scoreboardHTML(b);
+    return '<details class="tradebar" data-k="trade"' + (openD.trade ? ' open' : '') + '><summary>\ud83d\udcb0 Cost ' + s.cost + ' \u00b7 \u26a1 Speed ' + s.speed + ' \u00b7 \ud83c\udfaf Accuracy ' + s.acc + ' \u00b7 \u26a0\ufe0f Risk ' + s.risk + ' <small>illustrative \u25be</small></summary>' + sb + '</details>';
+  }
+  /* ===== v7: every Learn step taught inside Build ===== */
+  const LESSON_OF = { 10: 1, 11: 2, 12: 3, 13: 4, 3: 5, 4: 6, 5: 7, 7: 8, 2: 9 };
+  function lessonHTML(id) {
+    const L = LESSON_OF[id]; if (!L) return '';
+    const s = window.COURSE.steps[L - 1]; if (!s) return '';
+    const myths = (s.myths || []).map((m) => '<li><b>Myth:</b> ' + m.myth + ' <b>Reality:</b> ' + m.reality + '</li>').join('');
+    return '<details class="why-x lesson" data-k="les' + id + '" data-lesson="' + L + '"' + (openD['les' + id] ? ' open' : '') + '><summary>\ud83d\udcd8 The lesson in brief <small>(from Learn Step ' + L + ': ' + esc(s.name) + ')</small></summary>' +
+      '<div class="lesson-in"><p class="jarg">Key idea: ' + esc(s.concept) + '</p><div class="les-mech">' + s.mechanism + '</div>' + (s.workplace ? '<div class="les-work">' + s.workplace + '</div>' : '') +
+      '<h4>Myth-busters</h4><ul>' + myths + '</ul><h4>So what for your work</h4><ul>' + (s.sowhat || []).map((x) => '<li>' + x + '</li>').join('') + '</ul>' +
+      '<h4>Under the hood <small class="jarg">(for the curious)</small></h4><ul class="les-hood">' + (s.hoodBullets || []).map((x) => '<li>' + x + '</li>').join('') + '</ul>' +
+      '<p class="note"><a href="#/step/' + L + '">Open the full Step ' + L + ' \u2192</a></p></div></details>' +
+      '<details class="why-x tryreal" data-k="real' + id + '" data-real="' + L + '"><summary>\ud83e\uddea Try it for real <small>(the hands-on demo from Step ' + L + (L <= 2 ? '; trains a tiny model in your browser' : '') + ')</small></summary><div class="real-w" id="realW"></div></details>';
+  }
+  function mountReal(main) {
+    const d = $('details.tryreal', main); if (!d) return; let done = false;
+    d.addEventListener('toggle', () => { if (!d.open || done) return; done = true; window.App.mountLearn($('#realW', d), +d.dataset.real); });
+  }
+  function bodyNew(id, b) {
+    const t = b.temp || 'steady', dq = b.data || 'clean';
+    switch (id) {
+      case 10: return '<div class="bgrid three">' + card('temp', 'steady', t, '\ud83e\uddf1 Steady', 'Picks the most likely next word. Same answer every time.') + card('temp', 'creative', t, '\ud83c\udfa8 A bit creative', 'Sometimes picks the 2nd or 3rd likeliest word. Varied wording.') + card('temp', 'wild', t, '\ud83c\udf2a\ufe0f Wild', 'Often picks unlikely words. Fun, and it starts inventing.') + '</div>' + safe('The real mini-model below trains on your device. Nothing is sent.');
+      case 11: return '<div class="bgrid two">' + card('data', 'clean', dq, '\u2728 Clean, checked examples', 'Current policies and good emails, duplicates and junk removed.') + card('data', 'everything', dq, '\ud83d\uddd1\ufe0f Everything we\u2019ve got', 'Old policies, spam, contradictions and all. More is better, right?') + '</div>' + fict();
+      case 12: return '<div class="bgrid two">' + card('ctx', 'standard', b.ctx, '\ud83d\udcc4 A few pages', 'The chat plus the best few pages. Quick and cheap.') + card('ctx', 'long', b.ctx, '\ud83d\udcda A whole handbook', 'Reads much more at once. Slower and pricier, and it can still miss things in the middle.') + '</div>' +
+        more(12, tog('pack', '\ud83e\uddf3 Context engineering: pack the best chunks first', b.pack, 'Puts the most relevant passages where the model pays most attention.'));
+      case 13: return '<div class="bgrid three">' + card('search', 'meaning', b.search, '\ud83e\udde0 By meaning', '\u201cVacation\u201d finds \u201cannual leave\u201d.') + card('search', 'hybrid', b.search, '\ud83e\udde9 Meaning + exact words', 'Also catches codes like INV-2291.') + card('search', 'keyword', b.search, '\ud83d\udd24 Exact words only', 'Simple, but misses synonyms.') + '</div>';
+    }
+    return '';
+  }
+  const Q2 = { 10: 'How adventurous should its wording be?', 11: 'What should it learn from?', 12: 'How much can it read at once?', 13: 'How should it match your words?' };
+  const J2 = { 10: 'tokens \u00b7 next-token prediction \u00b7 temperature', 11: 'training data \u00b7 loss', 12: 'attention \u00b7 context window', 13: 'embeddings \u00b7 position \u00b7 attention \u00b7 feed-forward \u00b7 softmax' };
+  Object.assign(WHY, {
+    10: { what: 'It writes one small piece of a word at a time, always picking a likely next piece.', like: 'Like phone autocomplete, on a much bigger scale.', bad: 'Too wild and it invents things; too steady and it repeats itself.', jargon: 'Tokens, next-token prediction, temperature.' },
+    11: { what: 'Its skills come from the examples it was trained on.', like: 'Like training a new hire with real, current examples, not a drawer of old memos.', bad: 'Junk or outdated examples teach junk: it repeats old rules confidently.', jargon: 'Training data, loss, overfitting, data curation.' },
+    12: { what: 'Decides how much text it can look at in one go, and which words it links together.', like: 'Like a desk: a bigger desk fits more papers, but finding things takes longer.', bad: 'Too small and it forgets earlier parts; too big and it\u2019s slow, pricey and still misses the middle.', jargon: 'Attention, context window.' },
+    13: { what: 'Words become numbers that capture meaning, so similar ideas sit close together.', like: 'Like a library that shelves books by topic, not by title spelling.', bad: 'Exact-word matching misses \u201cvacation\u201d when the policy says \u201cannual leave\u201d.', jargon: 'Embeddings, position, attention, feed-forward layers, softmax.' }
+  });
+  Object.assign(BREAK, {
+    10: ['Turn it up to Wild', (b) => { const r = answer(Object.assign({}, b, { temp: 'wild' }), job(b).facts[0].q, {}); return { q: job(b).facts[0].q + ' (Wild)', html: answerHTML(r), lesson: 'Higher randomness picks unlikely words: fluent, confident, and invented.' }; }],
+    11: ['Train it on everything, old memos included', (b) => { const r = answer(Object.assign({}, b, { data: 'everything' }), job(b).facts[0].q, {}); return { q: job(b).facts[0].q + ' (trained on everything)', html: answerHTML(r), lesson: 'More data isn\u2019t better data. Old memos teach old answers.' }; }],
+    12: ['Bury the key fact in the middle of 300 pages', (b) => ({ q: 'The leave rule is on page 150 of a 300-page pile.', html: (b.ctx === 'long' ? 'Long reading space: it fits, but ' : 'Standard reading space: pages 1-40 fit, so ') + '\u201cSorry, I couldn\u2019t find a leave rule.\u201d <span class="illus">Simulated</span>', lesson: 'Models attend best to the start and end. Send the right page, not the whole pile.' })],
+    13: ['Search with exact words only', (b) => { const q = 'Do I get vacation days?'; const r = answer(Object.assign({}, b, { search: 'keyword' }), q, {}); return { q: q + ' (exact words only)', html: answerHTML(r), lesson: 'Exact-word search misses synonyms. Meaning-based search (embeddings) finds them.' }; }]
+  });
+  let lastN = 0, pendingAnim = null;
   function render(main, n) {
-    if (n !== lastN) { lastChange = ''; lastN = n; }
-    const b = B(); const sc = SCREENS[n - 1];
+    if (n !== lastN) { lastChange = ''; lastN = n; prevR = {}; }
+    const b = B(); const sc = SCREENS[n - 1], id = sc.id;
     const S = window.App.S(); S.bdone = S.bdone || {}; for (let k = 1; k < n; k++) if (k !== 2 || b.job) S.bdone[k] = true; save();
     if (n > 2 && !b.job) { main.innerHTML = '<div class="card lockscreen"><h1>Pick a job first</h1><p>Your bot needs a job before it needs a brain. (Same as most of us.)</p><a class="btn primary" href="#/build/2">Pick a job</a></div>'; return; }
-    main.innerHTML = '<div class="step-head"><div><div class="chips"><span class="chip">Build your GPT \u00b7 ' + n + ' of ' + SCREENS.length + '</span><span class="chip time">\u23f1 ~2-3 min</span>' + (b.job ? '<span class="chip">' + esc(job(b).icon + ' ' + (b.name || job(b).label)) + '</span>' : '') + '</div><h1>' + sc.e + ' ' + esc(sc.t) + '</h1></div></div>' +
+    const type = pendingAnim; pendingAnim = null;
+    main.innerHTML = miniBar(b) + '<div class="step-head"><div><div class="chips"><span class="chip">Build your GPT \u00b7 ' + n + ' of ' + SCREENS.length + '</span>' + (b.job ? '<span class="chip">' + esc(job(b).icon + ' ' + (b.name || job(b).label)) + '</span>' : '') + '</div><h1>' + sc.e + ' ' + esc(Q[id] || Q2[id]) + '</h1><p class="jarg">' + esc(JARGON[id] || J2[id]) + '</p></div></div>' +
       '<div class="sprint-dots" aria-hidden="true">' + SCREENS.map((s, i) => '<i class="' + (i + 1 === n ? 'cur' : i + 1 < n ? 'on' : '') + '"></i>').join('') + '</div>' +
-      '<div class="bwrap"><div class="bmain"><section class="card sprint" id="sprint">' + termStrip(n) + body(n, b) + '</section>' + whyHTML(n) + breakHTML(n) + '</div>' + sideHTML(n, b) + '</div>';
-    inlineTerms($('#sprint', main), n);
+      '<section class="card sprint" id="sprint"><div class="beat-h"><span class="beat-n">1</span> Pick</div>' + body(id, b) + '</section>' +
+      (id !== 9 ? '<section class="card beat" id="beatInside" hidden></section><section class="card beat result' + (type ? '' : ' show') + '" id="beatResult">' + resultHTML(id, b, type) + (type ? '' : '<p class="note">Pick a card above to see what happens inside your bot.</p>') + '</section>' : '') +
+      lessonHTML(id) + '<details class="why-x" id="whyCard" data-k="why"' + (openD.why ? ' open' : '') + '><summary>\ud83d\udca1 Why does this matter?</summary><p><b>What it does:</b> ' + esc(WHY[id].what) + '</p><p><b>Think of it as:</b> ' + esc(WHY[id].like) + '</p><p><b>If you pick badly:</b> ' + esc(WHY[id].bad) + '</p><p class="jarg">Jargon: ' + esc(WHY[id].jargon) + '</p></details>' +
+      '<details class="why-x trybreak" id="breakMini" data-k="brk"' + (openD.brk ? ' open' : '') + '><summary>\ud83d\udd28 Try breaking it <small>(optional)</small></summary><button class="btn accent" id="breakBtn">' + esc(BREAK[id][0]) + '</button><div id="breakOut" aria-live="polite"></div></details>';
+    inlineTerms($('#sprint', main), id);
+    $$('details[data-k]', main).forEach((d) => d.addEventListener('toggle', () => { openD[d.dataset.k] = d.open; }));
+    mountReal(main);
+    if (type) playAnim(main, type, b);
     animatePreview(main, b);
     wire(main, n, b);
   }
@@ -529,15 +665,15 @@
   function wire(main, n, b) {
     const nm = $('#bname', main); if (nm) nm.addEventListener('input', () => { b.name = nm.value.trim().slice(0, 24); b.built = false; save(); });
     $$('.bcard', main).forEach((c) => c.onclick = () => {
-      const g = c.dataset.g; lastChange = ({ avatar: 'Avatar', job: 'Job', size: 'Brain', host: 'Hosting', reason: 'Reasoning', ctx: 'Context', tone: 'Tone' }[g] || g) + ': ' + plainText(c.querySelector('strong')).replace(/^\W+/, '').trim(); b[g] = c.dataset.v; b.built = false; b.score = g === 'job' ? null : b.score;
+      const g = c.dataset.g; pendingAnim = ANIM_OF[g]; lastChange = ({ avatar: 'Avatar', job: 'Job', size: 'Brain', host: 'Hosting', reason: 'Reasoning', ctx: 'Context', tone: 'Tone' }[g] || g) + ': ' + plainText(c.querySelector('strong')).replace(/^\W+/, '').trim(); b[g] = c.dataset.v; b.built = false; b.score = g === 'job' ? null : b.score;
       if (g === 'job') { b.docs = {}; Object.keys(JOBS[b.job].docs).slice(0, 3).forEach((d) => { b.docs[d] = true; }); b.evals = {}; }
       save(); rerender(main, n);
     });
-    $$('[data-t]', main).forEach((i) => i.onchange = () => { setPath(b, i.dataset.t, i.checked); lastChange = plainText(i.closest('label').querySelector('strong')).replace(/^\W+/, '').trim() + (i.checked ? ' on' : ' off'); b.built = false; save(); rerender(main, n); });
-    $$('[data-s]', main).forEach((s) => s.onchange = () => { b[s.dataset.s] = s.value; lastChange = plainText(s.closest('.field').querySelector('label')).trim() + ': ' + s.options[s.selectedIndex].text; b.built = false; save(); rerender(main, n); });
-    const bk = $('#breakBtn', main); if (bk) bk.onclick = () => { $('#breakOut', main).innerHTML = runBreak(n, b); };
-    if (nm) nm.addEventListener('change', () => { lastChange = 'Name: ' + (b.name || 'none'); rerender(main, n); });
-    const re = $('#runEval', main); if (re) re.onclick = () => { b.score = runEvals(b); lastChange = 'Ran the tests'; save(); rerender(main, n); };
+    $$('[data-t]', main).forEach((i) => i.onchange = () => { setPath(b, i.dataset.t, i.checked); pendingAnim = ANIM_OF[i.dataset.t.split('.')[0]]; lastChange = plainText(i.closest('label').querySelector('strong')).replace(/^\W+/, '').trim() + (i.checked ? ' on' : ' off'); b.built = false; save(); rerender(main, n); });
+    $$('[data-s]', main).forEach((s) => s.onchange = () => { b[s.dataset.s] = s.value; pendingAnim = ANIM_OF[s.dataset.s]; lastChange = plainText(s.closest('.field').querySelector('label')).trim() + ': ' + s.options[s.selectedIndex].text; b.built = false; save(); rerender(main, n); });
+    const bk = $('#breakBtn', main); if (bk) bk.onclick = () => { $('#breakOut', main).innerHTML = runBreak(SCREENS[n - 1].id, b); };
+    if (nm) nm.addEventListener('change', () => { lastChange = 'Name: ' + (b.name || 'none'); pendingAnim = 'ui'; rerender(main, n); });
+    const re = $('#runEval', main); if (re) re.onclick = () => { b.score = runEvals(b); lastChange = 'Ran the tests'; pendingAnim = 'evals'; save(); rerender(main, n); };
     const bb = $('#buildBtn', main); if (bb) bb.onclick = () => build(main, b);
     wireSpec(main, b);
   }
@@ -616,5 +752,5 @@
     draw();
   }
 
-  window.Sprint = { scores, reasons, BREAK, WHY, INSIDE, previewQs, SCREEN_TERMS, TERM_STEP, termDef, SCREENS, JOBS, REFUSE, ALIGN, render, renderChat, answer, answerFact, runEvals, evalItems, specLines, meter, ingredients, defaults, B, resetSession: () => { session = { mem: {}, log: [], spent: 0 }; } };
+  window.Sprint = { anim, ANIM_OF, scores, reasons, BREAK, WHY, INSIDE, previewQs, SCREEN_TERMS, TERM_STEP, termDef, SCREENS, JOBS, REFUSE, ALIGN, render, renderChat, answer, answerFact, runEvals, evalItems, specLines, meter, ingredients, defaults, B, resetSession: () => { session = { mem: {}, log: [], spent: 0 }; } };
 })();

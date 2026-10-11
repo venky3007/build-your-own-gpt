@@ -52,7 +52,7 @@
         '<button class="slab" type="button" aria-expanded="' + (open === l.id) + '" aria-controls="cap-' + l.id + '">' +
           (p && !fresh ? face : (fresh ? face + cover + '<span class="peel-flag" aria-hidden="true">Peeled!</span>' : cover)) +
         '</button>' +
-        (atts[l.id] ? '<div class="atts">' + atts[l.id].map((a) => '<a class="att" href="#/build/9" title="Added in your build">+ ' + esc(a) + '</a>').join('') + '</div>' : '') +
+        (atts[l.id] ? '<div class="atts">' + atts[l.id].map((a) => '<a class="att" href="#/build/13" title="Added in your build">+ ' + esc(a) + '</a>').join('') + '</div>' : '') +
         '<div class="cap" id="cap-' + l.id + '"' + (open === l.id ? '' : ' hidden') + '><p><b>User sees:</b> ' + esc(l.sees) + '</p><p><b>Inside:</b> ' + (p ? esc(l.inside) : '<span class="muted">still covered. Peel it in ' + stepLink(l.steps[0]) + '.</span>') + '</p>' + (p ? '<p class="more">Explained in ' + l.steps.map(stepLink).join(', ') + '</p>' : '') + '</div></li>';
     }).join('');
     const n = peeled.length;
