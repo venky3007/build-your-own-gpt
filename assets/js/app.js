@@ -40,6 +40,22 @@
   let toastT;
   function toast(msg, ms) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms || 3200); }
   function linkSteps(html) { return String(html || '').replace(/\bStep (\d{1,2})\b(?![-\u2013\d])/g, (m, n) => (+n >= 1 && +n <= TOTAL) ? '<a href="#/step/' + n + '">Step ' + n + '</a>' : m); }
+  function safe(t) { return '<span class="safe">' + t + ' <button type="button" class="safe-more">Security details</button></span>'; }
+  const FICT = 'All documents, companies, people, policies, invoices and data in this course are fictional.';
+  const SECURITY = '<ul class="secl"><li><strong>Static files only:</strong> plain HTML, JavaScript and CSS served over HTTPS from GitHub Pages. No server-side code.</li><li><strong>No login, no accounts.</strong> The site sets no cookies and includes no analytics or trackers.</li><li><strong>No AI service or API is called.</strong> Chat answers are scripted from your picks; the tiny model in Steps 1\u20132 trains on your device.</li><li><strong>Outgoing connections are blocked</strong> by this Content-Security-Policy (set in the page): <code>default-src \'self\'; img-src \'self\' data:; style-src \'self\' \'unsafe-inline\'; font-src \'self\'; script-src \'self\'; connect-src \'none\'; object-src \'none\'; base-uri \'self\'; form-action \'none\'</code></li><li><strong>No camera, microphone or file access.</strong> The \u201cscreenshot\u201d and \u201cvoice\u201d demos use built-in samples.</li><li><strong>Storage:</strong> progress and picks are saved only in this browser\u2019s localStorage. Remove them any time with <em>Clear my data</em>.</li><li><strong>Please don\u2019t type real company or personal data</strong> into the bot name or chat box. It stays on your device, but the course isn\u2019t designed for real data.</li><li><strong>All documents, companies, people, policies, invoices and data in this course are fictional.</strong></li><li><strong>Source code is public</strong> for review: <a href="https://github.com/venky3007/build-your-own-gpt" rel="noopener noreferrer" target="_blank">github.com/venky3007/build-your-own-gpt</a>.</li></ul>';
+  function securityModal() { openModal('<h2 id="modalTitle">\ud83d\udd12 Security &amp; privacy: the facts</h2>' + SECURITY + '<div class="row"><button class="btn" id="secClear">Clear my data</button><button class="btn primary" id="secClose">Close</button></div>', (m) => { $('#secClose', m).onclick = () => closeModal(); $('#secClear', m).onclick = () => { closeModal(true); resetAll(); }; }); }
+  document.addEventListener('click', (e) => { if (e.target.closest('.safe-more')) { e.preventDefault(); securityModal(); } });
+  const SAFE_STEP = {
+    1: 'This model trains on your device. Nothing you type is uploaded.',
+    2: 'Training happens in this tab on fictional emails. No data leaves your device.',
+    3: 'ChatGPT/Claude are just examples here. Nothing connects to them.',
+    4: 'Everything you see is computed in your browser.',
+    5: 'Scripted demo. No AI service is called.',
+    6: 'The documents here are fictional, not your company\u2019s. Nothing connects to your files.',
+    7: 'Tools and emails here are pretend. Nothing is sent, booked or connected.',
+    8: 'Hosted vs in-house is just an idea here. No model or API is contacted.',
+    9: 'Just practice cards. Nothing is submitted anywhere.'
+  };
   function illus(label) { return '<span class="illus">' + esc(label || 'Simulated for this demo') + '</span>'; }
   function conf() { return '<span class="conf" tabindex="0" title="' + esc(F.confidenceTip) + '" aria-label="' + esc(F.confidence + '. ' + F.confidenceTip) + '">' + F.confidence + '</span>'; }
 
@@ -189,8 +205,8 @@
   function openDrawer() { const d = $('#drawer'); d.classList.add('open'); d.removeAttribute('aria-hidden'); $('#menuBtn').setAttribute('aria-expanded', 'true'); const s = document.createElement('div'); s.className = 'scrim'; s.id = 'scrim'; s.onclick = () => closeDrawer(); document.body.appendChild(s); const a = $('a[aria-current],a,button', d); if (a) a.focus(); }
   function closeDrawer(silent) { const d = $('#drawer'); if (!d || !d.classList.contains('open')) return; d.classList.remove('open'); d.setAttribute('aria-hidden', 'true'); $('#menuBtn').setAttribute('aria-expanded', 'false'); const s = $('#scrim'); if (s) s.remove(); if (!silent) $('#menuBtn').focus(); }
   function resetAll() {
-    if (!confirm('Reset all progress, quiz answers and your bot on this device? This can\u2019t be undone. (Your GPT will forget everything. Very on-theme.)')) return;
-    try { localStorage.removeItem(KEY); } catch (e) { }
+    if (!confirm('Clear my data: delete all progress, quiz answers and bot picks stored in this browser? This can\u2019t be undone. (Your GPT will forget everything. Very on-theme.)')) return;
+    try { localStorage.removeItem(KEY); localStorage.removeItem(OLD_KEY); } catch (e) { }
     S = blank(); if (SP()) SP().resetSession(); save(); toast('Fresh start! The engine is back to guessing random letters.'); go('#/welcome');
   }
 
@@ -205,7 +221,7 @@
     main.innerHTML =
       '<section class="hero"><div class="hero-art">' + heroArt() + '</div>' +
       '<div><div class="chips"><span class="chip">AI-literacy course</span><span class="chip time">Core build ~90 min</span><span class="chip">\ud83d\udd27 Build-your-GPT sprint ~15 min</span></div>' +
-      '<h1 class="course-title">' + esc(CFG.name) + '</h1><p class="subtitle">' + esc(CFG.subtitle) + '</p>' +
+      '<h1 class="course-title">' + esc(CFG.name) + '</h1><p class="subtitle">' + esc(CFG.subtitle) + '</p>' + safe('Runs 100% in your browser. No logins, no AI services, no data leaves your device. All company docs are fictional.') + '<p class="fict"><strong>' + FICT + '</strong></p>' +
       '<p>Inside, you\u2019ll assemble a GPT part by part, from a letter-guessing engine to a tool-using assistant, break it on purpose at every stage, then click together your own work bot and chat with it. <strong>Warning:</strong> side effects may include saying \u201cit depends on the retrieval\u201d in meetings.</p>' +
       '<div class="row">' + (resume ? '<a class="btn primary" href="' + resume + '">Continue: ' + esc(rl) + ' \u2192</a><a class="btn" href="#/step/1">Start from Step 1</a>' : '<a class="btn primary" href="#/step/1">Start the build \u2192</a>') + '</div></div></section>' +
       '<div class="card"><span class="section-label">Live from the workbench</span><p class="noise" id="noise" aria-live="off"></p><p class="note">This is an untrained engine: picking random letters, with total confidence. In Steps 1 and 2 you\u2019ll train a real (tiny) neural network right here in your browser, and watch it go from this to word-like office email. Progress!</p></div>' +
@@ -215,11 +231,12 @@
       '<div><h3>\ud83c\udf7c Core build (Steps 1-' + LAST_CORE + ')</h3><p>Peel your GPT layer by layer. One screen per step, ~10 minutes each, each with a Break it! challenge.</p></div>' +
       '<div><h3>\ud83d\udd27 Build your GPT (~15 min)</h3><p>Click together a work bot: pick its job, brain, documents, tools and guardrails (no typing except its name), then chat with it and download its spec card.</p></div></div></div>' +
       '<div class="card"><h2>How every step works</h2><ol><li><strong>Hook</strong>: one opening line (often a bad joke).</li><li><strong>What you see</strong>: the model before and after (illustrative).</li><li><strong>What\u2019s really happening</strong>: the real mechanism, in plain words. The metaphor is fun; this part is the truth.</li><li><strong>Break it!</strong>: a hands-on challenge. Breaking things is the fastest way to learn their limits.</li><li><strong>Myth-buster</strong>, <strong>So what for your requirement?</strong> and a one-question <strong>Quick check</strong>.</li><li><strong>Under the hood</strong>: a closed panel with a diagram and technical bullets for the curious.</li></ol><p>Underlined words like <button type="button" class="gloss" data-term="token" aria-expanded="false">token</button> open a one-line definition.</p></div>' +
+      '<details class="card" id="security"><summary><strong>\ud83d\udd12 Security &amp; privacy (for InfoSec teams)</strong></summary>' + SECURITY + '<p class="note">Full summary: SECURITY-SUMMARY in the repo.</p></details>' +
       '<div class="card"><h2>By the end you\u2019ll be able to\u2026</h2>' + C.intro.outcomes + '</div>' +
       '<div class="card"><h2>What this course does NOT promise (an honest note)</h2>' + C.intro.honest + '</div>' +
       '<details class="card"><summary><strong>Running it with your team (facilitator notes)</strong></summary>' + C.intro.howToRun + '</details>' +
       '<p class="privacy">\ud83d\udd12 <strong>Privacy:</strong> nothing you type is sent anywhere. There is no server, no login and no live AI: the tiny model in Steps 1-2 trains right here in your browser, and every other AI reply is scripted in this page. Progress and your bot\u2019s picks are saved only in this browser, so switching devices or clearing your browser starts you fresh.</p>' +
-      '<div class="row"><button class="btn small" id="resetBtn2">Reset my progress</button></div>';
+      '<div class="row"><button class="btn small" id="resetBtn2">Clear my data</button></div>';
     const nameIn = $('#nameIn', main);
     const hi = () => { $('#nameHi', main).textContent = S.name ? 'Hi ' + S.name + '! Your GPT says: \u201c' + S.name.toLowerCase().split('').reverse().join('') + '?\u201d It\u2019s working on it.' : ''; };
     nameIn.addEventListener('input', () => { S.name = nameIn.value.trim(); save(); hi(); }); hi();
@@ -243,7 +260,7 @@
     h += '<div class="card"><span class="section-label">What you see</span> ' + illus('Illustrative example') + '<div class="ba" style="margin-top:10px"><div class="before"><h4>' + s.see.head[0] + '</h4><div>' + s.see.before + '</div></div><div class="after"><h4>' + s.see.head[1] + '</h4><div>' + s.see.after + '</div></div></div>' + (s.see.note ? '<p class="note">' + s.see.note + '</p>' : '') + '</div>';
     h += '<div class="card mech" id="mech"><h2>What\u2019s really happening</h2>' + linkSteps(s.mechanism) + '</div>';
     if (s.workplace) h += '<div class="card" id="workplace"><h2>Workplace examples</h2>' + linkSteps(s.workplace) + '</div>';
-    h += '<section class="card breakit' + (done ? ' complete' : '') + '" id="breakit" aria-labelledby="bi-h"><h2 id="bi-h">\ud83d\udd28 Break it! \u2014 \u201c' + esc(s.breakName) + '\u201d</h2>' + (REAL_MODEL.includes(n) ? '<p class="honesty real">\ud83e\udde0 <strong>Real model:</strong> a tiny transformer with real causal self-attention, trained live in your browser on fictional office emails (~10-20 s). Nothing is scripted and nothing leaves your device.</p>' : '<p class="honesty sim">\ud83c\udfad <strong>Simulated for this demo:</strong> the replies below are scripted to show a real mechanism safely and offline. No live AI is involved.</p>') + '<p class="goal"><strong>Goal:</strong> ' + s.goal + '</p>' +
+    h += '<section class="card breakit' + (done ? ' complete' : '') + '" id="breakit" aria-labelledby="bi-h"><h2 id="bi-h">\ud83d\udd28 Break it! \u2014 \u201c' + esc(s.breakName) + '\u201d</h2>' + (REAL_MODEL.includes(n) ? '<p class="honesty real">\ud83e\udde0 <strong>Real model:</strong> a tiny transformer with real causal self-attention, trained live in your browser on fictional office emails (~10-20 s). Nothing is scripted and nothing leaves your device.</p>' : '<p class="honesty sim">\ud83c\udfad <strong>Simulated for this demo:</strong> the replies below are scripted to show a real mechanism safely and offline. No live AI is involved.</p>') + (SAFE_STEP[n] ? safe(SAFE_STEP[n]) : '') + '<p class="goal"><strong>Goal:</strong> ' + s.goal + '</p>' +
       ('<div class="widget" id="widget"></div>' + (s.discover ? '<details style="margin-top:12px"><summary><strong>Spoiler: what you discover</strong></summary><p class="discover">' + s.discover + '</p></details>' : '') +
         '<div class="done-banner" role="status" aria-live="polite" id="doneBanner">\u2705 Challenge complete! ' + (S.w[n] && S.w[n]._msg ? esc(S.w[n]._msg) : 'You broke it, and you know why.') + '</div>') + '</section>';
     h += '<div class="card" id="myths"><h2>\ud83d\udeab Myth-buster</h2>' + s.myths.map((m) => '<div class="myth"><span class="badge bm">MYTH</span><span class="m">' + m.myth + '</span><span class="badge br">REALITY</span><span>' + linkSteps(m.reality) + '</span></div>').join('') + '<p class="punch">' + esc(F.mythPunch[n]) + '</p></div>';
@@ -291,7 +308,7 @@
   }
 
   // ---------- expose + boot ----------
-  window.App = { S: () => S, save, toast, esc, pick, go, openModal, closeModal, glossify, linkSteps, illus, conf, updateChrome, step, isDone: (n) => !!S.done[n], CORE, CFG };
+  window.App = { S: () => S, safe, FICT, securityModal, save, toast, esc, pick, go, openModal, closeModal, glossify, linkSteps, illus, conf, updateChrome, step, isDone: (n) => !!S.done[n], CORE, CFG };
   function boot() {
     $('#brandIcon').innerHTML = partSVG('layers', 30);
     $('#brandName').textContent = CFG.name; $('#brandLink').setAttribute('aria-label', CFG.name + ', home');
