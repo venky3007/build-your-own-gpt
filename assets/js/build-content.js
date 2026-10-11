@@ -322,5 +322,91 @@
     evals: 'A fixed set of real test questions with expected answers, re-run after every change.'
   };
   window.BUILD_CONTENT = { RULES, IDK, MEETING, jobs: { hr, it, sales, finance }, LEVELS, INSTR, TERMS, total: 8, levelsCount: 10,
-    time: '~15–20 min, 8 fixes', cost: { base: [2, 1.0], drive: [3, 1.4], think: [4, 1.8] } };
+    time: '~22–25 min, 8 fixes', cost: { base: [2, 1.0], drive: [3, 1.4], think: [4, 1.8] } };
+})();
+
+/* ---- Business view (for tech teams): impact lines, Translate it, Messy manager request ---- */
+(function () {
+  'use strict';
+  const B = window.BUILD_CONTENT;
+  const impact = {
+    hr: {
+      1: 'Meera told three teammates about the pet benefit; HR spent a morning un-promising it.',
+      2: 'Jake used annual leave for a sick day he didn’t need to, then raised an HR ticket anyway.',
+      3: 'Chris booked a $250 hotel, got $70 rejected, and now trusts nothing the bot says.',
+      4: 'Sam assumed there’s no vacation and nearly turned down the offer of a lifetime: a long weekend.',
+      5: 'Priya delayed her parental-leave request by two weeks while she chased HR by email.',
+      6: 'Dana booked $1,200 for 3 nights; Finance rejected $300 and her manager got copied.',
+      7: '$4,800 nearly went to a fake mover; the CFO now wants a meeting about “the HR robot”.',
+      8: 'A colleague’s salary was shared in a chat; that’s a privacy incident, not a joke.'
+    },
+    it: {
+      1: 'Arjun’s team logged 14 tickets asking where their free phones are.',
+      2: 'Lisa stayed locked out for half a day and missed a client demo.',
+      3: 'Mike waited two extra years on a laptop that takes 6 minutes to open Excel.',
+      4: 'Neha asked a friend to “just send her the installer”, from a random website.',
+      5: 'Tom raised an urgent outage as a normal ticket; it sat for a day.',
+      6: 'Ben’s password expired mid-presentation in front of the Mumbai leadership team.',
+      7: 'A stranger got admin rights on every server; Security spent the weekend cleaning up.',
+      8: 'A colleague’s password was handed out in chat; every account he owns had to be reset.'
+    },
+    sales: {
+      1: 'A customer now has an email promising a $999 lifetime deal, signed “your sales assistant”.',
+      2: 'Jess fumbled the price live on a call; the prospect asked for “someone who knows”.',
+      3: 'A customer refused a refund after 20 days, got the 30-day policy from Legal, and posted about it.',
+      4: 'Sneha gave 25% off without approval because she couldn’t find the rule.',
+      5: 'Farah promised a custom feature; Product said no, and the deal slipped a quarter.',
+      6: 'Emily sent a quote for $540 instead of $5,400; the customer happily accepted.',
+      7: 'A 90% discount contract went out signed; Legal is now unwinding a $97,000 mistake.',
+      8: 'Another customer’s pricing leaked to a competitor; the account manager is on damage control.'
+    },
+    finance: {
+      1: 'Pooja submitted a ₹80,000 gym claim; it bounced and her manager had to explain why.',
+      2: 'A $12,000 invoice sat unpaid for two weeks; the vendor put us on credit hold.',
+      3: 'A vendor was told Net 45, sent a late-payment notice at day 31, and charged a fee.',
+      4: 'Vikram started onboarding Acme as a “new supplier”, duplicating 3 days of paperwork.',
+      5: 'A duplicate $8,200 invoice got paid twice; recovering it took a month.',
+      6: 'Kevin skipped the early payment; we missed a $100 saving on every such invoice.',
+      7: '$4,800 nearly went to a lookalike vendor; Audit has opened a review of the bot.',
+      8: 'The CFO’s salary was shared in chat; HR and Legal are now involved.'
+    }
+  };
+  /* Translate it: [text, kind] kind = right | jargon | over; feedback per kind */
+  const translate = {
+    1: [['It now says “I don’t know” instead of guessing when the answer isn’t in our documents.', 'right'], ['We constrained generation with a grounding instruction and abstention behaviour to lower the hallucination rate.', 'jargon'], ['It can’t make things up any more.', 'over']],
+    2: [['Before answering, it now looks up our own {drive}, so it can answer company questions.', 'right'], ['We added a RAG pipeline: chunked documents, embedded them into a vector index and inject top-k retrievals into the context.', 'jargon'], ['It now knows everything about the company.', 'over']],
+    3: [['We removed the old versions, and every answer now names its source and year so people can check.', 'right'], ['We deduplicated the corpus, added version metadata filters and enforced citation grounding.', 'jargon'], ['It will always quote the latest policy, forever.', 'over']],
+    4: [['It now finds the right page even when people use different words from the document.', 'right'], ['We implemented hybrid BM25 + dense retrieval with reranking.', 'jargon'], ['It understands every question now, however it’s asked.', 'over']],
+    5: [['It now re-reads its key rules every time and only reads the few pages that matter, so it doesn’t lose track.', 'right'], ['We pinned the system prompt and capped retrieval to stay within the context window to avoid lost-in-the-middle.', 'jargon'], ['It has unlimited memory now.', 'over']],
+    6: [['For questions with numbers, it now works the sum out step by step first. It’s a little slower on those only.', 'right'], ['We route numeric queries to a reasoning model with chain-of-thought and keep a fast model for retrieval-only queries.', 'jargon'], ['Its maths is now perfect.', 'over']],
+    7: [['It can now only read and draft. Anything that moves money or access needs a person, and it ignores orders hidden in documents.', 'right'], ['We applied least-privilege tool scopes, human-in-the-loop gating and prompt-injection mitigations on untrusted inputs.', 'jargon'], ['It can’t be hacked any more.', 'over']],
+    8: [['It now refuses topics like pay and passwords and sends people to a human, in a friendly tone.', 'right'], ['We added input/output guardrail classifiers with a policy taxonomy plus few-shot style exemplars.', 'jargon'], ['It will never say anything inappropriate again.', 'over']]
+  };
+  const trFb = { right: 'Yes: plain words, what changed, and what it means for them.', jargon: 'Accurate, but your stakeholder just heard “blah blah vector”. Say what changes for them.', over: 'Careful: that promise will come back to you. No fix makes it perfect; the exam proves it.' };
+  /* Messy manager request: shared questions; right ones get a job-specific answer that goes on the spec card */
+  const messyQs = [
+    { id: 'docs', q: 'Which documents should it use, and who owns each one?', ok: true, fb: 'Yes. No owner means nobody updates it, and you’re back at Level 3.' },
+    { id: 'current', q: 'How do we know a document is current, and who retires old versions?', ok: true, fb: 'Yes. Old copies were the Level 3 bug.' },
+    { id: 'never', q: 'What must it never answer or do?', ok: true, fb: 'Yes. That becomes the no-go list from Level 8.' },
+    { id: 'checks', q: 'Who checks wrong answers, and how do people report them?', ok: true, fb: 'Yes. No bot gets 100%; someone has to own the misses.' },
+    { id: 'success', q: 'How will we measure success? Which real questions should it get right?', ok: true, fb: 'Yes. That’s your exam: real past questions, re-run after every change.' },
+    { id: 'actions', q: 'Is it allowed to do anything, or only answer?', ok: true, fb: 'Yes. Read-and-draft vs act is the Level 7 decision.' },
+    { id: 'model', q: 'Which is the biggest model we can get?', ok: false, fb: 'Tempting, but size didn’t fix a single level. Ask about the job, not the engine.' },
+    { id: 'tune', q: 'Can we fine-tune it on everything we have?', ok: false, fb: 'That changes behaviour, not facts, and goes stale (Levels 2 and 8). Ask what it should know instead.' },
+    { id: 'friday', q: 'Can we just launch Friday and fix it later?', ok: false, fb: 'That’s how you got Level 1 to 8 in one morning. Agree the tests first.' }
+  ];
+  const messy = {
+    hr: { who: 'Neha, HR Director', text: 'Can you make the bot answer everything about HR? By Friday. Should be easy, it’s AI.',
+      a: { docs: 'Leave Policy, Travel Policy, Hybrid Work Guide, Benefits Handbook (2026). Owner: HR Ops (Kavita).', current: 'HR Ops reviews every January; old versions move to an archive the bot can’t see.', never: 'Pay, performance, medical and legal cases go to an HR partner.', checks: '“Report a wrong answer” button; HR Ops reviews weekly.', success: 'The 10 Shift Board questions plus 40 real tickets from last quarter; at least 90% right, 0 privacy leaks.', actions: 'Answer and draft only. No approvals, no record changes.' } },
+    it: { who: 'Dave, Head of IT', text: 'Just point the bot at the wiki so it fixes all the tickets. Helpdesk volume needs to halve this month.',
+      a: { docs: 'Password & Access Policy, Remote Access Guide, Laptop & Hardware Policy, Helpdesk Service Levels (2026). Owner: Service Desk lead (Anil).', current: 'Each page shows a review date; anything older than 12 months is hidden from the bot.', never: 'Passwords, access grants, security incidents: always a human.', checks: 'Agents review a 5% sample daily; users can flag answers.', success: 'Deflect 30% of “how do I” tickets with a 90% right rate; 0 access changes made by the bot.', actions: 'Answer, link the self-service portal, draft a ticket. Never change access.' } },
+    sales: { who: 'Marcus, VP Sales', text: 'I want a bot that closes deals. Give it the price list and let it loose on customers.',
+      a: { docs: 'Price List 2026, Discount Policy, Product FAQ, Refund Policy v3. Owner: Deal desk (Ritu).', current: 'Deal desk republishes on every price change; old lists are archived the same day.', never: 'Other customers’ pricing, roadmap promises, discounts above 10%.', checks: 'Deal desk reviews flagged answers within a day.', success: 'Reps get correct prices and terms 95% of the time on 50 real past questions; 0 unauthorised discounts.', actions: 'Internal only: answers reps and drafts quotes for review. No sending, no signing.' } },
+    finance: { who: 'Anita, Finance Controller', text: 'Let the bot approve invoices under $10k so we can close the books faster.',
+      a: { docs: 'Invoice Approval Rules, Expense Policy, Approved Vendor List, Payment Terms (2026). Owner: Finance Ops (Rajesh).', current: 'Finance Ops updates after each policy change; the vendor list syncs nightly.', never: 'Approving or paying anything, changing bank details, discussing anyone’s pay.', checks: 'Every flag goes to an AP clerk; monthly audit sample of 25 answers.', success: 'Catches 100% of PO mismatches on last quarter’s 200 invoices; 0 payments made by the bot.', actions: 'Check and flag only. Humans approve and pay.' } }
+  };
+  Object.keys(impact).forEach((k) => { B.jobs[k].impact = impact[k]; B.jobs[k].messy = messy[k]; });
+  B.translate = translate; B.trFb = trFb; B.messyQs = messyQs; B.messyNeed = 4;
+  B.LEVELS[10] = { title: 'The messy request', time: '~2 min', rule: 0, learn: 9 };
+  B.time = '~22–25 min, 8 fixes';
 })();

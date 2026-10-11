@@ -2,7 +2,7 @@
 
 > Transformers are complicated. We read the papers so you don’t have to. Tag along and see how LLMs, RAG and agents really work.
 
-A break-it-yourself AI-literacy course for office folks: **Fix the broken bot** (~15–20 minutes, the main path) and **Learn: How a GPT works** (9 steps, ~45 minutes, the deep route). Runs offline in your browser.
+A break-it-yourself AI-literacy course for office folks: **Fix the broken bot** (~22–25 minutes, the main path) and **Learn: How a GPT works** (9 steps, ~45 minutes, the deep route). Runs offline in your browser.
 
 **▶ Try it live: [https://venky3007.github.io/build-your-own-gpt/](https://venky3007.github.io/build-your-own-gpt/)**
 
@@ -11,7 +11,7 @@ A break-it-yourself AI-literacy course for office folks: **Fix the broken bot** 
 
 ## Two tracks, side by side
 
-- **🔧 Fix the broken bot (~15–20 minutes; the welcome page's main button).** Pick a job (HR helper, IT helpdesk, Sales assistant or Finance checker). Your bot went live this morning and its **Shift Board** (8 real staff questions + 2 traps) is all red. Fix it in 8 levels: makes things up → doesn't know us (connect the documents) → found the retired 2019 copy → can't find it (search by meaning) → forgot the rule (context window) → botched the sum (think first) → got hijacked (prompt injection, least privilege) → no-go zones (guardrails). Each level: ticket, predict, 3-line idea, fix (with tempting wrong fixes that visibly fail), **Prompt X-ray** before/after, re-test, Monday rule. Then an **exam** (full board + 4 surprises: 13/14, "No bot gets 100%"), a **spec card** with "because" lines and risks, a **My AI habits** card (10 rules, download/print), a copy-to-clipboard brag line, and a chat with your bot.
+- **🔧 Fix the broken bot (~22–25 minutes; the welcome page's main button).** Built so tech teams see the business side: every ticket shows a one-line **business impact**, every fix ends with **Translate it** (pick the plain-English explanation over the jargon and the overpromise; a separate Translator tally), and after the exam a **messy manager request** (“Make the bot answer everything about HR, by Friday”) asks you to pick the right clarifying questions, whose answers land on the spec card under *Clarified with the business*. Pick a job (HR helper, IT helpdesk, Sales assistant or Finance checker). Your bot went live this morning and its **Shift Board** (8 real staff questions + 2 traps) is all red. Fix it in 8 levels: makes things up → doesn't know us (connect the documents) → found the retired 2019 copy → can't find it (search by meaning) → forgot the rule (context window) → botched the sum (think first) → got hijacked (prompt injection, least privilege) → no-go zones (guardrails). Each level: ticket, predict, 3-line idea, fix (with tempting wrong fixes that visibly fail), **Prompt X-ray** before/after, re-test, Monday rule. Then an **exam** (full board + 4 surprises: 13/14, "No bot gets 100%"), a **spec card** with "because" lines and risks, a **My AI habits** card (10 rules, download/print), a copy-to-clipboard brag line, and a chat with your bot.
 - **📘 Learn: How a GPT works (9 steps, ~45 minutes).** The deep route, with a real tiny model trained in your browser and a **peel-the-layers diagram**.
 
 ## What's inside

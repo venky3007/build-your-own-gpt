@@ -726,3 +726,6 @@ details.more summary small,.tradebar small{color:#8a8fa3;font-weight:500}.more-i
 .xr-chunk.untrusted{outline:2px solid #dc2626}
 .qchips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.chip-q{border:1px solid var(--line2);background:#fff;border-radius:99px;padding:5px 10px;font-size:.82rem;cursor:pointer;text-align:left}
 .chatlog{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow:auto;margin:8px 0}.chatlog .bubble.user{align-self:flex-end}.chatlog .bubble.bot.bad{border-color:#fecaca;background:#fef2f2}
+.fx-impact{margin:8px 0 0;padding:8px 10px;border-left:4px solid #f59e0b;background:#fffbeb;border-radius:8px;font-size:.92rem}
+.fx-mq{display:flex;flex-direction:column;gap:6px}.fx-mq .fx-opt{text-align:left}.fx-fb.small{font-size:.85rem;margin:0 0 4px 8px}
+.specdl.clar dt{font-weight:600}

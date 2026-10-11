@@ -39,7 +39,7 @@
     }
     S = Object.assign(blank(), o || {});
     ['ws', 'wsGrad', 'forkSeen', 'express', 'path'].forEach((k) => delete S[k]);
-    if (S.route && !/^#\/(welcome|step\/[1-9]$|build\/([1-9]|1[0-3])$|fix\/([0-9]|10)$|chat)/.test(S.route)) S.route = '#/fix/0';
+    if (S.route && !/^#\/(welcome|step\/[1-9]$|build\/([1-9]|1[0-3])$|fix\/([0-9]|1[01])$|chat)/.test(S.route)) S.route = '#/fix/0';
   } catch (e) { S = blank(); }
   let storageOK = true;
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { if (storageOK) { storageOK = false; toast('Heads up: your browser is blocking local storage, so progress won\u2019t be saved this time.'); } } }
@@ -144,7 +144,7 @@
         return { prev: n === 1 ? '#/step/' + LAST_CORE : '#/build/' + (n - 1), next: '#/build/' + (n + 1), nextLabel: n === NB - 1 ? 'To the workbench \ud83d\udd27 \u2192' : 'Next \u2192' };
       }
       case 'chat': return { prev: '#/build/' + NB, next: null };
-      case 'fix': { const F = window.Fix; if (n >= F.LAST) return { prev: '#/fix/9', next: null }; return { prev: n === 0 ? '#/welcome' : '#/fix/' + (n - 1), next: F.canNext(n) ? '#/fix/' + (n + 1) : null, nextLabel: n === 8 ? 'Exam day \ud83c\udfc1 \u2192' : n === 9 ? 'Wrap-up \u2192' : 'Level ' + (n + 1) + ' \u2192' }; }
+      case 'fix': { const F = window.Fix; if (n >= F.LAST) return { prev: '#/fix/10', next: null }; return { prev: n === 0 ? '#/welcome' : '#/fix/' + (n - 1), next: F.canNext(n) ? '#/fix/' + (n + 1) : null, nextLabel: n === 8 ? 'Exam day \ud83c\udfc1 \u2192' : n === 9 ? 'The messy request \u2192' : n === 10 ? 'Wrap-up \u2192' : 'Level ' + (n + 1) + ' \u2192' }; }
       default: return {};
     }
   }
@@ -152,7 +152,7 @@
     if (r.name === 'step') { const s = step(+r.arg); return 'Step ' + s.n + ' of ' + CORE.length + ' \u00b7 ' + s.name; }
     if (r.name === 'build') return 'Build your GPT ' + r.arg + ' of ' + NB + ' \u00b7 ' + SP().SCREENS[+r.arg - 1].t;
     if (r.name === 'chat') return 'Chat with ' + (SP().B().name || 'your bot');
-    if (r.name === 'fix') return 'Fix the broken bot \u00b7 ' + (+r.arg === 9 ? 'Exam' : +r.arg === 10 ? 'Wrap-up' : 'Level ' + r.arg) + ' \u00b7 ' + window.Fix.title(+r.arg);
+    if (r.name === 'fix') return 'Fix the broken bot \u00b7 ' + (+r.arg === 9 ? 'Exam' : +r.arg === 10 ? 'Business request' : +r.arg === 11 ? 'Wrap-up' : 'Level ' + r.arg) + ' \u00b7 ' + window.Fix.title(+r.arg);
     return 'Welcome';
   }
 
@@ -161,7 +161,7 @@
   function render() {
     hideGloss(); closeModal(true); closeDrawer(true);
     const r = parse(location.hash);
-    if (!['welcome', 'step', 'build', 'chat', 'fix'].includes(r.name) || (r.name === 'fix' && !/^([0-9]|10)$/.test(r.arg || '')) || (r.name === 'step' && !(+r.arg >= 1 && +r.arg <= TOTAL)) || (r.name === 'build' && !(+r.arg >= 1 && +r.arg <= NB))) { location.replace('#/welcome'); return; }
+    if (!['welcome', 'step', 'build', 'chat', 'fix'].includes(r.name) || (r.name === 'fix' && !/^([0-9]|1[01])$/.test(r.arg || '')) || (r.name === 'step' && !(+r.arg >= 1 && +r.arg <= TOTAL)) || (r.name === 'build' && !(+r.arg >= 1 && +r.arg <= NB))) { location.replace('#/welcome'); return; }
     current = r;
     document.body.classList.toggle('on-build', r.name === 'build' || r.name === 'fix');
     const main = $('#main'); main.innerHTML = '';
@@ -194,9 +194,9 @@
   function updateChrome() {
     const core = CORE.filter((n) => S.done[n]).length, bc = buildCount();
     $('#pCore').style.width = (core / CORE.length * 100) + '%';
-    $('#pBuild').style.width = ((window.Fix ? window.Fix.done() : 0) / 10 * 100) + '%';
+    $('#pBuild').style.width = ((window.Fix ? window.Fix.done() : 0) / 11 * 100) + '%';
     $('#progCore').setAttribute('aria-valuenow', core); $('#progBuild').setAttribute('aria-valuenow', bc);
-    $('#progressLabel').textContent = 'Learn ' + core + '/' + CORE.length + ' \u00b7 Fix ' + (window.Fix ? window.Fix.done() : 0) + '/10';
+    $('#progressLabel').textContent = 'Learn ' + core + '/' + CORE.length + ' \u00b7 Fix ' + (window.Fix ? window.Fix.done() : 0) + '/11';
     drawTracks(core, bc);
     buildDrawer();
     if (window.Layers) { try { window.Layers.update(current); } catch (e) { console.error('layers', e); } }
@@ -211,7 +211,7 @@
     let h = '<ol>' + li('#/welcome', '\u2302', 'Welcome') + '</ol><h2 class="trk-learn">\ud83d\udcd8 ' + LEARN + ' (9 steps \u00b7 ~' + LEARN_MIN + ' min)</h2><ol>';
     CORE.forEach((n) => { h += li('#/step/' + n, n, step(n).name + ' \u00b7 ' + MIN[n] + ' min', { done: S.done[n] }); });
     h += '</ol><h2 class="trk-build">\ud83d\udd27 Fix the broken bot</h2><ol>';
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach((n) => { h += li('#/fix/' + n, n === 9 ? '\ud83c\udfc1' : n === 10 ? '\ud83c\udf93' : n, (n < 9 ? 'Level ' + n + ': ' : '') + window.Fix.title(n), { done: window.Fix.canNext(n) }); });
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].forEach((n) => { h += li('#/fix/' + n, n === 9 ? '\ud83c\udfc1' : n === 10 ? '\ud83d\udce8' : n === 11 ? '\ud83c\udf93' : n, (n < 9 ? 'Level ' + n + ': ' : '') + window.Fix.title(n), { done: window.Fix.canNext(n) }); });
     h += '</ol>';
     d.innerHTML = h;
   }
@@ -227,7 +227,7 @@
     const r = current || {}; const onL = r.name === 'step', onB = r.name === 'build' || r.name === 'chat';
     const nextStep = CORE.find((n) => !S.done[n]) || 1; const nextB = Math.min(NB, bc + 1);
     const learn = '<a class="track learn' + (onL ? ' on' : '') + '" href="#/step/' + (onL ? r.arg : nextStep) + '"' + (onL ? ' aria-current="true"' : '') + '><b>\ud83d\udcd8 ' + LEARN + '</b><small>9 steps \u00b7 ~' + LEARN_MIN + ' min \u00b7 ' + core + '/9 done</small><span class="tbar"><i style="width:' + (core / 9 * 100) + '%"></i></span>' + (compact ? '' : '<span class="tdesc">Peel a GPT layer by layer: train a tiny model, break it, see why it works.</span>') + '</a>';
-    const fd = window.Fix ? window.Fix.done() : 0, onF = r.name === 'fix'; const build = '<a class="track build' + (onF ? ' on' : '') + '" href="#/fix/' + (onF ? r.arg : Math.min(10, fd)) + '"' + (onF ? ' aria-current="true"' : '') + '><b>\ud83d\udd27 Fix the broken bot</b><small>' + window.BUILD_CONTENT.time + ' \u00b7 ' + fd + '/10 done</small><span class="tbar"><i style="width:' + (fd / 10 * 100) + '%"></i></span>' + (compact ? '' : '<span class="tdesc">Your work bot went live and it\u2019s failing. Fix it level by level and watch the Shift Board turn green. HR, IT, Sales or Finance.</span>') + '</a>';
+    const fd = window.Fix ? window.Fix.done() : 0, onF = r.name === 'fix'; const build = '<a class="track build' + (onF ? ' on' : '') + '" href="#/fix/' + (onF ? r.arg : Math.min(11, fd)) + '"' + (onF ? ' aria-current="true"' : '') + '><b>\ud83d\udd27 Fix the broken bot</b><small>' + window.BUILD_CONTENT.time + ' \u00b7 ' + fd + '/11 done</small><span class="tbar"><i style="width:' + (fd / 11 * 100) + '%"></i></span>' + (compact ? '' : '<span class="tdesc">Your work bot went live and it\u2019s failing. Fix it level by level and watch the Shift Board turn green. HR, IT, Sales or Finance.</span>') + '</a>';
     return learn + build;
   }
   function tracksHTML() { return '<section class="tracks big" aria-label="Choose a track">' + trackCards(CORE.filter((n) => S.done[n]).length, buildCount(), false) + '</section>'; }
@@ -245,7 +245,7 @@
       '<div><div class="chips"><span class="chip">AI-literacy course</span><span class="chip learn">\ud83d\udcd8 ' + LEARN + ' (9 steps) ~' + LEARN_MIN + ' min</span><span class="chip build">\ud83d\udd27 Fix the broken bot ' + BUILD_MIN + '</span></div>' +
       '<h1 class="course-title">' + esc(CFG.name) + '</h1><p class="subtitle">' + esc(CFG.subtitle) + '</p>' + safe('Runs 100% in your browser. No logins, no AI services, no data leaves your device. All company docs are fictional.') + '<p class="fict"><strong>' + FICT + '</strong></p>' +
       '<p>Inside, you\u2019ll assemble a GPT part by part, from a letter-guessing engine to a tool-using assistant, break it on purpose at every stage, then click together your own work bot and chat with it. <strong>Warning:</strong> side effects may include saying \u201cit depends on the retrieval\u201d in meetings.</p>' +
-      '<div class="row">' + '<a class="btn primary" id="welcomeFix" href="#/fix/' + (window.Fix ? Math.min(10, window.Fix.done()) : 0) + '">\ud83d\udd27 Fix the broken bot \u2192</a>' + (resume && /step/.test(resume) ? '<a class="btn" href="' + resume + '">Continue: ' + esc(rl) + '</a>' : '<a class="btn" href="#/step/1">Learn how it works (~' + LEARN_MIN + ' min)</a>') + '</div></div></section>' + tracksHTML() +
+      '<div class="row">' + '<a class="btn primary" id="welcomeFix" href="#/fix/' + (window.Fix ? Math.min(11, window.Fix.done()) : 0) + '">\ud83d\udd27 Fix the broken bot \u2192</a>' + (resume && /step/.test(resume) ? '<a class="btn" href="' + resume + '">Continue: ' + esc(rl) + '</a>' : '<a class="btn" href="#/step/1">Learn how it works (~' + LEARN_MIN + ' min)</a>') + '</div></div></section>' + tracksHTML() +
       '<div class="card"><span class="section-label">Live from the workbench</span><p class="noise" id="noise" aria-live="off"></p><p class="note">This is an untrained engine: picking random letters, with total confidence. In Steps 1 and 2 you\u2019ll train a real (tiny) neural network right here in your browser, and watch it go from this to word-like office email. Progress!</p></div>' +
       '<div class="card"><h2>Hello! What should your GPT call you?</h2><div class="field"><label for="nameIn">First name (optional, stays in this browser)</label><input class="input" id="nameIn" autocomplete="given-name" maxlength="40" value="' + esc(S.name) + '" placeholder="e.g. Priya, Tom, Ananya, Sam"></div><p id="nameHi" class="status" aria-live="polite"></p></div>' +
       '<div class="card"><h2>The pitch</h2>' + C.intro.pitch + '</div>' +

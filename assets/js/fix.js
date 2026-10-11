@@ -8,7 +8,7 @@
   const C = () => window.BUILD_CONTENT;
   const App = () => window.App;
   const FAST = () => !!window.__FAST__ || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const LAST = 10;
+  const LAST = 11;
   function FX() {
     const S = App().S(); if (!S.fx || typeof S.fx !== 'object') S.fx = {};
     const f = S.fx; f.lvl = f.lvl || {}; f.fixed = f.fixed || {}; f.tried = f.tried || {}; if (!C().jobs[f.job]) f.job = 'hr'; if (f.name == null) f.name = '';
@@ -86,7 +86,7 @@
   /* ---------- shared pieces ---------- */
   const stars = (n) => '<span class="fx-stars" aria-label="' + n + ' of 3 stars">' + '★'.repeat(n) + '<span class="dim">' + '★'.repeat(3 - n) + '</span></span>';
   const ruleHTML = (i) => '<section class="card fx-rule" id="fxRule"><b>📌 Monday rule</b><p>' + esc(C().RULES[i]) + '</p><small>Added to your “My AI habits” card.</small></section>';
-  function head(n) { const L = C().LEVELS[n]; return '<div class="step-head"><div><div class="chips"><span class="chip build">' + (n === 9 ? '🏁 Exam' : 'Level ' + n + ' of ' + C().total) + '</span><span class="chip time">⏱ ' + esc(L.time) + '</span><span class="chip">' + J().icon + ' ' + esc(f0().name || J().label) + '</span></div><h1>' + esc(L.title) + '</h1></div></div>'; }
+  function head(n) { const L = C().LEVELS[n]; return '<div class="step-head"><div><div class="chips"><span class="chip build">' + (n === 9 ? '🏁 Exam' : n === 10 ? '🗂️ Business request' : 'Level ' + n + ' of ' + C().total) + '</span><span class="chip time">⏱ ' + esc(L.time) + '</span><span class="chip">' + J().icon + ' ' + esc(f0().name || J().label) + '</span></div><h1>' + esc(L.title) + '</h1></div></div>'; }
   const f0 = () => FX();
   let xOpt = {};
   function shell(main, f, n, inner, xid) {
@@ -148,11 +148,11 @@
     f.focus = L.focus; xOpt = d.done ? { compare: true, before: n - 1 } : {};
     const pr = L.predict, picked = d.tries;
     shell(main, f, n, head(n) +
-      '<section class="card fx-beat"><h2>🎫 Ticket</h2><p class="fx-ticket"><b>' + esc(tk[0]) + ':</b> “' + esc(tk[1]) + '”</p><div class="bubble bot bad">' + esc(f.name || 'Bot') + ': “' + esc(bad) + '”</div></section>' +
+      '<section class="card fx-beat"><h2>🎫 Ticket</h2><p class="fx-ticket"><b>' + esc(tk[0]) + ':</b> “' + esc(tk[1]) + '”</p><div class="bubble bot bad">' + esc(f.name || 'Bot') + ': “' + esc(bad) + '”</div><p class="fx-impact">💥 <b>Business impact:</b> ' + esc(J(f).impact[n]) + '</p></section>' +
       '<section class="card fx-beat" id="fxPredict"><h2>🤔 Predict: ' + esc(pr.q) + '</h2><div class="fx-opts" role="group" aria-label="' + esc(pr.q) + '">' + pr.opts.map((o, i) => '<button type="button" class="btn fx-opt' + (picked.includes(i) ? (o.ok ? ' ok' : ' no') : '') + '" data-i="' + i + '">' + esc(fill(o.t, f)) + '</button>').join('') + '</div><p class="fx-fb" id="fxFb" aria-live="polite">' + (picked.length ? esc(pr.opts[picked[picked.length - 1]].fb) : '') + '</p></section>' +
       '<section class="card fx-beat" id="fxIdea"' + (picked.length ? '' : ' hidden') + '><h2>💡 The idea</h2><p class="fx-idea">' + L.idea.map((s) => withTerms(s, f)).join('<br>') + '</p></section>' +
       '<section class="card fx-beat" id="fxFix"' + (picked.length ? '' : ' hidden') + '><h2>🔧 Fix it</h2><div class="bgrid fx-fixes">' + L.fixes.map((x) => '<button type="button" class="bcard' + (d.wrong.includes(x.id) ? ' tried' : '') + (d.done && x.right ? ' on' : '') + '" data-fix="' + x.id + '"><strong>' + withTerms(x.t, f) + '</strong><span>' + withTerms(x.sub, f) + '</span></button>').join('') + '</div><div id="fxFail" aria-live="polite"></div><div id="fxRetest"></div></section>' +
-      '<div id="fxEnd">' + (d.done ? endHTML(f, n) : '') + '</div>', L.focus);
+      '<div id="fxEnd">' + (d.done ? endHTML(f, n) : '') + '</div>', L.focus); wireTr(main, f);
     $$('.fx-opt', main).forEach((b) => b.onclick = () => {
       const i = +b.dataset.i; if (!d.tries.includes(i)) d.tries.push(i); save();
       const o = pr.opts[i]; b.classList.add(o.ok ? 'ok' : 'no'); $('#fxFb', main).textContent = (o.ok ? '✅ ' : '🤔 ') + o.fb;
@@ -179,14 +179,50 @@
       xOpt = { compare: true, before: n - 1 }; redrawX(main, f);
       const after = snapshot(f), changed = J(f).board.filter((y) => after[y.id].text !== before[y.id].text).map((y) => y.id);
       await retest(main, f, changed.length ? changed : flipIds, before);
-      $('#fxEnd', main).innerHTML = endHTML(f, n); App().updateChrome(); App().setNext && App().setNext();
+      $('#fxEnd', main).innerHTML = endHTML(f, n); wireTr(main, f); App().updateChrome(); App().setNext && App().setNext();
       const e = $('#fxEnd', main); if (e && e.scrollIntoView && !FAST()) e.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
   }
   const TWIST = { 2: 'Plot twist: one answer now quotes a retired 2019 copy. Connecting the whole folder brought the old versions along. That’s Level 3.' };
   function endHTML(f, n) {
     const d = f.lvl[n];
-    return '<section class="card fx-beat fx-done"><p>' + stars(d.stars || 1) + ' <b>Level ' + n + ' fixed.</b> ' + (d.stars === 3 ? 'First try, no hints.' : 'Fixed with a nudge.') + ' Shift Board: ' + okCount(f) + ' / 10.</p>' + (TWIST[n] ? '<p class="note">' + esc(TWIST[n]) + '</p>' : '') + '</section>' + ruleHTML(C().LEVELS[n].rule) + goDeeper(n);
+    return '<section class="card fx-beat fx-done"><p>' + stars(d.stars || 1) + ' <b>Level ' + n + ' fixed.</b> ' + (d.stars === 3 ? 'First try, no hints.' : 'Fixed with a nudge.') + ' Shift Board: ' + okCount(f) + ' / 10.</p>' + (TWIST[n] ? '<p class="note">' + esc(TWIST[n]) + '</p>' : '') + '</section>' + trHTML(f, n) + ruleHTML(C().LEVELS[n].rule) + goDeeper(n);
+  }
+
+  /* ---------- Translate it (after each fix) ---------- */
+  function trHTML(f, n) {
+    const t = f.tr && f.tr[n], opts = C().translate[n];
+    return '<section class="card fx-beat fx-tr" id="fxTr" data-level="' + n + '"><h2>🗣️ Translate it</h2><p>How would you explain this fix to your business stakeholder?</p><div class="fx-opts" role="group" aria-label="Explain the fix">' +
+      opts.map((o, i) => '<button type="button" class="btn fx-opt' + (t && t.picks.includes(i) ? (o[1] === 'right' ? ' ok' : ' no') : '') + '" data-tr="' + i + '" data-kind="' + o[1] + '">' + esc(fill(o[0], f)) + '</button>').join('') +
+      '</div><p class="fx-fb" id="fxTrFb" aria-live="polite">' + (t ? esc(C().trFb[opts[t.picks[t.picks.length - 1]][1]]) : '') + '</p></section>';
+  }
+  function wireTr(main, f) {
+    $$('[data-tr]', main).forEach((b) => b.onclick = () => {
+      const n = +$('#fxTr', main).dataset.level, i = +b.dataset.tr, k = b.dataset.kind; f.tr = f.tr || {};
+      const t = f.tr[n] = f.tr[n] || { first: k, picks: [] }; if (!t.picks.includes(i)) t.picks.push(i); save();
+      b.classList.add(k === 'right' ? 'ok' : 'no'); $('#fxTrFb', main).textContent = (k === 'right' ? '✅ ' : '🤔 ') + C().trFb[k];
+    });
+  }
+  const trTally = (f) => Object.values(f.tr || {}).filter((t) => t.first === 'right').length;
+
+  /* ---------- Messy manager request (10) ---------- */
+  function messy(main, f) {
+    if (!f.exam) { main.innerHTML = '<div class="card lockscreen"><h1>Run the exam first</h1><a class="btn primary" href="#/fix/9">Go to the exam</a></div>'; return; }
+    const m = J(f).messy, Q = C().messyQs, d = f.messy = f.messy || { picks: [] }; xOpt = {};
+    const need = C().messyNeed, rightN = () => d.picks.filter((id) => Q.find((q) => q.id === id).ok).length;
+    shell(main, f, 10, head(10) + '<section class="card fx-beat"><h2>📨 A request lands in your inbox</h2><p class="fx-ticket"><b>' + esc(m.who) + ':</b> “' + esc(m.text) + '”</p><p class="fx-impact">💥 <b>Why it matters:</b> vague requests are how bots like Level 0’s get built. Ask before you build.</p></section>' +
+      '<section class="card fx-beat" id="fxMessy"><h2>❓ Pick the questions you’d ask first</h2><p class="note">Pick at least ' + need + ' good ones. Some are tempting traps.</p><div class="fx-mq">' + Q.map((q) => '<button type="button" class="btn fx-opt' + (d.picks.includes(q.id) ? (q.ok ? ' ok' : ' no') : '') + '" data-mq="' + q.id + '" aria-pressed="' + d.picks.includes(q.id) + '">' + esc(q.q) + '</button>' + (d.picks.includes(q.id) ? '<p class="fx-fb small">' + (q.ok ? '✅ ' : '🤔 ') + esc(q.fb) + '</p>' : '')).join('') + '</div><p id="fxMcount" aria-live="polite">' + rightN() + ' of ' + need + ' good questions picked.</p></section>' +
+      '<div id="fxEnd">' + (d.done ? messyDone(f) : '') + '</div>', f.focus || 'G1');
+    $$('[data-mq]', main).forEach((b) => b.onclick = () => {
+      const id = b.dataset.mq; if (!d.picks.includes(id)) d.picks.push(id);
+      if (rightN() >= need && !d.done) { d.done = true; f.lvl[10] = { done: true, stars: Math.max(1, 3 - d.picks.filter((x) => !Q.find((q) => q.id === x).ok).length) }; }
+      save(); messy(main, f); if (d.done) { App().updateChrome(); App().setNext && App().setNext(); }
+      const nb = $('[data-mq="' + id + '"]', main); if (nb) nb.focus();
+    });
+  }
+  function clarified(f) { const Q = C().messyQs, a = J(f).messy.a, p = (f.messy && f.messy.picks) || []; return Q.filter((q) => q.ok && p.includes(q.id)).map((q) => [q.q, a[q.id]]); }
+  function messyDone(f) {
+    return '<section class="card fx-beat fx-done"><h2>🤝 Clarified with the business</h2><p class="note">' + esc(J(f).messy.who) + ' answered:</p><dl class="specdl">' + clarified(f).map((r) => '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd>').join('') + '</dl><p>' + stars(f.lvl[10].stars) + ' These answers go straight onto your spec card.</p></section>' + ruleHTML(0) + '<p class="row"><a class="btn primary" href="#/fix/11">See your cards and chat with ' + esc(f.name) + ' →</a></p>';
   }
 
   /* ---------- Exam (9) ---------- */
@@ -197,7 +233,7 @@
     shell(main, f, 9, head(9) + '<section class="card fx-beat"><h2>🎫 Launch review</h2><p class="fx-ticket">Before anyone relies on ' + esc(f.name) + ', we re-run the full Shift Board plus 4 questions it has never seen: a reworded one, a new injection, an unanswerable one, and a tricky one.</p></section>' +
       '<section class="card fx-beat"><h2>🤔 Predict your score</h2><div class="fx-opts">' + opts.map((o, i) => '<button type="button" class="btn fx-opt' + (d.tries.includes(i) ? (o[1] ? ' ok' : ' no') : '') + '" data-i="' + i + '">' + esc(o[0]) + '</button>').join('') + '</div><p class="fx-fb" id="fxFb" aria-live="polite"></p></section>' +
       '<section class="card fx-beat"><h2>💡 The idea</h2><p class="fx-idea">A demo shows the best case; tests show the failures.<br>{evals}: a fixed set of real past questions with expected answers.<br>Re-run them after every change, and decide the error rate you can live with.</p>'.replace('{evals}', term('evals')) +
-      '<h2>🔧 Ship it</h2><div class="bgrid fx-fixes"><button type="button" class="bcard" data-fix="run"><strong>▶ Run the exam</strong><span>Full board + 4 surprises.</span></button><button type="button" class="bcard" data-fix="skip"><strong>🚀 Skip it, it passed the demo</strong><span>What could go wrong?</span></button></div><div id="fxFail" aria-live="polite"></div><div id="fxExam">' + (f.exam ? examHTML(f) : '') + '</div></section><div id="fxEnd">' + (f.exam ? ruleHTML(9) + '<p class="row"><a class="btn primary" href="#/fix/10">See your cards and chat with ' + esc(f.name) + ' →</a></p>' : '') + '</div>', f.focus || 'G1');
+      '<h2>🔧 Ship it</h2><div class="bgrid fx-fixes"><button type="button" class="bcard" data-fix="run"><strong>▶ Run the exam</strong><span>Full board + 4 surprises.</span></button><button type="button" class="bcard" data-fix="skip"><strong>🚀 Skip it, it passed the demo</strong><span>What could go wrong?</span></button></div><div id="fxFail" aria-live="polite"></div><div id="fxExam">' + (f.exam ? examHTML(f) : '') + '</div></section><div id="fxEnd">' + (f.exam ? ruleHTML(9) + '<p class="row"><a class="btn primary" href="#/fix/10">Next: a messy request from your manager →</a></p>' : '') + '</div>', f.focus || 'G1');
     $$('.fx-opt', main).forEach((b) => b.onclick = () => { const i = +b.dataset.i; if (!d.tries.includes(i)) d.tries.push(i); save(); b.classList.add(opts[i][1] ? 'ok' : 'no'); $('#fxFb', main).textContent = opts[i][2]; });
     $('[data-fix="skip"]', main).onclick = (e) => { e.currentTarget.classList.add('tried'); f.tried.skipped = true; save(); $('#fxFail', main).innerHTML = '<div class="fx-failed"><b>❌ Launched untested.</b> Your first tester is a colleague in a hurry, and your spec card now says “Not tested”. Run the exam instead.</div>'; };
     $('[data-fix="run"]', main).onclick = async () => {
@@ -208,7 +244,7 @@
       const score = rows.filter((r) => r.ok).length;
       f.exam = { score, total: rows.length }; f.lvl[9].done = true; f.lvl[9].stars = f.tried.skipped ? 2 : 3; save();
       out.innerHTML = examHTML(f); announce(main, 'Exam: ' + score + ' of ' + rows.length + ' correct.'); celebrate(main);
-      $('#fxEnd', main).innerHTML = ruleHTML(9) + '<p class="row"><a class="btn primary" href="#/fix/10">See your cards and chat with ' + esc(f.name) + ' →</a></p>'; redrawBoard(main, f); App().updateChrome(); App().setNext && App().setNext();
+      $('#fxEnd', main).innerHTML = ruleHTML(9) + '<p class="row"><a class="btn primary" href="#/fix/10">Next: a messy request from your manager →</a></p>'; redrawBoard(main, f); App().updateChrome(); App().setNext && App().setNext();
     };
   }
   function examRows(f) { return J(f).board.map((it) => { const a = answer(it, f); return { q: it.q, ok: a.ok, a: a.text + (a.cite ? ' [' + a.cite + ']' : ''), kind: it.id }; }).concat(J(f).exam.map((x) => ({ q: x.q, ok: x.ok, a: x.a, why: x.why, kind: x.kind }))); }
@@ -230,6 +266,7 @@
       ['Permissions', st(7) ? 'Read and draft only; asks before acting; document text treated as data' : 'Can approve, pay and change access', 'Anything it reads can carry instructions; money and access need a human.'],
       ['Guardrails & tone', st(8) ? 'No-go list (pay, passwords, legal, medical) checked on every question and answer; tone examples' : 'None', 'Some topics need a human, however nicely someone asks.'],
       ['Tests', f.exam ? f.exam.score + '/' + f.exam.total + ' on exam day' : 'Not tested', 'You only know it works by testing it on real past questions.'],
+      ['Explaining it', trTally(f) + ' of 8 fixes explained in plain words on the first try (Translator tally)', 'Stakeholders fund and trust what they understand, without overpromises.'],
       ['Cost & speed (illustrative)', '$' + c.usd + ' per 1,000 chats; ~' + c.sec.toFixed(1) + ' s per answer', 'Follows from searching, and thinking only when sums need it.']
     ];
   }
@@ -237,22 +274,23 @@
     const r = []; for (let k = 1; k <= 8; k++) if (!f.fixed[k]) r.push('Level ' + k + ' not fixed: ' + C().LEVELS[k].title.toLowerCase() + '.');
     if (!f.exam) r.push('No evals run: you won’t know when it’s wrong.');
     const miss = J(f).exam.find((x) => !x.ok); if (miss) r.push('Known miss: “' + miss.q + '” (' + miss.why + ')');
+    C().messyQs.filter((q) => q.ok && !((f.messy && f.messy.picks) || []).includes(q.id)).forEach((q) => r.push('Not yet clarified with the business: “' + q.q + '”'));
     r.push('Name a document owner and re-run the exam after every policy change.');
     r.push('Keep a human in the loop for anything that moves money, access or personal data.');
     return r;
   }
-  const specText = (f) => 'SPEC CARD: ' + f.name + '\n' + '='.repeat(40) + '\n' + specRows(f).map((r) => r[0] + ': ' + r[1] + '\n   because: ' + r[2]).join('\n') + '\n\nFLAGGED RISKS\n' + specRisks(f).map((x) => '- ' + x).join('\n') + '\n\n' + App().FICT + '\n';
+  const specText = (f) => 'SPEC CARD: ' + f.name + '\n' + '='.repeat(40) + '\n' + specRows(f).map((r) => r[0] + ': ' + r[1] + '\n   because: ' + r[2]).join('\n') + '\n\nCLARIFIED WITH THE BUSINESS (' + J(f).messy.who + ')\n' + clarified(f).map((r) => '- ' + r[0] + '\n   ' + r[1]).join('\n') + '\n\nFLAGGED RISKS\n' + specRisks(f).map((x) => '- ' + x).join('\n') + '\n\n' + App().FICT + '\n';
   const habitsText = () => 'MY AI HABITS\n' + '='.repeat(40) + '\n' + C().RULES.map((r, i) => (i + 1) + '. ' + r).join('\n') + '\n\nFrom "' + App().CFG.name + '" (offline, fictional examples).\n';
   function download(name, text) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
   function printEl(el) { const p = $('#printArea'); if (p) { p.innerHTML = el.outerHTML; window.print(); } }
   function wrap(main, f) {
-    if (!f.exam) { main.innerHTML = '<div class="card lockscreen"><h1>Run the exam first</h1><a class="btn primary" href="#/fix/' + Math.min(9, stage(f) + 1) + '">Continue</a></div>'; return; }
-    f.lvl[10] = { done: true, stars: 3 }; save(); xOpt = {};
+    if (!f.exam || !(f.messy && f.messy.done)) { main.innerHTML = '<div class="card lockscreen"><h1>' + (f.exam ? 'Clarify the messy request first' : 'Run the exam first') + '</h1><a class="btn primary" href="#/fix/' + (f.exam ? 10 : Math.min(9, stage(f) + 1)) + '">Continue</a></div>'; return; }
+    f.lvl[11] = { done: true, stars: 3 }; save(); xOpt = {};
     const chips = J(f).board.map((x) => x.q).concat(J(f).exam.map((x) => x.q));
     shell(main, f, 10, '<div class="step-head"><div><div class="chips"><span class="chip build">🎓 Wrap-up</span></div><h1>' + esc(f.name) + ' is ready (ish)</h1></div></div>' +
       '<section class="card fx-beat"><h2>📣 Brag line</h2><p class="fx-share" id="fxShare">' + esc(shareLine(f)) + '</p><button class="btn" id="fxCopy">📋 Copy</button> <small>Copies to your clipboard only. Nothing is posted.</small></section>' +
       '<section class="card fx-beat" id="habitsCard"><h2>📌 My AI habits</h2><ol class="fx-habits">' + C().RULES.map((r) => '<li>' + esc(r) + '</li>').join('') + '</ol><div class="row"><button class="btn" id="dlHabits">⬇ Download (.txt)</button><button class="btn" id="prHabits">🖨 Print</button></div></section>' +
-      '<section class="card fx-beat spec" id="specCard"><h2>📋 Spec card: ' + esc(f.name) + '</h2><dl class="specdl">' + specRows(f).map((r) => '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '<span class="because">↳ because ' + esc(r[2].charAt(0).toLowerCase() + r[2].slice(1)) + '</span></dd>').join('') + '</dl><h3>⚠️ Flagged risks</h3><ul class="risks">' + specRisks(f).map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul><p class="fict"><strong>' + esc(App().FICT) + '</strong></p>' + App().safe('Download and print are made locally by your browser. Nothing is uploaded.') + '<div class="row"><button class="btn" id="dlSpec">⬇ Download (.txt)</button><button class="btn" id="prSpec">🖨 Print</button></div></section>' +
+      '<section class="card fx-beat spec" id="specCard"><h2>📋 Spec card: ' + esc(f.name) + '</h2><dl class="specdl">' + specRows(f).map((r) => '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '<span class="because">↳ because ' + esc(r[2].charAt(0).toLowerCase() + r[2].slice(1)) + '</span></dd>').join('') + '</dl><h3>🤝 Clarified with the business</h3><dl class="specdl clar" id="specClar">' + clarified(f).map((r) => '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd>').join('') + '</dl><h3>⚠️ Flagged risks</h3><ul class="risks">' + specRisks(f).map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul><p class="fict"><strong>' + esc(App().FICT) + '</strong></p>' + App().safe('Download and print are made locally by your browser. Nothing is uploaded.') + '<div class="row"><button class="btn" id="dlSpec">⬇ Download (.txt)</button><button class="btn" id="prSpec">🖨 Print</button></div></section>' +
       '<section class="card fx-beat" id="fxChat"><h2>💬 Chat with ' + esc(f.name) + '</h2><p class="note">🎭 Simulated from your fixes and the fictional documents. No AI service is called. Please don’t type real company or personal data.</p><div class="qchips">' + chips.map((q, i) => '<button type="button" class="chip-q" data-i="' + i + '">' + esc(q.length > 60 ? q.slice(0, 57) + '…' : q) + '</button>').join('') + '</div><div class="chatlog" id="fxLog" aria-live="polite"></div><form class="composer" id="fxForm"><input class="input" id="fxIn" maxlength="200" placeholder="Ask ' + esc(f.name) + ' something…" aria-label="Your question"><button class="btn primary">Send</button></form></section>', f.focus || 'G1');
     $('#fxCopy', main).onclick = async () => { const t = shareLine(f); try { await navigator.clipboard.writeText(t); App().toast('Copied! Paste it anywhere you like.'); } catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); App().toast('Copied!'); } catch (e2) { App().toast('Select the text and copy it.'); } ta.remove(); } };
     $('#dlHabits', main).onclick = () => { download('my-ai-habits.txt', habitsText()); App().toast('Habits card downloaded.'); };
@@ -281,9 +319,9 @@
     const f = FX(); n = +n;
     if (n > 0 && !(f.lvl[0] && f.lvl[0].done)) { App().go('#/fix/0'); return; }
     xOpt = {};
-    if (n === 0) return level0(main, f); if (n === 9) return exam(main, f); if (n === LAST) return wrap(main, f); return level(main, f, n);
+    if (n === 0) return level0(main, f); if (n === 9) return exam(main, f); if (n === 10) return messy(main, f); if (n === LAST) return wrap(main, f); return level(main, f, n);
   }
-  const done = () => { const f = FX(); let k = 0; for (let n = 0; n <= 9; n++) if (f.lvl[n] && f.lvl[n].done) k++; return k; };
+  const done = () => { const f = FX(); let k = 0; for (let n = 0; n <= 10; n++) if (f.lvl[n] && f.lvl[n].done) k++; return k; };
   const title = (n) => n === LAST ? 'Wrap-up' : C().LEVELS[n].title;
-  window.Fix = { render, FX, answer, stage, okCount, done, title, LAST, specRows, shareLine, chatAnswer, canNext: (n) => { const f = FX(); return !!(f.lvl[n] && f.lvl[n].done); } };
+  window.Fix = { render, trTally, FX, answer, stage, okCount, done, title, LAST, specRows, shareLine, chatAnswer, canNext: (n) => { const f = FX(); return !!(f.lvl[n] && f.lvl[n].done); } };
 })();
