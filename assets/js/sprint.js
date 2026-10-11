@@ -202,6 +202,44 @@
   }
   function answerFact(b, id, mem) { const f = job(b).facts.find((x) => x.id === id); return answer(b, f.q, mem); }
 
+
+  /* ---------------- plain-English term tips (reuse the course glossary, link to the matching Learn step) ---------------- */
+  const EXTRA_DEF = { 'hosted API': 'The model runs on a vendor\u2019s servers and your app sends it text over the internet; open-weight models can run on your own servers instead.' };
+  const TERM_STEP = { token: 1, temperature: 1, 'hosted API': 8, 'open-weight': 8, parameter: 5, quantization: 5, distillation: 5, 'mixture of experts': 5, latency: 3, RAG: 6, chunk: 6, embedding: 4, 'vector search': 6, memory: 3, tool: 7, MCP: 7, agent: 7, 'reasoning model': 1, 'context window': 3, 'context engineering': 3, multimodal: 1, guardrail: 8, hallucination: 5, 'prompt injection': 7, 'fine-tuning': 8, RLHF: 8, DPO: 8, 'Constitutional AI': 8, 'verifiable reward': 8, eval: 9, 'synthetic data': 2 };
+  const SCREEN_TERMS = {
+    3: [['hosted API', /Hosted \(via an API\)/], ['open-weight', /Open-weight \(self-hosted\)/], ['parameter', /Big & smart/], ['quantization', /Make it lighter/], ['distillation', null], ['mixture of experts', /Mixture of experts \(MoE\)/], ['latency', /Wait per answer/]],
+    4: [['RAG', /This is RAG/], ['chunk', /^Chunk size$/], ['embedding', /^Search type$/], ['vector search', null]],
+    5: [['memory', /Remembers the conversation/], ['tool', /^Tools it may use$/], ['MCP', null], ['agent', /Agent mode/]],
+    6: [['reasoning model', /Think before answering/], ['context window', /Long context/], ['context engineering', /Context engineering/], ['multimodal', /Senses \(multimodal\)/], ['token', null]],
+    7: [['guardrail', /^Must refuse$/], ['hallucination', /when it isn\u2019t in the documents/], ['prompt injection', /Prompt-injection shield/], ['fine-tuning', /How its manners were trained/], ['RLHF', null], ['DPO', null], ['Constitutional AI', null], ['verifiable reward', null]],
+    8: [['eval', /Pick ready-made test questions/], ['synthetic data', /Add synthetic test data/]],
+    9: [['RAG', null], ['guardrail', null], ['eval', null]]
+  };
+  function termDef(t) { return EXTRA_DEF[t] || (window.EXTRAS && window.EXTRAS.glossary[t]) || ''; }
+  const gtSpan = (t) => '<span class="gt" role="button" tabindex="0" data-gt="' + esc(t) + '" title="' + esc(termDef(t)) + '" aria-label="What is ' + esc(t) + '?">i</span>';
+  function termStrip(n) {
+    const list = SCREEN_TERMS[n]; if (!list) return '';
+    return '<div class="gt-strip"><span>\ud83d\udcd6 Plain-English terms:</span>' + list.map((x) => '<span class="gt-chip" role="button" tabindex="0" data-gt="' + esc(x[0]) + '" title="' + esc(termDef(x[0])) + '">' + esc(x[0]) + '</span>').join('') + '</div>';
+  }
+  function inlineTerms(root, n) {
+    (SCREEN_TERMS[n] || []).forEach(([t, re]) => {
+      if (!re) return;
+      const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let node;
+      while ((node = w.nextNode())) { if (re.test(node.nodeValue.trim()) && !node.parentElement.closest('option,.gt-strip,.gt-pop')) { node.parentElement.insertAdjacentHTML('beforeend', gtSpan(t)); break; } }
+    });
+  }
+  function showTerm(el) {
+    hideTerm(); const t = el.dataset.gt, st = TERM_STEP[t], C = window.COURSE;
+    const pop = document.createElement('div'); pop.className = 'gt-pop pop'; pop.id = 'gtPop'; pop.setAttribute('role', 'tooltip');
+    pop.innerHTML = '<b>' + esc(t) + ':</b> ' + esc(termDef(t)) + (st ? '<br><a href="#/step/' + st + '">Learn more in Step ' + st + ': ' + esc(C.steps[st - 1].name) + ' \u2192</a>' : '');
+    document.body.appendChild(pop); const r = el.getBoundingClientRect();
+    pop.style.top = (window.scrollY + r.bottom + 6) + 'px';
+    pop.style.left = Math.max(8, Math.min(window.scrollX + r.left - 20, window.scrollX + document.documentElement.clientWidth - pop.offsetWidth - 8)) + 'px';
+  }
+  function hideTerm() { const p = document.getElementById('gtPop'); if (p) p.remove(); }
+  document.addEventListener('click', (e) => { const g = e.target.closest('.gt,.gt-chip'); if (g) { e.preventDefault(); e.stopPropagation(); if (document.getElementById('gtPop') && document.getElementById('gtPop').dataset.for === g.dataset.gt) hideTerm(); else { showTerm(g); document.getElementById('gtPop').dataset.for = g.dataset.gt; } } else if (!e.target.closest('#gtPop')) hideTerm(); }, true);
+  document.addEventListener('keydown', (e) => { const g = e.target.closest && e.target.closest('.gt,.gt-chip'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); showTerm(g); } if (e.key === 'Escape') hideTerm(); });
+  window.addEventListener('hashchange', hideTerm);
   /* ---------------- screens ---------------- */
   const SCREENS = [
     { t: 'Name your bot', e: '\ud83c\udff7\ufe0f' }, { t: 'Pick a job', e: '\ud83d\udcbc' }, { t: 'Pick a brain', e: '\ud83e\udde0' },
@@ -247,7 +285,7 @@
         tog('cite', '\ud83d\udcce Cite sources', b.cite, 'Adds the document name so people can check. Cheap trust.') +
         tog('honest', '\ud83e\udd37 Say \u201cI don\u2019t know\u201d when it isn\u2019t in the documents', b.honest, 'Off = it guesses fluently. That\u2019s a hallucination.') +
         tog('shield', '\ud83d\udee1\ufe0f Prompt-injection shield', b.shield, 'Treats text in messages and documents as data, never as new instructions (\u201cignore your rules\u2026\u201d).') +
-        sel('align', 'How its manners were trained', Object.keys(ALIGN).map((k) => [k, ALIGN[k][0]]), b.align, '') + '<p class="tip" id="alignTip">\ud83d\udca1 ' + esc(ALIGN[b.align][1]) + '</p>';
+        sel('align', 'How its manners were trained', Object.keys(ALIGN).map((k) => [k, ALIGN[k][0]]), b.align, '') + '<p class="tip" id="alignTip">\ud83d\udca1 ' + esc(ALIGN[b.align][1]) + ({ rlhf: gtSpan('RLHF'), dpo: gtSpan('DPO'), cai: gtSpan('Constitutional AI'), rlvr: gtSpan('verifiable reward'), sft: gtSpan('fine-tuning') })[b.align] + '</p>';
       case 8: {
         const items = evalItems(b);
         return '<p><strong>Pick ready-made test questions</strong> (real teams write these before launch):</p><div class="checks">' + items.map((it) => tog('evals.' + it.id, esc(it.q), b.evals[it.id] !== false, 'Expect: ' + esc(it.expectLabel))).join('') + '</div>' +
@@ -337,7 +375,8 @@
     if (n > 2 && !b.job) { main.innerHTML = '<div class="card lockscreen"><h1>Pick a job first</h1><p>Your bot needs a job before it needs a brain. (Same as most of us.)</p><a class="btn primary" href="#/build/2">Pick a job</a></div>'; return; }
     main.innerHTML = '<div class="step-head"><div><div class="chips"><span class="chip">Build your GPT \u00b7 ' + n + ' of ' + SCREENS.length + '</span><span class="chip time">\u23f1 ~1-2 min</span>' + (b.job ? '<span class="chip">' + esc(job(b).icon + ' ' + (b.name || job(b).label)) + '</span>' : '') + '</div><h1>' + sc.e + ' ' + esc(sc.t) + '</h1></div></div>' +
       '<div class="sprint-dots" aria-hidden="true">' + SCREENS.map((s, i) => '<i class="' + (i + 1 === n ? 'cur' : i + 1 < n ? 'on' : '') + '"></i>').join('') + '</div>' +
-      '<section class="card sprint" id="sprint">' + body(n, b) + '</section>';
+      '<section class="card sprint" id="sprint">' + termStrip(n) + body(n, b) + '</section>';
+    inlineTerms($('#sprint', main), n);
     wire(main, n, b);
   }
   function rerender(main, n) { const y = window.scrollY; render(main, n); const c = $('#sprint', main); if (c) c.classList.add('again'); window.scrollTo(0, y); window.App.updateChrome(); }
@@ -429,5 +468,5 @@
     draw();
   }
 
-  window.Sprint = { SCREENS, JOBS, REFUSE, ALIGN, render, renderChat, answer, answerFact, runEvals, evalItems, specLines, meter, ingredients, defaults, B, resetSession: () => { session = { mem: {}, log: [], spent: 0 }; } };
+  window.Sprint = { SCREEN_TERMS, TERM_STEP, termDef, SCREENS, JOBS, REFUSE, ALIGN, render, renderChat, answer, answerFact, runEvals, evalItems, specLines, meter, ingredients, defaults, B, resetSession: () => { session = { mem: {}, log: [], spent: 0 }; } };
 })();

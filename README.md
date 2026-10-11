@@ -2,7 +2,7 @@
 
 > Transformers are complicated. We read the papers so you don’t have to. Tag along and see how LLMs, RAG and agents really work.
 
-A break-it-yourself course (9 core steps, ~90 minutes) that shows office folks how LLMs, RAG and agents really work, then a 15-minute click-to-build sprint where you assemble your own work bot and chat with it. Runs offline in your browser.
+A break-it-yourself course (Learn: How a GPT works, 9 steps, ~45 minutes) that shows office folks how LLMs, RAG and agents really work, then a 15-minute click-to-build sprint where you assemble your own work bot and chat with it. Runs offline in your browser.
 
 **▶ Try it live: [https://venky3007.github.io/build-your-own-gpt/](https://venky3007.github.io/build-your-own-gpt/)**
 
@@ -10,14 +10,14 @@ A break-it-yourself course (9 core steps, ~90 minutes) that shows office folks h
 
 ![Screenshot: chatting with the bot you built in the sprint, with an off-script suggestion](docs/screenshot-chat.png)
 
-## One route, two parts
+## Two tracks, side by side
 
-- **Core build (~90 minutes).** 9 core steps that assemble a GPT part by part. A **peel-the-layers diagram** starts fully assembled (just the chat box a user sees) and peels one layer per step, down to tokens.
-- **Build your GPT sprint (~15 minutes).** Nine click-to-build screens (zero typing except the bot's name): pick a job (HR helper, IT helpdesk, sales assistant or finance checker), a brain (small vs big, hosted vs open-weight, quantised/distilled, mixture of experts, with a live cost and speed meter), documents for RAG (chunking, keyword vs embedding search), memory, tools/MCP/agents and permissions, reasoning mode, long context and context engineering, screenshot and voice inputs, tone, guardrails, citations, a prompt-injection shield, honesty vs hallucination, alignment method (SFT, RLHF, DPO, Constitutional AI, verifiable rewards), and evals with optional synthetic test data. Click **Build** to watch the parts bolt into the layer diagram, get a downloadable/printable **spec card**, then **chat with your bot**. Its answers are simulated from your picks and the bundled fictional documents, with a "Why it answered this way" panel.
+- **Learn: How a GPT works (9 steps, ~45 minutes).** The learning course: steps that assemble a GPT part by part (about 4–6 minutes each). A **peel-the-layers diagram** starts fully assembled (just the chat box a user sees) and peels one layer per step, down to tokens.
+- **Build your GPT (~15 minutes).** Can be started any time, even before Learn: every technical term has a plain-English tip with a "Learn more in Step X" link. Nine click-to-build screens (zero typing except the bot's name): pick a job (HR helper, IT helpdesk, sales assistant or finance checker), a brain (small vs big, hosted vs open-weight, quantised/distilled, mixture of experts, with a live cost and speed meter), documents for RAG (chunking, keyword vs embedding search), memory, tools/MCP/agents and permissions, reasoning mode, long context and context engineering, screenshot and voice inputs, tone, guardrails, citations, a prompt-injection shield, honesty vs hallucination, alignment method (SFT, RLHF, DPO, Constitutional AI, verifiable rewards), and evals with optional synthetic test data. Click **Build** to watch the parts bolt into the layer diagram, get a downloadable/printable **spec card**, then **chat with your bot**. Its answers are simulated from your picks and the bundled fictional documents, with a "Why it answered this way" panel.
 
 ## What's inside
 
-| Core step | What you build and break |
+| Learn step | What you build and break |
 |---|---|
 | 1. The Autocomplete Engine | next-token prediction and tokens |
 | 2. Fuel: Training Data | training, loss and why data quality matters |

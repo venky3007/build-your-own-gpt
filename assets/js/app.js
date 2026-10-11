@@ -8,6 +8,10 @@
   const CORE = C.steps.map((s) => s.n);
   const LAST_CORE = CORE[CORE.length - 1];
   const SP = () => window.Sprint; const NB = 9;       // build sprint screens
+  // Honest per-step minutes: words (hook..quiz, excl. optional Under-the-hood) at 200 wpm + ~2 min Break it!/quiz (+0.5 min training in Steps 1-2), rounded.
+  const MIN = { 1: 5, 2: 5, 3: 4, 4: 6, 5: 5, 6: 5, 7: 5, 8: 5, 9: 4 };
+  const LEARN_MIN = 45, BUILD_MIN = 15, LEARN = 'Learn: How a GPT works';
+  C.steps.forEach((s) => { s.time = MIN[s.n] + ' min'; });
   const REAL_MODEL = [1, 2];                          // steps whose Break it! runs a genuinely trained model
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
@@ -184,7 +188,8 @@
     $('#pCore').style.width = (core / CORE.length * 100) + '%';
     $('#pBuild').style.width = (bc / NB * 100) + '%';
     $('#progCore').setAttribute('aria-valuenow', core); $('#progBuild').setAttribute('aria-valuenow', bc);
-    $('#progressLabel').textContent = 'Core ' + core + '/' + CORE.length + ' \u00b7 Build ' + bc + '/' + NB;
+    $('#progressLabel').textContent = 'Learn ' + core + '/' + CORE.length + ' \u00b7 Build ' + bc + '/' + NB;
+    drawTracks(core, bc);
     buildDrawer();
     if (window.Layers) { try { window.Layers.update(current); } catch (e) { console.error('layers', e); } }
   }
@@ -195,9 +200,9 @@
       opts = opts || {};
       return '<li class="' + (opts.done ? 'done' : '') + '"><a href="' + href + '"' + (cur === href ? ' aria-current="page"' : '') + '><span class="num" aria-hidden="true">' + (opts.done ? '\u2713' : num) + '</span>' + esc(label) + (opts.done ? '<span class="sr-only"> (done)</span>' : '') + '</a></li>';
     };
-    let h = '<h2>The core build (~90 min)</h2><ol>' + li('#/welcome', '\u2302', 'Welcome');
-    CORE.forEach((n) => { h += li('#/step/' + n, n, step(n).name, { done: S.done[n] }); });
-    h += '</ol><h2>\ud83d\udd27 Build your GPT (~15 min)</h2><ol>';
+    let h = '<ol>' + li('#/welcome', '\u2302', 'Welcome') + '</ol><h2 class="trk-learn">\ud83d\udcd8 ' + LEARN + ' (9 steps \u00b7 ~' + LEARN_MIN + ' min)</h2><ol>';
+    CORE.forEach((n) => { h += li('#/step/' + n, n, step(n).name + ' \u00b7 ' + MIN[n] + ' min', { done: S.done[n] }); });
+    h += '</ol><h2 class="trk-build">\ud83d\udd27 Build your GPT (~' + BUILD_MIN + ' min)</h2><ol>';
     SP().SCREENS.forEach((sc, i) => { h += li('#/build/' + (i + 1), i + 1, sc.t, { done: i + 1 === NB ? SP().B().built : S.bdone[i + 1] }); });
     h += li('#/chat', '\ud83d\udcac', 'Chat with your bot') + '</ol>';
     d.innerHTML = h;
@@ -210,6 +215,15 @@
     S = blank(); if (SP()) SP().resetSession(); save(); toast('Fresh start! The engine is back to guessing random letters.'); go('#/welcome');
   }
 
+  function trackCards(core, bc, compact) {
+    const r = current || {}; const onL = r.name === 'step', onB = r.name === 'build' || r.name === 'chat';
+    const nextStep = CORE.find((n) => !S.done[n]) || 1; const nextB = Math.min(NB, bc + 1);
+    const learn = '<a class="track learn' + (onL ? ' on' : '') + '" href="#/step/' + (onL ? r.arg : nextStep) + '"' + (onL ? ' aria-current="true"' : '') + '><b>\ud83d\udcd8 ' + LEARN + '</b><small>9 steps \u00b7 ~' + LEARN_MIN + ' min \u00b7 ' + core + '/9 done</small><span class="tbar"><i style="width:' + (core / 9 * 100) + '%"></i></span>' + (compact ? '' : '<span class="tdesc">Peel a GPT layer by layer: train a tiny model, break it, see why it works.</span>') + '</a>';
+    const build = '<a class="track build' + (onB ? ' on' : '') + '" href="#/build/' + (onB && r.name === 'build' ? r.arg : nextB) + '"' + (onB ? ' aria-current="true"' : '') + '><b>\ud83d\udd27 Build your GPT</b><small>9 screens \u00b7 ~' + BUILD_MIN + ' min \u00b7 ' + bc + '/9 done</small><span class="tbar"><i style="width:' + (bc / 9 * 100) + '%"></i></span>' + (compact ? '' : '<span class="tdesc">Click together a work bot and chat with it. Start any time: every term has a plain-English tip.</span>') + '</a>';
+    return learn + build;
+  }
+  function tracksHTML() { return '<section class="tracks big" aria-label="Choose a track">' + trackCards(CORE.filter((n) => S.done[n]).length, buildCount(), false) + '</section>'; }
+  function drawTracks(core, bc) { const t = $('#trackNav'); if (t) t.innerHTML = trackCards(core, bc, true); }
   function heroArt() {
     const L = ['Chat app', 'Guardrails', 'Agents & tools', 'Retrieval (RAG)', 'Context window', 'Next-token output', 'Transformer blocks \u00d7N', 'Attention + feed-forward', 'Embeddings', 'Tokens'];
     return '<svg viewBox="0 0 260 250" class="hero-svg" aria-hidden="true" focusable="false">' + L.map((l, i) => { const y = 14 + i * 22, w = 230 - i * 10, x = (260 - w) / 2; return '<g class="hl" style="--i:' + i + '"><rect x="' + x + '" y="' + y + '" width="' + w + '" height="18" rx="7" fill="url(#hg' + (i % 2) + ')"/><text x="130" y="' + (y + 12.5) + '" text-anchor="middle">' + l + '</text></g>'; }).join('') + '<defs><linearGradient id="hg0" x1="0" x2="1"><stop offset="0" stop-color="#6d4aff"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient><linearGradient id="hg1" x1="0" x2="1"><stop offset="0" stop-color="#0b7f7c"/><stop offset="1" stop-color="#0e8f8a"/></linearGradient></defs></svg>';
@@ -220,16 +234,13 @@
     const rl = resume ? whereLabel(parse(resume)) : '';
     main.innerHTML =
       '<section class="hero"><div class="hero-art">' + heroArt() + '</div>' +
-      '<div><div class="chips"><span class="chip">AI-literacy course</span><span class="chip time">Core build ~90 min</span><span class="chip">\ud83d\udd27 Build-your-GPT sprint ~15 min</span></div>' +
+      '<div><div class="chips"><span class="chip">AI-literacy course</span><span class="chip learn">\ud83d\udcd8 ' + LEARN + ' (9 steps) ~' + LEARN_MIN + ' min</span><span class="chip build">\ud83d\udd27 Build your GPT ~' + BUILD_MIN + ' min</span></div>' +
       '<h1 class="course-title">' + esc(CFG.name) + '</h1><p class="subtitle">' + esc(CFG.subtitle) + '</p>' + safe('Runs 100% in your browser. No logins, no AI services, no data leaves your device. All company docs are fictional.') + '<p class="fict"><strong>' + FICT + '</strong></p>' +
       '<p>Inside, you\u2019ll assemble a GPT part by part, from a letter-guessing engine to a tool-using assistant, break it on purpose at every stage, then click together your own work bot and chat with it. <strong>Warning:</strong> side effects may include saying \u201cit depends on the retrieval\u201d in meetings.</p>' +
-      '<div class="row">' + (resume ? '<a class="btn primary" href="' + resume + '">Continue: ' + esc(rl) + ' \u2192</a><a class="btn" href="#/step/1">Start from Step 1</a>' : '<a class="btn primary" href="#/step/1">Start the build \u2192</a>') + '</div></div></section>' +
+      '<div class="row">' + (resume ? '<a class="btn primary" href="' + resume + '">Continue: ' + esc(rl) + ' \u2192</a><a class="btn" href="#/step/1">Start from Step 1</a>' : '<a class="btn primary" href="#/step/1">Start learning \u2192</a>') + '</div></div></section>' + tracksHTML() +
       '<div class="card"><span class="section-label">Live from the workbench</span><p class="noise" id="noise" aria-live="off"></p><p class="note">This is an untrained engine: picking random letters, with total confidence. In Steps 1 and 2 you\u2019ll train a real (tiny) neural network right here in your browser, and watch it go from this to word-like office email. Progress!</p></div>' +
       '<div class="card"><h2>Hello! What should your GPT call you?</h2><div class="field"><label for="nameIn">First name (optional, stays in this browser)</label><input class="input" id="nameIn" autocomplete="given-name" maxlength="40" value="' + esc(S.name) + '" placeholder="e.g. Priya, Tom, Ananya, Sam"></div><p id="nameHi" class="status" aria-live="polite"></p></div>' +
       '<div class="card"><h2>The pitch</h2>' + C.intro.pitch + '</div>' +
-      '<div class="card"><h2>One route, two parts</h2><div class="path-cards">' +
-      '<div><h3>\ud83c\udf7c Core build (Steps 1-' + LAST_CORE + ')</h3><p>Peel your GPT layer by layer. One screen per step, ~10 minutes each, each with a Break it! challenge.</p></div>' +
-      '<div><h3>\ud83d\udd27 Build your GPT (~15 min)</h3><p>Click together a work bot: pick its job, brain, documents, tools and guardrails (no typing except its name), then chat with it and download its spec card.</p></div></div></div>' +
       '<div class="card"><h2>How every step works</h2><ol><li><strong>Hook</strong>: one opening line (often a bad joke).</li><li><strong>What you see</strong>: the model before and after (illustrative).</li><li><strong>What\u2019s really happening</strong>: the real mechanism, in plain words. The metaphor is fun; this part is the truth.</li><li><strong>Break it!</strong>: a hands-on challenge. Breaking things is the fastest way to learn their limits.</li><li><strong>Myth-buster</strong>, <strong>So what for your requirement?</strong> and a one-question <strong>Quick check</strong>.</li><li><strong>Under the hood</strong>: a closed panel with a diagram and technical bullets for the curious.</li></ol><p>Underlined words like <button type="button" class="gloss" data-term="token" aria-expanded="false">token</button> open a one-line definition.</p></div>' +
       '<details class="card" id="security"><summary><strong>\ud83d\udd12 Security &amp; privacy (for InfoSec teams)</strong></summary>' + SECURITY + '<p class="note">Full summary: SECURITY-SUMMARY in the repo.</p></details>' +
       '<div class="card"><h2>By the end you\u2019ll be able to\u2026</h2>' + C.intro.outcomes + '</div>' +
@@ -252,7 +263,7 @@
     const icon = X.icons[n] || 'spark';
     const done = !!S.challenge[n];
     let h = '<div class="step-head">' + partSVG(icon, 84) + '<div><div class="chips">' +
-      '<span class="chip">Step ' + n + ' of ' + CORE.length + ' \u00b7 Core</span>' +
+      '<span class="chip learn">\ud83d\udcd8 Learn \u00b7 Step ' + n + ' of ' + CORE.length + '</span>' +
       '<span class="chip time">\u23f1 ~' + esc(s.time.replace(/,.*$/, '')) + '</span></div>' +
       '<h1>' + X.emoji[n] + ' ' + esc(s.name) + '</h1><p class="concept">' + esc(s.concept) + '</p>' +
       (s.buildsOn ? '<p class="note">Builds on ' + linkSteps(s.buildsOn.replace(/Steps (\d+) and (\d+)/, 'Step $1 and Step $2').replace(/Steps (\d+), (\d+) and (\d+)/, 'Step $1, Step $2 and Step $3')) + '.</p>' : '') + '</div></div>';
