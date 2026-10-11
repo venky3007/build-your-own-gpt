@@ -720,3 +720,9 @@ details.more summary small,.tradebar small{color:#8a8fa3;font-weight:500}.more-i
 @keyframes fxpop{from{opacity:0;transform:translate(-50%,-30%) scale(.6)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}to{opacity:0;transform:translate(-50%,-90%)}}
 @media (max-width:980px){.fx-wrap{grid-template-columns:1fr}.fx-side{position:static;max-height:none}.xr-wrap>summary{display:block;cursor:pointer;font-weight:800;padding:8px 0}.fx-board{top:84px}.fx-list{max-height:38vh}}
 @media (prefers-reduced-motion:reduce){.fx-dot.flip,.fx-list li.flip,.fx-rt li.flip,.fx-confetti{animation:none}}
+.fx-score{text-align:center;background:linear-gradient(135deg,#ecfdf5,#eef2ff);border-radius:14px;padding:10px;margin:8px 0}.fx-score .big{font-size:2.6rem;font-weight:900;margin:0}
+.fx-habits li{margin:6px 0;font-weight:600}.fx-share{font-weight:700;background:#f8fafc;border:1px dashed var(--line2);border-radius:10px;padding:10px}
+.xr-match{color:#86efac;font-size:.78rem;margin:2px 0}.xr-b.work{border-style:dashed;color:#cbd5e1}.tagold.gone{background:#475569;text-decoration:line-through}
+.xr-chunk.untrusted{outline:2px solid #dc2626}
+.qchips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.chip-q{border:1px solid var(--line2);background:#fff;border-radius:99px;padding:5px 10px;font-size:.82rem;cursor:pointer;text-align:left}
+.chatlog{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow:auto;margin:8px 0}.chatlog .bubble.user{align-self:flex-end}.chatlog .bubble.bot.bad{border-color:#fecaca;background:#fef2f2}
