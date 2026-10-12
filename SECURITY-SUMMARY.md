@@ -17,8 +17,7 @@ A self-paced AI-literacy course: 9 explanatory steps plus "Fix the broken bot", 
 - One optional outbound link: the "source code" link to github.com opens only if a user clicks it.
 
 ## Storage
-- Progress, the bot's name, job and fixes are stored only in the browser's `localStorage` (key `ryoba.v3`; older `ryoba.v1`/`ryoba.v2` data is migrated once, and **Clear my data** removes all three keys). No cookies are set (`document.cookie` is empty in tests).
-- **Clear my data** (menu, welcome page and security panel) deletes the stored keys.
+- Your progress lives only in this browser tab (`sessionStorage`, key `ryoba.v3`) and is erased when you close the tab or the browser; a refresh keeps it. **Clear my data** (in the footer of every page, plus the Steps menu, welcome page and security panel) erases it immediately, after a confirm. It's per browser tab and per device: never synced, never sent anywhere. Older versions used `localStorage` (`ryoba.v1`/`v2`/`v3`): on first load that data is moved into the tab and the localStorage keys are deleted, so nothing persists. No cookies, IndexedDB, Cache Storage or service workers are used. Chat messages are never stored, only shown on screen until you leave the page. If the browser blocks storage, the course still works; progress just won't survive a refresh.
 - The spec-card download is a local file created in the browser (Blob). Nothing is uploaded.
 - Users are asked not to type real company or personal data into the bot-name or chat fields. Anything typed stays on the device.
 
@@ -37,9 +36,9 @@ default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font
 Headless Chrome (Playwright) suites (`tools/test-site.mjs`, `tools/test-full.mjs`, `tools/test-slice.mjs`) run against both a local copy and the live site. They check:
 - every request goes to the site's own origin (**0 external requests**)
 - 0 JavaScript errors
-- `document.cookie` is empty
+- `document.cookie` is empty, and no IndexedDB, Cache Storage or service worker is used
 - the security panel quotes the CSP
-- "Clear my data" empties storage
+- "Clear my data" is visible on every route and empties storage; no localStorage keys remain after load; progress survives a refresh but not closing the tab
 - all simulated chat behaviours
 
 ## Known limitations
@@ -61,3 +60,11 @@ Headless Chrome (Playwright) suites (`tools/test-site.mjs`, `tools/test-full.mjs
 ## /preview/
 
 The former preview path now holds a static page with a `<meta http-equiv="refresh">` to the main site and a plain link. It has no scripts.
+
+
+## What is stored (key `ryoba.v3` in sessionStorage)
+
+- Learn track: steps done/visited, quiz answers, challenge state, and the text of the Step 7 invoice box if you edit it.
+- Optional first name from the welcome page.
+- Fix the broken bot: bot name, job, levels done and stars, fixes applied, wrong fixes tried, exam score, Translate picks, messy-request picks.
+- Not stored: chat messages, the trained mini-model, anything sent anywhere.

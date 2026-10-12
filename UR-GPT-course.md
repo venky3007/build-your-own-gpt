@@ -43,7 +43,7 @@ Everyone has an opinion about AI, but few of us have seen how it actually works.
 | **What you leave with** | A clear picture of how LLMs, RAG and agents work and fail, plus a downloadable or printable spec card and “My AI habits” card. |
 | **Setup needed** | None. A modern web browser and the link. No login and no install. |
 | **Data** | All companies, people, documents, policies and invoices are **fictional**. |
-| **Progress** | Saved only in your own browser. You can wipe it any time with **Clear my data**. |
+| **Progress** | Kept only in your open browser tab: a refresh keeps it, closing the tab erases it. **Clear my data** (footer of every page) erases it immediately. |
 
 **What you'll be able to do by the end** (from the welcome screen):
 
@@ -71,8 +71,8 @@ A footer on every page says it plainly: **"🔒 Runs 100% in your browser. No lo
 | **Content Security Policy** | Set with a meta tag in `index.html`: `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'`. `connect-src 'none'` stops scripts from making any network connection. There is also a `no-referrer` policy. |
 | **Cookies and tracking** | No cookies, analytics or trackers. |
 | **Camera, mic and files** | Not used. The "screenshot" and "voice" demos use built-in samples. |
-| **Storage** | Progress and bot picks live only in the browser's `localStorage` (key `ryoba.v2`; an older `ryoba.v1` key is migrated and also removed on reset). If your browser blocks storage, the course still works and a toast says progress won't be saved. |
-| **Clear my data** | Available in the Steps menu, on the welcome page and in the security panel. It asks you to confirm ("Your GPT will forget everything. Very on-theme."), deletes the stored keys and resets the chat. |
+| **Storage** | Your progress lives only in this browser tab (`sessionStorage`, key `ryoba.v3`) and is erased when you close the tab or the browser; a refresh keeps it. **Clear my data** (in the footer of every page, plus the Steps menu, welcome page and security panel) erases it immediately, after a confirm. It's per browser tab and per device: never synced, never sent anywhere. Older versions used `localStorage` (`ryoba.v1`/`v2`/`v3`): on first load that data is moved into the tab and the localStorage keys are deleted, so nothing persists. No cookies, IndexedDB, Cache Storage or service workers are used. Chat messages are never stored, only shown on screen until you leave the page. If the browser blocks storage, the course still works; progress just won't survive a refresh. |
+| **Clear my data** | In the footer of every page (and the Steps menu, welcome page and security panel). It asks you to confirm ("Your GPT will forget everything. Very on-theme."), erases the tab's progress and any old localStorage keys, and returns to the welcome page. It affects this browser only. |
 | **Spec card download** | Created on your device as a local `.txt` file. Nothing is uploaded. |
 | **Fictional data** | "All documents, companies, people, policies, invoices and data in this course are fictional." Learners are asked not to type real company or personal data into the bot-name or chat boxes. |
 | **Third-party code** | None. All the JavaScript is plain, first-party code. Fonts (Inter, Space Grotesk, JetBrains Mono) are bundled under the SIL Open Font License. |
@@ -632,7 +632,7 @@ The course works for one person at a desk or a whole team. These formats come fr
 - Techno-functional colleagues make great "table buddies". The Under-the-hood panels give them enough to answer follow-up questions.
 - Remind people the data is fictional, and that they shouldn't type real company or personal information into the name or chat boxes.
 - Working across the USA and India? The examples already mix both (US and India leave days, New York and Bengaluru hotel caps, both holiday calendars, $ and ₹), so the same session works in both offices.
-- On a shared or kiosk computer, finish with **Clear my data**.
+- On a shared or kiosk computer, close the tab when done (or click **Clear my data**).
 - The Steps 1–2 training uses the device's processor for roughly 15–25 seconds. Older laptops are fine, just slower.
 - Nothing needs installing or approving: no logins, accounts, cookies or AI services. For your security team, point them to the **Security details** panel and the public source code.
 

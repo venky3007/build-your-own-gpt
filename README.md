@@ -35,7 +35,7 @@ A break-it-yourself AI-literacy course for office folks: **Fix the broken bot** 
 
 ## Privacy
 
-**Nothing leaves your browser.** There is no server, no login, no analytics, no cookies and no cloud AI. A Content Security Policy blocks all network requests (`connect-src 'none'`); fonts and every other asset are bundled. Progress and your bot's picks are saved only in this browser's local storage, and you can reset them at any time.
+**Nothing leaves your browser.** There is no server, no login, no analytics, no cookies and no cloud AI. Your progress lives only in the open browser tab (sessionStorage) and is erased when you close it; **Clear my data** in the footer erases it immediately. A Content Security Policy blocks all network requests (`connect-src 'none'`); fonts and every other asset are bundled. Progress and your bot's picks are saved only in this browser's local storage, and you can reset them at any time.
 
 ## Run it locally
 

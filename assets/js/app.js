@@ -1,4 +1,4 @@
-/* Course app shell (name comes from config.js). No network calls; state lives in localStorage only. */
+/* Course app shell (name comes from config.js). No network calls; state lives in sessionStorage only (this tab). */
 (function () {
   'use strict';
   const C = window.COURSE, X = window.EXTRAS, F = window.FUN, CFG = window.SITE_CONFIG;
@@ -29,20 +29,30 @@
     if (o.route) o.route = o.route.replace(/^#\/step\/(\d+)/, (m, n) => '#/step/' + sh(n));
     o.v = 2; return o;
   }
+  /* Storage: sessionStorage only (survives refresh, erased when the tab/browser closes).
+     Older versions used localStorage: migrate it once into this tab, then delete it so nothing persists. */
+  const SS = () => { try { return window.sessionStorage; } catch (e) { return null; } };
+  const LS = () => { try { return window.localStorage; } catch (e) { return null; } };
+  function wipeLocal() { const l = LS(); if (!l) return; [KEY, V2_KEY, OLD_KEY].forEach((k) => { try { l.removeItem(k); } catch (e) { } }); }
   let S;
   try {
-    let raw = localStorage.getItem(KEY), o;
+    const ss = SS(), ls = LS(), get = (st, k) => { try { return st ? st.getItem(k) : null; } catch (e) { return null; } };
+    let raw = get(ss, KEY), o;
     if (raw) o = JSON.parse(raw);
+    else if ((raw = get(ls, KEY))) o = JSON.parse(raw);
     else {
-      if ((raw = localStorage.getItem(V2_KEY))) o = JSON.parse(raw); else if ((raw = localStorage.getItem(OLD_KEY))) o = migrate(JSON.parse(raw));
-      if (o) { const ob = o.b || {}; o.fx = { name: ob.name || '', job: 'hr', lvl: {}, fixes: {}, tried: {} }; delete o.bdone; delete o.buildAtt; o.v = 3; o.migratedFrom = raw === localStorage.getItem(V2_KEY) ? 2 : 1; }
+      const v2 = get(ls, V2_KEY), v1 = get(ls, OLD_KEY);
+      if (v2) o = JSON.parse(v2); else if (v1) o = migrate(JSON.parse(v1));
+      if (o) { const ob = o.b || {}; o.fx = { name: ob.name || '', job: 'hr', lvl: {}, fixes: {}, tried: {} }; delete o.bdone; delete o.buildAtt; o.v = 3; o.migratedFrom = v2 ? 2 : 1; }
     }
+    wipeLocal();
+    if (o) { try { SS().setItem(KEY, JSON.stringify(Object.assign(blank(), o))); } catch (e) { } }
     S = Object.assign(blank(), o || {});
     ['ws', 'wsGrad', 'forkSeen', 'express', 'path'].forEach((k) => delete S[k]);
     if (S.route && !/^#\/(welcome|step\/[1-9]$|build\/([1-9]|1[0-3])$|fix\/([0-9]|1[01])$|chat)/.test(S.route)) S.route = '#/fix/0';
-  } catch (e) { S = blank(); }
-  let storageOK = true;
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { if (storageOK) { storageOK = false; toast('Heads up: your browser is blocking local storage, so progress won\u2019t be saved this time.'); } } }
+  } catch (e) { S = blank(); wipeLocal(); }
+  let storageOK = true, clearedAt = 0;
+  function save() { try { SS().setItem(KEY, JSON.stringify(S)); } catch (e) { if (storageOK) { storageOK = false; toast('Heads up: your browser is blocking storage, so progress won\u2019t survive a refresh this time.'); } } }
 
   // ---------- helpers ----------
   let toastT;
@@ -50,7 +60,7 @@
   function linkSteps(html) { return String(html || '').replace(/\bStep (\d{1,2})\b(?![-\u2013\d])/g, (m, n) => (+n >= 1 && +n <= TOTAL) ? '<a href="#/step/' + n + '">Step ' + n + '</a>' : m); }
   function safe(t) { return '<span class="safe">' + t + ' <button type="button" class="safe-more">Security details</button></span>'; }
   const FICT = 'All documents, companies, people, policies, invoices and data in this course are fictional.';
-  const SECURITY = '<ul class="secl"><li><strong>Static files only:</strong> plain HTML, JavaScript and CSS served over HTTPS from GitHub Pages. No server-side code.</li><li><strong>No login, no accounts.</strong> The site sets no cookies and includes no analytics or trackers.</li><li><strong>No AI service or API is called.</strong> Chat answers are scripted from your picks; the tiny model in Steps 1\u20132 trains on your device.</li><li><strong>Outgoing connections are blocked</strong> by this Content-Security-Policy (set in the page): <code>default-src \'self\'; img-src \'self\' data:; style-src \'self\' \'unsafe-inline\'; font-src \'self\'; script-src \'self\'; connect-src \'none\'; object-src \'none\'; base-uri \'self\'; form-action \'none\'</code></li><li><strong>No camera, microphone or file access.</strong> The \u201cscreenshot\u201d and \u201cvoice\u201d demos use built-in samples.</li><li><strong>Storage:</strong> progress and picks are saved only in this browser\u2019s localStorage. Remove them any time with <em>Clear my data</em>.</li><li><strong>Please don\u2019t type real company or personal data</strong> into the bot name or chat box. It stays on your device, but the course isn\u2019t designed for real data.</li><li><strong>All documents, companies, people, policies, invoices and data in this course are fictional.</strong></li><li><strong>Source code is public</strong> for review: <a href="https://github.com/venky3007/build-your-own-gpt" rel="noopener noreferrer" target="_blank">github.com/venky3007/build-your-own-gpt</a>.</li></ul>';
+  const SECURITY = '<ul class="secl"><li><strong>Static files only:</strong> plain HTML, JavaScript and CSS served over HTTPS from GitHub Pages. No server-side code.</li><li><strong>No login, no accounts.</strong> The site sets no cookies and includes no analytics or trackers.</li><li><strong>No AI service or API is called.</strong> Chat answers are scripted from your picks; the tiny model in Steps 1\u20132 trains on your device.</li><li><strong>Outgoing connections are blocked</strong> by this Content-Security-Policy (set in the page): <code>default-src \'self\'; img-src \'self\' data:; style-src \'self\' \'unsafe-inline\'; font-src \'self\'; script-src \'self\'; connect-src \'none\'; object-src \'none\'; base-uri \'self\'; form-action \'none\'</code></li><li><strong>No camera, microphone or file access.</strong> The \u201cscreenshot\u201d and \u201cvoice\u201d demos use built-in samples.</li><li><strong>Storage:</strong> your progress lives only in this browser tab (<code>sessionStorage</code>) and is erased when you close the tab or browser. A refresh keeps it. <em>Clear my data</em> erases it immediately. No cookies, no IndexedDB, nothing synced or sent. (Older versions used localStorage; on your first visit that data is moved into this tab and deleted.)</li><li><strong>Please don\u2019t type real company or personal data</strong> into the bot name or chat box. It stays on your device, but the course isn\u2019t designed for real data.</li><li><strong>All documents, companies, people, policies, invoices and data in this course are fictional.</strong></li><li><strong>Source code is public</strong> for review: <a href="https://github.com/venky3007/build-your-own-gpt" rel="noopener noreferrer" target="_blank">github.com/venky3007/build-your-own-gpt</a>.</li></ul>';
   function securityModal() { openModal('<h2 id="modalTitle">\ud83d\udd12 Security &amp; privacy: the facts</h2>' + SECURITY + '<div class="row"><button class="btn" id="secClear">Clear my data</button><button class="btn primary" id="secClose">Close</button></div>', (m) => { $('#secClose', m).onclick = () => closeModal(); $('#secClear', m).onclick = () => { closeModal(true); resetAll(); }; }); }
   document.addEventListener('click', (e) => { if (e.target.closest('.safe-more')) { e.preventDefault(); securityModal(); } });
   const SAFE_STEP = {
@@ -218,9 +228,9 @@
   function openDrawer() { const d = $('#drawer'); d.classList.add('open'); d.removeAttribute('aria-hidden'); $('#menuBtn').setAttribute('aria-expanded', 'true'); const s = document.createElement('div'); s.className = 'scrim'; s.id = 'scrim'; s.onclick = () => closeDrawer(); document.body.appendChild(s); const a = $('a[aria-current],a,button', d); if (a) a.focus(); }
   function closeDrawer(silent) { const d = $('#drawer'); if (!d || !d.classList.contains('open')) return; d.classList.remove('open'); d.setAttribute('aria-hidden', 'true'); $('#menuBtn').setAttribute('aria-expanded', 'false'); const s = $('#scrim'); if (s) s.remove(); if (!silent) $('#menuBtn').focus(); }
   function resetAll() {
-    if (!confirm('Clear my data: delete all progress, quiz answers and bot picks stored in this browser? This can\u2019t be undone. (Your GPT will forget everything. Very on-theme.)')) return;
-    try { localStorage.removeItem(KEY); localStorage.removeItem(V2_KEY); localStorage.removeItem(OLD_KEY); } catch (e) { }
-    S = blank(); if (SP()) SP().resetSession(); save(); toast('Fresh start! The engine is back to guessing random letters.'); go('#/welcome');
+    if (!confirm('Clear my data: erase all progress, quiz answers and bot picks from this browser tab now? This can\u2019t be undone. (Your GPT will forget everything. Very on-theme.)')) return;
+    try { const ss = SS(); [KEY, V2_KEY, OLD_KEY].forEach((k) => ss.removeItem(k)); } catch (e) { } wipeLocal();
+    S = blank(); clearedAt = Date.now(); if (SP()) SP().resetSession(); toast('Fresh start! The engine is back to guessing random letters.'); go('#/welcome');
   }
 
   function trackCards(core, bc, compact) {
@@ -243,11 +253,11 @@
     main.innerHTML =
       '<section class="hero"><div class="hero-art">' + heroArt() + '</div>' +
       '<div><div class="chips"><span class="chip">AI-literacy course</span><span class="chip learn">\ud83d\udcd8 ' + LEARN + ' (9 steps) ~' + LEARN_MIN + ' min</span><span class="chip build">\ud83d\udd27 Fix the broken bot ' + BUILD_MIN + '</span></div>' +
-      '<h1 class="course-title">' + esc(CFG.name) + '</h1><p class="subtitle">' + esc(CFG.subtitle) + '</p>' + safe('Runs 100% in your browser. No logins, no AI services, no data leaves your device. All company docs are fictional.') + '<p class="fict"><strong>' + FICT + '</strong></p>' +
+      '<h1 class="course-title">' + esc(CFG.name) + '</h1><p class="subtitle">' + esc(CFG.subtitle) + '</p>' + safe('Runs 100% in your browser. No logins, no AI services, no data leaves your device. Progress is kept only in this tab and erased when you close it. All company docs are fictional.') + '<p class="fict"><strong>' + FICT + '</strong></p>' +
       '<p>Inside, you\u2019ll assemble a GPT part by part, from a letter-guessing engine to a tool-using assistant, break it on purpose at every stage, then click together your own work bot and chat with it. <strong>Warning:</strong> side effects may include saying \u201cit depends on the retrieval\u201d in meetings.</p>' +
       '<div class="row">' + '<a class="btn primary" id="welcomeFix" href="#/fix/' + (window.Fix ? Math.min(11, window.Fix.done()) : 0) + '">\ud83d\udd27 Fix the broken bot \u2192</a>' + (resume && /step/.test(resume) ? '<a class="btn" href="' + resume + '">Continue: ' + esc(rl) + '</a>' : '<a class="btn" href="#/step/1">Learn how it works (~' + LEARN_MIN + ' min)</a>') + '</div></div></section>' + tracksHTML() +
       '<div class="card"><span class="section-label">Live from the workbench</span><p class="noise" id="noise" aria-live="off"></p><p class="note">This is an untrained engine: picking random letters, with total confidence. In Steps 1 and 2 you\u2019ll train a real (tiny) neural network right here in your browser, and watch it go from this to word-like office email. Progress!</p></div>' +
-      '<div class="card"><h2>Hello! What should your GPT call you?</h2><div class="field"><label for="nameIn">First name (optional, stays in this browser)</label><input class="input" id="nameIn" autocomplete="given-name" maxlength="40" value="' + esc(S.name) + '" placeholder="e.g. Priya, Tom, Ananya, Sam"></div><p id="nameHi" class="status" aria-live="polite"></p></div>' +
+      '<div class="card"><h2>Hello! What should your GPT call you?</h2><div class="field"><label for="nameIn">First name (optional, kept only in this tab)</label><input class="input" id="nameIn" autocomplete="given-name" maxlength="40" value="' + esc(S.name) + '" placeholder="e.g. Priya, Tom, Ananya, Sam"></div><p id="nameHi" class="status" aria-live="polite"></p></div>' +
       '<div class="card"><h2>The pitch</h2>' + C.intro.pitch + '</div>' +
       '<div class="card"><h2>How every step works</h2><ol><li><strong>Hook</strong>: one opening line (often a bad joke).</li><li><strong>What you see</strong>: the model before and after (illustrative).</li><li><strong>What\u2019s really happening</strong>: the real mechanism, in plain words. The metaphor is fun; this part is the truth.</li><li><strong>Break it!</strong>: a hands-on challenge. Breaking things is the fastest way to learn their limits.</li><li><strong>Myth-buster</strong>, <strong>So what for your requirement?</strong> and a one-question <strong>Quick check</strong>.</li><li><strong>Under the hood</strong>: a closed panel with a diagram and technical bullets for the curious.</li></ol><p>Underlined words like <button type="button" class="gloss" data-term="token" aria-expanded="false">token</button> open a one-line definition.</p></div>' +
       '<details class="card" id="security"><summary><strong>\ud83d\udd12 Security &amp; privacy (for InfoSec teams)</strong></summary>' + SECURITY + '<p class="note">Full summary: SECURITY-SUMMARY in the repo.</p></details>' +
@@ -339,7 +349,7 @@
     $('#brandName').textContent = CFG.name; $('#brandLink').setAttribute('aria-label', CFG.name + ', home');
     $('#menuBtn').onclick = () => ($('#drawer').classList.contains('open') ? closeDrawer() : openDrawer());
     $('#closeDrawer').onclick = () => closeDrawer();
-    $('#resetBtn').onclick = resetAll;
+    $('#resetBtn').onclick = resetAll; $('#clearAlways').onclick = resetAll;
     $('#backBtn').onclick = () => { const h = $('#backBtn').dataset.href; if (h) go(h); };
     $('#nextBtn').onclick = onNext;
     $('#drawer').addEventListener('click', (e) => { if (e.target.closest('a')) closeDrawer(true); });
